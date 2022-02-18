@@ -1,0 +1,13 @@
+
+BootStrap: docker
+From: ubuntu:16.04
+
+%environment
+
+%post
+	apt-get update
+    pip3 install torch torchvision torchaudio
+
+%files
+%labels
+    Author hedwin.bonnavaud@isae.fr

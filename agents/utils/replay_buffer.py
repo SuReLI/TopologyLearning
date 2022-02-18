@@ -1,0 +1,45 @@
+import random
+
+import numpy as np
+import torch
+
+
+default_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+def to_tensor(data_list, device):
+    if isinstance(data_list[0], np.ndarray):
+        data_list = np.array(data_list)
+    return torch.Tensor(data_list).to(device=device)
+
+
+class ReplayBuffer:
+    def __init__(self, capacity, device=default_device, same_size_data=True):
+        self.capacity = capacity  # capacity of the buffer
+        self.device = device
+        self.data = []
+        self.index = 0  # index of the next cell to be filled
+        self.same_size_data = same_size_data
+        if self.same_size_data:
+            self.data_size = None
+
+    def append(self, data):
+        if self.same_size_data and self.data_size is None:
+            self.data_size = len(data)
+        elif self.same_size_data:
+            assert self.data_size == len(data), "Impossible to store data of size " + str(len(data)) + " inside " \
+                                                "buffer with data of size " + str(self.data_size) + "."
+        if len(self.data) < self.capacity:
+            self.data.append(None)
+        self.data[self.index] = data
+        self.index = (self.index + 1) % self.capacity
+
+    def sample(self, batch_size):
+        batch = random.sample(self.data, batch_size)
+        try:
+            return list(map(lambda x: to_tensor(x, self.device), list(zip(*batch))))
+        except:
+            print()
+
+    def __len__(self):
+        return len(self.data)

@@ -1,0 +1,1 @@
+from agents.goal_conditioned_rl_agents.Discrete.discrete_actions_agent import GCAgentDiscrete

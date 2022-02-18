@@ -1,0 +1,104 @@
+import torch as T
+from settings.environments_index import *
+
+from settings.environments_index import EnvironmentsIndex
+from utils.sys_fun import get_output_directory
+
+########################################################################################################################
+#                                                      SETTINGS                                                        #
+########################################################################################################################
+
+#################
+#    General    #
+#################
+
+device = T.device('cuda' if T.cuda.is_available() else 'cpu')  # Device for the tensors to run on
+verbose = True
+global_output_directory = get_output_directory()
+
+#################
+#  Simulations  #
+#################
+
+nb_seeds = 5
+nb_episodes_max = 100
+nb_time_steps_max_per_episodes = 50
+environment_index = EnvironmentsIndex.GRID_WORLD_DISCRETE  # Environment to test the agents on
+environments_rollout = False  # Rollout environment every episode if the environment present the ability to do so
+pre_train_low_level_agent = True
+
+print_reward_after_episodes = False
+
+#################
+#     Tests     #
+#################
+
+# Test video recording settings are in section "Rendering"
+nb_episodes_before_evaluation = 5
+nb_tests = 20
+
+#################
+#     Plots     #
+#################
+
+colors = [  # Colors used to plot lines on topology (each simulation have its own color)
+        "#ff0000",
+        "#ff9500",
+        "#ccbb00",
+        "#0a9900",
+        "#00f0e0",
+        "#0000ff",
+        "#c7009f",
+        "#8800c7",
+        "#000000",
+        "#6e3900"
+    ]
+
+show_rewards_per_episodes = False
+nb_episode_before_graph_update = 40  # None = no plot
+std_area_transparency = 0.2
+
+plot_main_side = True
+plot_main_side_shape = (2, 3)
+plot_agent_side = False
+
+if not plot_agent_side and not plot_main_side:
+    nb_episode_before_graph_update = None
+
+#  Topology plot
+nodes_alpha = 0.8
+edges_alpha = 0.8
+failed_edge_color = "#000000"
+labels_color = "#000000"
+
+#################
+#   Rendering   #
+#################
+
+interactive = True
+
+# Video settings
+show_video_during_training = True
+rendering_start_at_episode = 0
+rendering_stop_at_episode = nb_episodes_max
+nb_episodes_between_two_records = None
+
+show_video_during_tests = True
+rendering_start_at_test = 0
+rendering_stop_at_test = nb_episodes_max
+nb_tests_between_two_records = 3
+
+video_output_fps = 30
+
+# Graph plot rendering settings
+input_point_width = 15
+input_point_color = "#3adb00"
+
+########################################
+#   Goal Reaching main file settings   #
+########################################
+nb_final_demo = 1
+
+########################################################################################################################
+#                                      VARIABLES DIRECTLY COMPUTED FROM SETTINGS                                       #
+########################################################################################################################
