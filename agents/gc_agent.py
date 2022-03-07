@@ -18,9 +18,8 @@ class GoalConditionedAgent(Agent):
         self.current_goal = None
 
     def on_episode_start(self, *args):
-        state, goal, episode_id = args
+        state, goal = args
         assert isinstance(state, np.ndarray)
         assert isinstance(goal, np.ndarray)
-        assert isinstance(episode_id, int)
-        super().on_episode_start(state, episode_id)
+        super().on_episode_start(state)
         self.current_goal = goal

@@ -1,6 +1,5 @@
 """
-GWR (Growing When Require) is a famous state of the art neuronal gaz (NG) for topology learning. This NG is able to
-grow (add new nodes) when new data are far from its closest node, and when this closest node cannot learn anymore.
+Trajectory Conditioned Neural Gaz (TCNG) is a GWR that use trajectory to define if a link should be placed or not.
 """
 import math
 from statistics import mean
@@ -11,7 +10,7 @@ import numpy as np
 from agents.graph_building_strategies.topology_manager import TopologyManager
 
 
-class GWR(TopologyManager):
+class TCNG(TopologyManager):
     def __init__(self, topology, distance_function=None, nodes_attributes=None, edges_attributes=None, Sw=0.1, Sn=0.05,
                  age_max=30, activity_threshold=0.87, firing_threshold=0.05):
         # activity_threshold=0.87 for map 7
@@ -19,7 +18,7 @@ class GWR(TopologyManager):
         # activity_threshold=0.96 for map 10
         if edges_attributes is None:
             edges_attributes = {}
-        edges_attributes["risk"] = 1
+        edges_attributes["strong"] = False
         edges_attributes["density"] = 0
         if nodes_attributes is None:
             nodes_attributes = {}
@@ -42,7 +41,7 @@ class GWR(TopologyManager):
         # for elt in data:
         #     data_ += elt[1]
         # data = data_
-        data = data[-1][1]
+        last_node, data = data[-1]
         """
         data = data[-1][1]
         """
@@ -58,7 +57,7 @@ class GWR(TopologyManager):
                 if activity < self.activity_threshold and node_count_ratio < self.firing_threshold:
                     # Add new node
                     new_node = self.create_node((node_params["weights"] + state) / 2)
-                    self.create_edge(0, new_node)
+                    self.create_edge(0, new_node, strong=True)
                 continue
             first_node, first_node_params, first_node_distance, second_node, second_node_params, second_node_distance \
                 = self.get_winners(state)
@@ -74,8 +73,8 @@ class GWR(TopologyManager):
             if activity < self.activity_threshold and first_node_count_ratio < self.firing_threshold:
                 # Add new node
                 new_node = self.create_node((first_node_params["weights"] + state) / 2)
-                self.create_edge(first_node, new_node)
-                self.create_edge(first_node, new_node)
+                self.create_edge(first_node, new_node, strong=first_node == last_node)
+                self.create_edge(second_node, new_node, strong=second_node == last_node)
                 """
                 try:
                     # We don't need to verify if the topology has been divided because we just created two links between
@@ -113,7 +112,7 @@ class GWR(TopologyManager):
         edge_data = self.topology.get_edge_data(first_node, second_node)
         if edge_data is None:
             # We should create the link, with every parameter initialised
-            self.create_edge(first_node, second_node)
+            self.create_edge(first_node, second_node, strong=False)
         else:
             # If we re-create an already existing edge, all his parameters will be reset. But we just want to reset the
             # age.
@@ -144,15 +143,32 @@ class GWR(TopologyManager):
         return first_node_id, first_node_parameters, first_node_distance, \
             second_node_id, second_node_parameters, second_node_distance
 
+    def remove_subgraph(self, node):
+        to_remove = [n for n in self.topology.neighbors(node)]
+        self.topology.remove_node(node)
+        for node in to_remove:
+            self.remove_subgraph(node)
+
+    def on_edge_break(self, first_node, second_node):
+        try:
+            nx.shortest_path(self.topology, 0, first_node)
+        except:
+            self.remove_subgraph(first_node)
+        try:
+            nx.shortest_path(self.topology, 0, second_node)
+        except:
+            self.remove_subgraph(second_node)
+
     def on_reaching_waypoint_failed(self, last_node, next_node):
         if last_node is None:
             return
         edge_data = self.topology.get_edge_data(last_node, next_node)
         if edge_data is None:
             return
-        data = self.topology.get_edge_data(last_node, next_node)
-        data["risk"] += 1
-        self.topology.add_edge(last_node, next_node, **data)
+        if edge_data["strong"]:
+            print("FAILED ON STRONG EDGE ", (last_node, next_node))
+        self.topology.remove_edge(last_node, next_node)
+        self.on_edge_break(last_node, next_node)
 
     def on_reaching_waypoint_succeed(self, last_node, next_node):
         if last_node is None:
@@ -160,6 +176,5 @@ class GWR(TopologyManager):
         edge_data = self.topology.get_edge_data(last_node, next_node)
         if edge_data is None:
             return
-        data = self.topology.get_edge_data(last_node, next_node)
-        data["risk"] = 1
-        self.topology.add_edge(last_node, next_node, **data)
+        edge_data["strong"] = True
+        self.topology.add_edge(last_node, next_node, **edge_data)  # TODO verify if it's not already changed

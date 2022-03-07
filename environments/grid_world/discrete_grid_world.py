@@ -114,7 +114,7 @@ class DiscreteGridWorld(gym.Env):
         path += "/environments/grid_world/maps/"
         self.load_map(path + map_name + ".txt")
         # self.load_map("implem/environments/grid_world/map1.txt")
-        self.observation_space = spaces.Box(-1, 1, (2,))
+        self.observation_space = spaces.Box(np.float32(-1.), np.float32(1.), (2,))
         self.action_space = spaces.Discrete(len(Direction))
         self.possibleActions = Direction
 
@@ -127,7 +127,6 @@ class DiscreteGridWorld(gym.Env):
         self.__init__(map_id=map_id)
 
     def load_map(self, map_file):
-        print(map_file)
         file = open(map_file, "r")
         self.grid = []
         y = 0

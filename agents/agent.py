@@ -1,4 +1,5 @@
 import gym
+import numpy as np
 import torch
 from settings import settings
 
@@ -32,10 +33,10 @@ class Agent:
         pass
 
     def on_episode_start(self, *episode_info):
-        (state, episode_id) = episode_info
+        (state,) = episode_info
+        assert isinstance(state, np.ndarray)
         self.last_state = state
         self.episode_time_step_id = 0
-        self.episode_id = episode_id
 
     def action(self, state):
         res = self.action_space.sample()

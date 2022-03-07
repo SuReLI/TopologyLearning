@@ -69,7 +69,8 @@ class DataHolder:
 
     def get_accuracy_evolution(self):
         if self.current_seed == 0:
-            return np.array(self.evaluations_average_agent_distances), np.zeros(len(self.evaluations_average_agent_distances))
+            return np.array(self.evaluations_average_agent_distances), \
+                   np.zeros(len(self.evaluations_average_agent_distances))
         old_seeds_data = self.old_seeds_accuracies[:self.current_seed]
         return np.mean(old_seeds_data, axis=0), np.std(old_seeds_data, axis=0)
 

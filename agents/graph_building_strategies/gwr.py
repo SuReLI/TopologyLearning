@@ -13,13 +13,13 @@ from agents.graph_building_strategies.topology_manager import TopologyManager
 
 class GWR(TopologyManager):
     def __init__(self, topology, distance_function=None, nodes_attributes=None, edges_attributes=None, Sw=0.1, Sn=0.05,
-                 age_max=30, activity_threshold=0.87, firing_threshold=0.05):
+                 age_max=30, activity_threshold=0.88, firing_threshold=0.05):
         # activity_threshold=0.87 for map 7
         # activity_threshold=0.94 for map 9
         # activity_threshold=0.96 for map 10
         if edges_attributes is None:
             edges_attributes = {}
-        edges_attributes["risk"] = 1
+        edges_attributes["risk"] = 1.
         edges_attributes["density"] = 0
         if nodes_attributes is None:
             nodes_attributes = {}
@@ -30,6 +30,7 @@ class GWR(TopologyManager):
         self.age_max = age_max
         self.activity_threshold = activity_threshold
         self.firing_threshold = firing_threshold
+        self.failed_edges = []
 
     def shortest_path(self, node_from, node_to_reach):
         return nx.shortest_path(self.topology, node_from, node_to_reach, "risk")
@@ -52,7 +53,6 @@ class GWR(TopologyManager):
                 node_params = self.topology.nodes[0]
                 node_distance = np.linalg.norm(node_params["weights"] - state, 2)
                 activity = math.exp(- node_distance)
-                node_params = self.topology.nodes()[0]
                 node_count_ratio = math.exp(- node_params["win_count"])
                 node_params["weights"] += self.Sw * (node_count_ratio * 4) * (state - node_params["weights"])
                 node_params["win_count"] += 1
@@ -74,19 +74,10 @@ class GWR(TopologyManager):
             second_node_count_ratio = math.exp(- second_node_params["win_count"])
             if activity < self.activity_threshold and first_node_count_ratio < self.firing_threshold:
                 # Add new node
-                new_node = self.create_node((first_node_params["weights"] + state) / 2)
+                new_node_weights = (first_node_params["weights"] + state) / 2
+                new_node = self.create_node(new_node_weights)
                 self.create_edge(first_node, new_node)
-                self.create_edge(first_node, new_node)
-                """
-                try:
-                    # We don't need to verify if the topology has been divided because we just created two links between
-                    # first_node and second_node
-                    self.topology.remove_edge(first_node, second_node)
-                except:
-                    pass
-                self.remove_if_isolated(first_node)
-                self.remove_if_isolated(second_node)
-                """
+                self.create_edge(second_node, new_node)
             else:
                 # If a new node is not added, adapt the position of the winner and its neighbors
                 first_node_params["weights"] += \
@@ -152,15 +143,19 @@ class GWR(TopologyManager):
         if edge_data is None:
             return
         data = self.topology.get_edge_data(last_node, next_node)
-        data["risk"] += 1
+        data["risk"] = float('inf')
         self.topology.add_edge(last_node, next_node, **data)
+        if (last_node, next_node) in self.failed_edges:
+            print("Failed on edge already failed before")
+        else:
+            self.failed_edges.append((last_node, next_node))
+            self.failed_edges.append((next_node, last_node))
 
     def on_reaching_waypoint_succeed(self, last_node, next_node):
-        if last_node is None:
+        """if last_node is None:
             return
         edge_data = self.topology.get_edge_data(last_node, next_node)
         if edge_data is None:
             return
-        data = self.topology.get_edge_data(last_node, next_node)
-        data["risk"] = 1
-        self.topology.add_edge(last_node, next_node, **data)
+        edge_data["risk"] = 1
+        self.topology.add_edge(last_node, next_node, **edge_data)"""

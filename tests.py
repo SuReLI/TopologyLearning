@@ -1,4 +1,7 @@
+import copy
 from random import choice
+import gym
+from gym import logger
 
 import numpy as np
 
@@ -9,16 +12,24 @@ from utils.data_holder import DataHolder
 from utils.sys_fun import generate_video, save_image
 
 
-def evaluation(simulation, environment, evaluation_id):
-    agent = simulation.agent
-    assert isinstance(agent, TopologyLearner)
+def evaluation(simulation, evaluation_id):
+    # Create a new instance of the environment (we are testing the agent knowledge in a parallel environment, because
+    # exploration episodes are still running.
+
+    # Build a parallel environment for our test
+    environment = gym.make(settings.environment_index.value)
+
+    # Get an agent copy and prepare it to the test
+    test_agent = copy.deepcopy(simulation.agent)
+    test_agent.on_episode_stop(learn=False)
+    assert isinstance(test_agent, TopologyLearner)
     data_holder: DataHolder = simulation.data_holder
     data_holder.on_evaluation_start()
     selected_goals = ([], [])
     for test_id in range(settings.nb_tests):
-        directory = agent.output_dir + "tests/eval_" + str(evaluation_id) + "/"
+        directory = simulation.outputs_directory + "tests/eval_" + str(evaluation_id) + "/"
         filename = "test_" + str(test_id)
-        data_holder.on_test(test(directory, filename, simulation, environment, selected_goals))
+        data_holder.on_test(test(directory, filename, test_agent, environment, selected_goals))
     data_holder.on_evaluation_end()
     return selected_goals
 
@@ -48,16 +59,17 @@ def get_test_image(environment, agent: TopologyLearner, goal):
     return image
 
 
-def test(directory, filename, simulation, environment, selected_goals: tuple, video=True) -> tuple:
+def test(directory, filename, agent, environment, selected_goals: tuple, video=True) -> tuple:
     """
     Test the agent over a single goal reaching task. Return the result that will be directly passed to the DataHolder.
     return tuple(the closest node distance from goal, success in {0, 1})
     """
-    agent = simulation.agent
     assert isinstance(agent, TopologyLearner)
     if video:
         images_directory = directory + filename.split(".")[0] + "_images/"
         images = []
+
+    # Choose a goal
     oracle = environment.get_oracle()
     goal = choice(oracle)
     state = environment.reset()
@@ -79,7 +91,7 @@ def test(directory, filename, simulation, environment, selected_goals: tuple, vi
             images.append(image)
             save_image(image, images_directory, str(time_step_id + 1) + ".png")
         agent.on_action_stop(action, state, None, None, train_policy=False, learn_topology=False)
-        reached = agent.reached(state, goal, allow_area=False)
+        reached = agent.reached(state, goal)
         if reached or agent.done:
             agent.on_episode_stop()
             if video:

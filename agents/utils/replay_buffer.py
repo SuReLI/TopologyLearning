@@ -29,6 +29,8 @@ class ReplayBuffer:
         elif self.same_size_data:
             assert self.data_size == len(data), "Impossible to store data of size " + str(len(data)) + " inside " \
                                                 "buffer with data of size " + str(self.data_size) + "."
+        assert isinstance(data[0], np.ndarray)
+
         if len(self.data) < self.capacity:
             self.data.append(None)
         self.data[self.index] = data
@@ -36,10 +38,7 @@ class ReplayBuffer:
 
     def sample(self, batch_size):
         batch = random.sample(self.data, batch_size)
-        try:
-            return list(map(lambda x: to_tensor(x, self.device), list(zip(*batch))))
-        except:
-            print()
+        return list(map(lambda x: to_tensor(x, self.device), list(zip(*batch))))
 
     def __len__(self):
         return len(self.data)

@@ -37,13 +37,26 @@ class DensityFirstTL(TopologyLearner):
         if not self.topology.nodes:
             self.current_exploration_nodes_path = []
             return
-        node_from = self.get_node_for_state(state)
-
-        # Get the node with the lowest density
-        best_node = min(self.topology.nodes(data=True), key=lambda x: x[1]["density"])[0]
+        if self.last_node_passed is None:
+            # Get the node with the lowest density
+            node_from = self.get_node_for_state(state)
+            best_node = min(self.topology.nodes(data=True), key=lambda x: x[1]["density"])[0]
+        else:
+            # Get the node with the lowest density that are not too far from our current node
+            node_from = self.last_node_passed
+            best_node = None
+            best_node_cost = None
+            for node, parameters in self.topology.nodes(data=True):
+                distance = self.shortest_path(node_from, node)
+                cost = parameters["density"] + self.graph_distance_ratio * distance
+                if best_node is None or best_node_cost > cost:
+                    best_node = node
+                    best_node_cost = cost
 
         # Find the shortest path through our topology to it
         shortest_path = self.shortest_path(node_from, best_node)
+        for node in shortest_path:
+            self.topology.nodes[node]["density"] += 1
 
         # Stor the chosen path
         self.current_exploration_nodes_path = shortest_path

@@ -7,23 +7,23 @@ from agents.topology_learners.sc_topology_learner import SkillChainingTL
 
 class UCB_QL(TopologyLearner):
     """
-    A topology learner that use a node density first strategy for node selection for graph exploration.
-    It means that it will select the node with the lower density, and then try to reach it.
-    The density of a node is the number of time the agent goes into its influence area.
+    A topology learner that use a node explorations first strategy for node selection for graph exploration.
+    It means that it will select the node with the lower explorations, and then try to reach it.
+    The explorations of a node is the number of time the agent goes into its influence area.
     """
 
     def __init__(self, **params):
 
         self.ucb_exploration_ratio = params.get("ucb_exploration_ratio", 0.7)
         self.gamma = params.get("gamma", 0.98)
-        self.learning_rate = params.get("learning_rate", 0.03)
+        self.learning_rate = params.get("learning_rate", 0.1)
 
         if "nodes_attributes" in params:
-            params["nodes_attributes"]["density"] = 0
+            params["nodes_attributes"]["explorations"] = 0
             params["nodes_attributes"]["q_values"] = {}
             params["nodes_attributes"]["nb_selections"] = {}
         else:
-            params["nodes_attributes"] = {"density": 0, "q_values": {}, "nb_selections": {}}
+            params["nodes_attributes"] = {"explorations": 0, "q_values": {}, "nb_selections": {}}
 
         super().__init__(**params)
 
@@ -56,10 +56,10 @@ class UCB_QL(TopologyLearner):
         return res
 
     def is_local_minimum(self, node):
-        density = self.topology.nodes[node]["density"]
+        explorations = self.topology.nodes[node]["explorations"]
         for neighbor in self.topology.neighbors(node):
-            neighbor_density = self.topology.nodes[neighbor]["density"]
-            if density > neighbor_density:
+            neighbor_explorations = self.topology.nodes[neighbor]["explorations"]
+            if explorations > neighbor_explorations:
                 return False
         return True
 
@@ -94,6 +94,7 @@ class UCB_QL(TopologyLearner):
     def get_exploration_next_node(self):
         # If we are in a graph local minimum, we can stop and start a random exploration.
         if self.last_node_passed is None:
+            self.topology.nodes[0]["explorations"] += 1
             return 0
 
         if self.is_local_minimum(self.last_node_passed):
@@ -101,10 +102,11 @@ class UCB_QL(TopologyLearner):
                 print("££££££££££££££££££££")
                 print("  UCB choice report:")
                 print(" We are in a local minimum.")
-                print(" current node = " + str(self.last_node_passed) + " with density = "
-                      + str(self.topology.nodes[self.last_node_passed]["density"]))
+                print(" current node = " + str(self.last_node_passed) + " with explorations = "
+                      + str(self.topology.nodes[self.last_node_passed]["explorations"]))
                 for neighbor in self.topology.neighbors(self.last_node_passed):
-                    print(" neighbor " + str(neighbor) + ": density = " + str(self.topology.nodes[neighbor]["density"]))
+                    print(" neighbor " + str(neighbor) + ": explorations = " +
+                          str(self.topology.nodes[neighbor]["explorations"]))
                 print("££££££££££££££££££££")
             return None
 
@@ -144,6 +146,7 @@ class UCB_QL(TopologyLearner):
         else:
             self.topology.nodes[self.last_node_passed]["nb_selections"][best_utility_node] += 1
 
+        self.topology.nodes[best_utility_node]["explorations"] += 1
         return best_utility_node
 
     def on_reaching_waypoint_failed(self, last_node, next_node):
@@ -155,18 +158,18 @@ class UCB_QL(TopologyLearner):
     def on_reaching_waypoint_succeed(self, last_node, next_node):
         super().on_reaching_waypoint_succeed(last_node, next_node)
         if last_node is not None:
-            # Update the Q-value using a reward of 1 / density (because we reached the next node)
+            # Update the Q-value using a reward of 1 / explorations (because we reached the next node)
             # This reward is supposed to be more important when we are close to the border of our topology.
-            density = self.topology.nodes[next_node]["density"]
-            reward = 1 / density
+            explorations = self.topology.nodes[next_node]["explorations"]
+            reward = 1 / explorations
             self.update_q_value(last_node, next_node, reward=reward)
 
 
 class UCBSkillChainingTL(SkillChainingTL, UCB_QL):
     """
-    A topology learner that use a node density first strategy for node selection for graph exploration.
-    It means that it will select the node with the lower density, and then try to reach it.
-    The density of a node is the number of time the agent goes into its influence area.
+    A topology learner that use a node explorations first strategy for node selection for graph exploration.
+    It means that it will select the node with the lower explorations, and then try to reach it.
+    The explorations of a node is the number of time the agent goes into its influence area.
     """
 
     def __init__(self, **params):
@@ -176,9 +179,9 @@ class UCBSkillChainingTL(SkillChainingTL, UCB_QL):
 
 class UCBSingleAgentTL(SingleAgentTL, UCB_QL):
     """
-    A topology learner that use a node density first strategy for node selection for graph exploration.
-    It means that it will select the node with the lower density, and then try to reach it.
-    The density of a node is the number of time the agent goes into its influence area.
+    A topology learner that use a node explorations first strategy for node selection for graph exploration.
+    It means that it will select the node with the lower explorations, and then try to reach it.
+    The explorations of a node is the number of time the agent goes into its influence area.
     """
 
     def __init__(self, **params):

@@ -37,10 +37,21 @@ class ExplorationsFirstTL(TopologyLearner):
         if not self.topology.nodes:
             self.current_exploration_nodes_path = []
             return
-        node_from = self.get_node_for_state(state)
-
-        # Get the node with the lowest density
-        best_node = min(self.topology.nodes(data=True), key=lambda x: x[1]["explorations"])[0]
+        if self.last_node_passed is None:
+            # Get the node with the lowest number of explorations from it
+            node_from = self.get_node_for_state(state)
+            best_node = min(self.topology.nodes(data=True), key=lambda x: x[1]["explorations"])[0]
+        else:
+            # Get the node with the lowest number of explorations from it that are not too far from our current node
+            node_from = self.last_node_passed
+            best_node = None
+            best_node_cost = None
+            for node, parameters in self.topology.nodes(data=True):
+                distance = self.shortest_path(node_from, node)
+                cost = parameters["explorations"] + self.graph_distance_ratio * distance
+                if best_node is None or best_node_cost > cost:
+                    best_node = node
+                    best_node_cost = cost
         self.topology.nodes[best_node]["explorations"] += 1
 
         # Find the shortest path through our topology to it

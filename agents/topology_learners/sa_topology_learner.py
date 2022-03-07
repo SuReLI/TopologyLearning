@@ -1,7 +1,7 @@
 from enum import Enum
 
+from agents.goal_conditioned_rl_agents.Discrete.dqn_her_diff import DqnHerDiffAgent
 from agents.goal_conditioned_rl_agents.Discrete.dqn_her import DQNHERAgent
-from agents.graph_building_strategies.gwr import GWR
 from agents.topology_learners.topology_learner import TopologyLearner
 from agents.gc_agent import GoalConditionedAgent
 
@@ -25,7 +25,7 @@ class SingleAgentTL(TopologyLearner):
         state_space = params.get("state_space")
         action_space = params.get("action_space")
         device = params.get("device")
-        goal_reaching_agent_class = params.get("goal_reaching_agent_class", DQNHERAgent)
+        goal_reaching_agent_class = params.get("goal_reaching_agent_class", DqnHerDiffAgent)
         self.goal_reaching_agent = goal_reaching_agent_class(state_space, action_space, device)
         TopologyLearner.__init__(self, **params)
 

@@ -1,4 +1,5 @@
 import copy
+from datetime import datetime
 from statistics import mean
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -9,6 +10,7 @@ from settings import settings
 from settings.simulations import Simulation
 from agents import TopologyLearner
 from utils.sys_fun import create_dir, get_red_green_color
+import agents.graph_building_strategies as gbs
 
 
 def initiate_plots(agent):
@@ -43,6 +45,8 @@ def update_plots(figure, main_subplots, environment, current_simulation: Simulat
                  episode_id: int):
 
     environment_image = environment.render()
+    train_duration = (datetime.now() - current_simulation.start_time) - current_simulation.pause_total_duration
+    figure.suptitle("Training duration: " + str(train_duration).split(".")[0], fontsize=16)
 
     # plot update
     current_simulation.agent.update_plots(environment)
@@ -116,20 +120,24 @@ def update_plots(figure, main_subplots, environment, current_simulation: Simulat
         # Compute edges color
         edges_colors = []
         if topology.edges():
-            risk_values = [params["risk"] for _, _, params in topology.edges(data=True)]
-            max_risk = max(risk_values)
-            min_risk = min(risk_values)
-            diff_risk = max_risk - min_risk
-            if diff_risk == 0:
-                edges_color_values = [1. for _ in risk_values]
+            if isinstance(current_simulation.agent.topology_manager, gbs.TCNG):
+                edges_colors = ["#000000" if params["strong"] else "#00ff00"
+                                for _, _, params in topology.edges(data=True)]
             else:
-                edges_color_values = [1 - (risk_value - min_risk) / diff_risk for risk_value in risk_values]
-            edges_colors = [get_red_green_color(color_value) for color_value in edges_color_values]
+                risk_values = [0 if params["risk"] == 1. else 1 for _, _, params in topology.edges(data=True)]
+                max_risk = max(risk_values)
+                min_risk = min(risk_values)
+                diff_risk = max_risk - min_risk
+                if diff_risk == 0:
+                    edges_color_values = [1. for _ in risk_values]
+                else:
+                    edges_color_values = [1 - (risk_value - min_risk) / diff_risk for risk_value in risk_values]
+                edges_colors = [get_red_green_color(color_value) for color_value in edges_color_values]
 
-            for edge_index, (first, second) in enumerate(topology.edges(data=False)):
-                if (first, second) == current_simulation.agent.last_edge_failed \
-                        or (second, first) == current_simulation.agent.last_edge_failed:
-                    edges_colors[edge_index] = settings.failed_edge_color
+                for edge_index, (first, second) in enumerate(topology.edges(data=False)):
+                    if (first, second) == current_simulation.agent.last_edge_failed \
+                            or (second, first) == current_simulation.agent.last_edge_failed:
+                        edges_colors[edge_index] = settings.failed_edge_color
 
         # Plot graph
         nx.draw(topology, nodes_coordinates, with_labels=False, node_color=colors_map, ax=ax3,
@@ -146,14 +154,15 @@ def update_plots(figure, main_subplots, environment, current_simulation: Simulat
         for simulation in simulations:
             # Plot the closest node distance from goal
             means, stds = simulation.data_holder.get_node_distances_evolution()
-            ax4.plot(means, color=simulation.color, label=simulation.agent.name)
-            ax4.fill_between([x for x in range(len(means))], means + stds, means - stds,
+            abscissa_values = [x * settings.nb_interactions_before_evaluation for x in range(1, len(means) + 1)]
+            ax4.plot(abscissa_values, means, color=simulation.color, label=simulation.agent.name)
+            ax4.fill_between(abscissa_values, means + stds, means - stds,
                              color=simulation.color, alpha=settings.std_area_transparency)
 
             # Plot the average accuracy
             means, stds = simulation.data_holder.get_accuracy_evolution()
-            ax5.plot(means, color=simulation.color, label=simulation.agent.name)
-            ax5.fill_between([x for x in range(len(means))], means + stds, means - stds,
+            ax5.plot(abscissa_values, means, color=simulation.color, label=simulation.agent.name)
+            ax5.fill_between(abscissa_values, means + stds, means - stds,
                              color=simulation.color, alpha=settings.std_area_transparency)
         ax4.legend()
         ax5.legend()

@@ -33,24 +33,67 @@ class TopologyManager:
     def shortest_path(self, node_from, node_to_reach):
         return nx.shortest_path(self.topology, node_from, node_to_reach)
 
-    def create_node(self, weights):
-        params = copy.deepcopy(self.nodes_attributes)
-        for key, value in self.nodes_attributes.items():
+    def create_node(self, weights, **params):
+        attributes = copy.deepcopy(self.nodes_attributes)
+        for key, value in params.items():
+            attributes[key] = value
+        for key, value in attributes.items():
             if isinstance(value, tuple) and len(value) == 2 and callable(value[0]):
                 # Here, the value of this parameter should be initialised using a function call.
                 # The value inside self.nodes_attributes is a tuple, with the function in first attribute, and it's
                 # parameters as a dict in the second.
                 function = value[0]
                 parameters_dict = value[1]
-                params[key] = function(**parameters_dict)
+                attributes[key] = function(**parameters_dict)
 
-        params["weights"] = weights
-        self.topology.add_node(self.next_node_id, **params)
+        attributes["weights"] = weights
+        self.topology.add_node(self.next_node_id, **attributes)
         self.next_node_id += 1
         return self.next_node_id - 1
 
-    def create_edge(self, first_node, second_node):
-        self.topology.add_edge(first_node, second_node, **self.edges_attributes)
+    def create_edge(self, first_node, second_node, **params):
+        attributes = copy.deepcopy(self.edges_attributes)
+        for key, value in params.items():
+            attributes[key] = value
+        self.topology.add_edge(first_node, second_node, **attributes)
+
+    def get_node_for_state(self, state, data=False):
+        """
+        Select the node that best represent the given state.
+        """
+        assert isinstance(state, np.ndarray)
+        if not self.topology.nodes:
+            return None  # The graph  hasn't been initialised yet.
+        closest = None
+        node_data = None
+        closest_distance = None
+        for node_id, args in self.topology.nodes(data=True):
+            distance = np.linalg.norm(args["weights"] - state, 2)
+            if closest is None or distance < closest_distance:
+                closest = node_id
+                node_data = (node_id, args)
+                closest_distance = distance
+        return node_data if data else node_data[0]
+
+    def remove_subgraph(self, node):
+        to_remove = [n for n in self.topology.neighbors(node)]
+        self.topology.remove_node(node)
+        for node in to_remove:
+            self.remove_subgraph(node)
+
+    def remove_edge(self, node_1, node_2):
+        try:
+            self.topology.remove_edge(node_1, node_2)
+        except:
+            return
+        try:
+            nx.shortest_path(self.topology, 0, node_1)
+        except:
+            self.remove_subgraph(node_1)
+        try:
+            nx.shortest_path(self.topology, 0, node_2)
+        except:
+            self.remove_subgraph(node_2)
 
     def on_new_data(self, data):
         """

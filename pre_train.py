@@ -15,7 +15,7 @@ def pre_train(goal_reaching_agent: GoalConditionedAgent, environment, nb_episode
         state = environment.reset()
         if episode_id != 0:
             goal = choice(local_buffer)
-            goal_reaching_agent.on_episode_start(state, goal, episode_id)
+            goal_reaching_agent.on_episode_start(state, goal)
 
         episode_rewards = []
         done = False

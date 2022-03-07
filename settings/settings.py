@@ -21,7 +21,7 @@ global_output_directory = get_output_directory()
 #################
 
 nb_seeds = 5
-nb_episodes_max = 100
+nb_evaluations_max = 30
 nb_time_steps_max_per_episodes = 50
 environment_index = EnvironmentsIndex.GRID_WORLD_DISCRETE  # Environment to test the agents on
 environments_rollout = False  # Rollout environment every episode if the environment present the ability to do so
@@ -34,7 +34,7 @@ print_reward_after_episodes = False
 #################
 
 # Test video recording settings are in section "Rendering"
-nb_episodes_before_evaluation = 5
+nb_interactions_before_evaluation = 1000
 nb_tests = 20
 
 #################
@@ -55,7 +55,7 @@ colors = [  # Colors used to plot lines on topology (each simulation have its ow
     ]
 
 show_rewards_per_episodes = False
-nb_episode_before_graph_update = 40  # None = no plot
+nb_episode_before_graph_update = 20  # None = no plot
 std_area_transparency = 0.2
 
 plot_main_side = True
@@ -80,12 +80,10 @@ interactive = True
 # Video settings
 show_video_during_training = True
 rendering_start_at_episode = 0
-rendering_stop_at_episode = nb_episodes_max
 nb_episodes_between_two_records = None
 
 show_video_during_tests = True
 rendering_start_at_test = 0
-rendering_stop_at_test = nb_episodes_max
 nb_tests_between_two_records = 3
 
 video_output_fps = 30

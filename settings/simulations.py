@@ -16,9 +16,7 @@ This file allow us to build custom simulations, that will be run by the main fil
 """
 
 # Build environment, necessary to build agents and set their parameters
-logger.set_level(logger.INFO)
 environment = gym.make(settings.environment_index.value)
-environment.seed(0)
 
 
 # Use this environment to pre-build our simulations on it
@@ -32,8 +30,12 @@ class Simulation:
         self.color = "#000000"
         self.data_holder = DataHolder()
         self.outputs_directory = settings.global_output_directory + self.environment_index.name + "/" + \
-            agent.name + "/"
+            agent.name + "/seed_0/"
         self.agent.set_output_dir(self.outputs_directory)
+
+        self.start_time = None
+        self.end_time = None
+        self.pause_total_duration = None
 
     def on_seed_end(self):
         self.data_holder.on_seed_end()
@@ -46,20 +48,20 @@ if isinstance(environment.observation_space, Dict):
 
 tile_width = (1 / environment.width)
 tile_height = (1 / environment.height)
-allowed_tile_diff = 2 + 0.1
+allowed_tile_diff = 1 + 0.1
 tolerance_radius = (tile_width + tile_height) / 2 * allowed_tile_diff
 reach_distance = sqrt((tile_width / 2) ** 2 + (tile_height / 2) ** 2)
 
 simulations = [
     Simulation(
         DFSingleAgentTL(environment=environment, tolerance_radius=tolerance_radius, state_space=state_space,
-                        action_space=environment.action_space, device=settings.device, topology_manager_class=gbs.GWReR,
-                        name="SA + GWR with exp. risk", reach_distance=reach_distance)
+                        action_space=environment.action_space, device=settings.device, topology_manager_class=gbs.GWR,
+                        name="DF + GWR", reach_distance=reach_distance)
     ),
     Simulation(
-        DFSingleAgentTL(environment=environment, tolerance_radius=tolerance_radius, state_space=state_space,
+        EFSingleAgentTL(environment=environment, tolerance_radius=tolerance_radius, state_space=state_space,
                         action_space=environment.action_space, device=settings.device, topology_manager_class=gbs.GWR,
-                        name="SA + GWR", reach_distance=reach_distance)
+                        name="EF + GWR", reach_distance=reach_distance)
     )
 ]
 
