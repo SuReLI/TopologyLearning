@@ -13,13 +13,17 @@ class DensityFirstTL(TopologyLearner):
     def __init__(self, **params):
         if "nodes_attributes" in params:
             params["nodes_attributes"]["density"] = 0
+            params["nodes_attributes"]["explorations"] = 0
         else:
-            params["nodes_attributes"] = {"density": 0}
+            params["nodes_attributes"] = {
+                "density": 0,
+                "explorations": 0
+            }
         self.current_exploration_nodes_path = []
         super().__init__(**params)
 
     def on_episode_start(self, *args):
-        state, mode, _ = args[:3]
+        state, mode = args[:2]
         if mode.value == TopologyLearnerMode.LEARN_ENV.value:
             self.set_exploration_path(state)
         super().on_episode_start(*args)
@@ -58,7 +62,9 @@ class DensityFirstTL(TopologyLearner):
         for node in shortest_path:
             self.topology.nodes[node]["density"] += 1
 
-        # Stor the chosen path
+        self.topology.nodes[shortest_path[-1]]["explorations"] += 1
+
+        # Store the chosen path
         self.current_exploration_nodes_path = shortest_path
 
 

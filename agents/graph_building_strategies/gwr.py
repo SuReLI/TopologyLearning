@@ -13,14 +13,15 @@ from agents.graph_building_strategies.topology_manager import TopologyManager
 
 class GWR(TopologyManager):
     def __init__(self, topology, distance_function=None, nodes_attributes=None, edges_attributes=None, Sw=0.1, Sn=0.05,
-                 age_max=30, activity_threshold=0.88, firing_threshold=0.05):
-        # activity_threshold=0.87 for map 7
+                 age_max=30, activity_threshold=0.93, firing_threshold=0.05):
+        # activity_threshold=0.93 for map 7
         # activity_threshold=0.94 for map 9
         # activity_threshold=0.96 for map 10
         if edges_attributes is None:
             edges_attributes = {}
         edges_attributes["risk"] = 1.
         edges_attributes["density"] = 0
+        edges_attributes["explorations"] = 0
         if nodes_attributes is None:
             nodes_attributes = {}
         nodes_attributes["win_count"] = 0
@@ -56,6 +57,7 @@ class GWR(TopologyManager):
                 node_count_ratio = math.exp(- node_params["win_count"])
                 node_params["weights"] += self.Sw * (node_count_ratio * 4) * (state - node_params["weights"])
                 node_params["win_count"] += 1
+                print("activity_threshold = " + str(self.activity_threshold))
                 if activity < self.activity_threshold and node_count_ratio < self.firing_threshold:
                     # Add new node
                     new_node = self.create_node((node_params["weights"] + state) / 2)

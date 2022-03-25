@@ -86,6 +86,7 @@ class TopologyLearner(Agent):
         edges_attributes = params.get("edges_attributes", None)
         verbose = params.get("verbose", False)
         nb_explorations_max = params.get("nb_explorations_max", 1)
+        graph_distance_ratio = params.get("graph_distance_ratio", 1)
 
         self.params = params
         super().__init__(state_space, action_space, device, name=name)
@@ -119,21 +120,23 @@ class TopologyLearner(Agent):
         Exploration and topology building attributes
         """
         assert issubclass(topology_manager_class, TopologyManager)
+        activity_threshold = params.get("activity_threshold", 0.93)
         self.topology_manager = topology_manager_class(self.topology, distance_function=self.get_distance_function(),
                                                        nodes_attributes=nodes_attributes,
-                                                       edges_attributes=edges_attributes)
+                                                       edges_attributes=edges_attributes,
+                                                       activity_threshold=activity_threshold)
         self.last_trajectory = [(None, [])]
 
         # Once we reached a node that has been selected as interesting for exploration, we will explore using a random
         # policy for a fixed duration.
         self.random_exploration_steps_left = None
         self.random_exploration_duration = random_exploration_duration
-        self.last_node_explored = None
+        self.last_nodes_explored = []
 
         # How many explorations we should do before reset our agent
         self.nb_explorations_max = nb_explorations_max
         self.nb_explorations = 0
-        self.graph_distance_ratio = 0.2  # Importance of the distance inside the graph for exploration node selection
+        self.graph_distance_ratio = graph_distance_ratio  # Importance of the distance inside the graph for exploration node selection
 
         """
         Goal reaching attributes
@@ -222,6 +225,8 @@ class TopologyLearner(Agent):
             print()
         self.last_trajectory = [(None, [])]
         self.crossing_images = []
+        if self.nb_explorations == 0:
+            self.last_nodes_explored = []
         self.video_id += 1
         self.done = False
         self.random_exploration_steps_left = None
@@ -398,7 +403,8 @@ class TopologyLearner(Agent):
                       + str(self.random_exploration_duration) + " time steps.")
             self.nb_explorations += 1
             self.random_exploration_steps_left = self.random_exploration_duration
-            self.last_node_explored = self.last_node_passed
+            if self.last_node_passed is not None:
+                self.last_nodes_explored.append(self.last_node_passed)
 
     def on_reaching_waypoint_failed(self, last_node, next_node):
         print("failed between", last_node, "and", next_node)

@@ -45,7 +45,7 @@ class MLP(Module):
 
     def forward(self, input_data):
         if isinstance(input_data, np.ndarray):
-            input_data = torch.from_numpy(input_data)
+            input_data = torch.from_numpy(input_data).to(self.device)
         input_data = input_data.float()
         for layer in self.layers:
             input_data = layer(input_data)

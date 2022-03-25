@@ -93,19 +93,11 @@ def get_red_green_color(value):
     Retourne une couleur correspondant à un gradient entre rouge (0) et vert (1) pour une valeur donnée entre 0 et 1
     :param value: valeur entre 0 et 1 définissant la couleur à récupérer
     """
-    value = value * 2 - 1
-    grey_value = 90
-    grey_diff = 255 - grey_value
-    if value >= 0:
-        red = hex(int((1 - value) * grey_diff + grey_value))[2:]
-        green = hex(int(value * grey_diff + grey_value))[2:]
-        blue = hex(int((1 - value) * grey_diff + grey_value))[2:]
-    else:
-        red = hex(int((-value) * grey_diff + grey_value))[2:]
-        green = hex(int((1 + value) * grey_diff + grey_value))[2:]
-        blue = hex(int((1 + value) * grey_diff + grey_value))[2:]
-    red = "0" + red if len(red) == 1 else red
-    green = "0" + green if len(green) == 1 else green
-    blue = "0" + blue if len(blue) == 1 else blue
-    res = "#" + red + green + blue
-    return res
+    low_color = [255, 0, 0]
+    high_color = [0, 255, 0]
+    result = "#"
+    for index, (low, high) in enumerate(zip(low_color, high_color)):
+        difference = high - low
+        final_color = hex(int(low + value * difference))[2:]
+        result += "0" + final_color if len(final_color) == 1 else final_color
+    return result

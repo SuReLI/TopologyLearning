@@ -20,6 +20,7 @@ global_output_directory = get_output_directory()
 #  Simulations  #
 #################
 
+redirect_std_output = True
 nb_seeds = 5
 nb_evaluations_max = 30
 nb_time_steps_max_per_episodes = 50
@@ -42,20 +43,17 @@ nb_tests = 20
 #################
 
 colors = [  # Colors used to plot lines on topology (each simulation have its own color)
-        "#ff0000",
-        "#ff9500",
-        "#ccbb00",
-        "#0a9900",
-        "#00f0e0",
-        "#0000ff",
-        "#c7009f",
-        "#8800c7",
-        "#000000",
-        "#6e3900"
+        "#c21e56",
+        "#ff8243",
+        "#fbec5d",
+        "#00cc99",
+        "#318ce7",
+        "#8806ce",
+        "#d473d4"
     ]
 
 show_rewards_per_episodes = False
-nb_episode_before_graph_update = 20  # None = no plot
+nb_episode_before_graph_update = 1  # None = no plot
 std_area_transparency = 0.2
 
 plot_main_side = True

@@ -104,7 +104,7 @@ class ECT(TopologyManager):
 
         for cloud_index, cloud in enumerate(candidates_clouds):
             # Verify if this cloud is related
-
+            pass  # TODO
 
 
 

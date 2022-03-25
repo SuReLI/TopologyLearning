@@ -12,14 +12,18 @@ class ExplorationsFirstTL(TopologyLearner):
 
     def __init__(self, **params):
         if "nodes_attributes" in params:
+            params["nodes_attributes"]["density"] = 0
             params["nodes_attributes"]["explorations"] = 0
         else:
-            params["nodes_attributes"] = {"explorations": 0}
+            params["nodes_attributes"] = {
+                "density": 0,
+                "explorations": 0
+            }
         self.current_exploration_nodes_path = []
         super().__init__(**params)
 
     def on_episode_start(self, *args):
-        state, mode, _ = args[:3]
+        state, mode = args[:2]
         if mode.value == TopologyLearnerMode.LEARN_ENV.value:
             self.set_exploration_path(state)
         super().on_episode_start(*args)
@@ -47,15 +51,17 @@ class ExplorationsFirstTL(TopologyLearner):
             best_node = None
             best_node_cost = None
             for node, parameters in self.topology.nodes(data=True):
-                distance = self.shortest_path(node_from, node)
+                distance = len(self.shortest_path(node_from, node))
                 cost = parameters["explorations"] + self.graph_distance_ratio * distance
                 if best_node is None or best_node_cost > cost:
                     best_node = node
                     best_node_cost = cost
-        self.topology.nodes[best_node]["explorations"] += 1
 
         # Find the shortest path through our topology to it
         shortest_path = self.shortest_path(node_from, best_node)
+        for node in shortest_path:
+            self.topology.nodes[node]["density"] += 1
+        self.topology.nodes[shortest_path[-1]]["explorations"] += 1
 
         # Store the chosen path
         self.current_exploration_nodes_path = shortest_path

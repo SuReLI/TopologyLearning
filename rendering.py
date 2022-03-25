@@ -64,26 +64,35 @@ def update_plots(figure, main_subplots, environment, current_simulation: Simulat
     assert isinstance(current_simulation.agent, TopologyLearner)
 
     if settings.plot_main_side:
+        """
         ax1.set_title("Reaching agent accuracy")
         if len(current_simulation.agent.reaching_success_moving_average) > 300:
             ax1.plot(current_simulation.agent.reaching_success_moving_average[-300:])
         else:
             ax1.plot(current_simulation.agent.reaching_success_moving_average)
+        """
 
-        ax2.set_title("Nodes domination over environment")
-        topology = copy.deepcopy(current_simulation.agent.topology)
-        oracle = environment.get_oracle()
-        colors = [[int(hexacol[i:i + 2], 16) for i in (1, 3, 5)] for hexacol in settings.colors]
-        graph_coloration = nx.greedy_color(topology)
-        background = environment.get_environment_background()
-        for state in oracle:
-            node_id = current_simulation.agent.get_node_for_state(state)
-            state_color = colors[graph_coloration[node_id]]
-            x, y = environment.get_coordinates(state)
-            background = environment.set_tile_color(background, x, y, state_color)
-        ax2.imshow(background)
+        ax1.set_title("Average explorations per node")
+        for simulation in simulations:
+            # Plot the closest node distance from goal
+            means, stds = simulation.data_holder.get_average_explorations_per_nodes()
+            abscissa_values = [x * settings.nb_interactions_before_evaluation for x in range(1, len(means) + 1)]
+            ax1.plot(abscissa_values, means, color=simulation.color, label=simulation.agent.name)
+            ax1.fill_between(abscissa_values, means + stds, means - stds,
+                             color=simulation.color, alpha=settings.std_area_transparency)
+        # Now we will plot the same for the current simulation in dotted line
+        means, _ = current_simulation.data_holder.get_average_explorations_per_nodes(last_seed_only=True)
+        abscissa_values = [x * settings.nb_interactions_before_evaluation for x in range(1, len(means) + 1)]
+        ax1.plot(abscissa_values, means, "--", color=current_simulation.color, label=current_simulation.agent.name)
+        ax1.legend()
 
-        ax3.set_title("Environment topology")
+        ax2.imshow(environment_image)
+
+        ax2.set_title("Nodes density")
+        total_explorations = 0
+        for node, node_params in current_simulation.agent.topology.nodes(data=True):
+            total_explorations += node_params["explorations"]
+        ax3.set_title("Nodes explorations, no. explo. = " + str(total_explorations))
         ax3.imshow(environment_image)
 
         """
@@ -100,22 +109,40 @@ def update_plots(figure, main_subplots, environment, current_simulation: Simulat
             nodes_coordinates[node_id] *= scale
 
         # Compute nodes colors
-        colors_map = []
-        risk_values = []
+        density_colors_map = []
+        explorations_colors_map = []
+        nodes_density_value = []
+        nodes_exploration_value = []
+        density_label_dict = {}
+        explorations_label_dict = {}
 
-        for _, node_params in topology.nodes(data=True):
-            risk_values.append(node_params["density"])
+        for node, node_params in topology.nodes(data=True):
+            nodes_density_value.append(node_params["density"])
+            density_label_dict[node] = node_params["density"]
+            nodes_exploration_value.append(node_params["explorations"])
+            explorations_label_dict[node] = node_params["explorations"]
 
-        high = max(risk_values)
-        low = min(risk_values)
+        high = max(nodes_density_value)
+        low = min(nodes_density_value)
         distance = high - low
         if distance == 0:
             distance = 1e-6
-        for elt, (node_id, node_params) in zip(risk_values, topology.nodes(data=True)):
+        for elt, (node_id, node_params) in zip(nodes_density_value, topology.nodes(data=True)):
             color = get_red_green_color((elt - low) / distance)
-            if node_id == current_simulation.agent.last_node_explored:
+            if node_id in current_simulation.agent.last_nodes_explored:
                 color = "#f4fc03"
-            colors_map.append(color)
+            density_colors_map.append(color)
+
+        high = max(nodes_exploration_value)
+        low = min(nodes_exploration_value)
+        distance = high - low
+        if distance == 0:
+            distance = 1e-6
+        for elt, (node_id, node_params) in zip(nodes_exploration_value, topology.nodes(data=True)):
+            color = get_red_green_color((elt - low) / distance)
+            if node_id in current_simulation.agent.last_nodes_explored:
+                color = "#f4fc03"
+            explorations_colors_map.append(color)
 
         # Compute edges color
         edges_colors = []
@@ -140,14 +167,10 @@ def update_plots(figure, main_subplots, environment, current_simulation: Simulat
                         edges_colors[edge_index] = settings.failed_edge_color
 
         # Plot graph
-        nx.draw(topology, nodes_coordinates, with_labels=False, node_color=colors_map, ax=ax3,
-                edge_color=edges_colors, alpha=settings.nodes_alpha)
-        nx.draw(topology, nodes_coordinates, with_labels=False, node_color=colors_map, ax=ax2,
-                edge_color=edges_colors, alpha=settings.nodes_alpha)
-
-        for node in topology:
-            nx.draw_networkx_labels(topology, nodes_coordinates, labels={node: node}, font_color=settings.labels_color,
-                                    ax=ax3)
+        nx.draw(topology, nodes_coordinates, with_labels=True, node_color=density_colors_map, ax=ax2,
+                edge_color=edges_colors, alpha=settings.nodes_alpha, labels=density_label_dict)
+        nx.draw(topology, nodes_coordinates, with_labels=True, node_color=explorations_colors_map, ax=ax3,
+                edge_color=edges_colors, alpha=settings.nodes_alpha, labels=explorations_label_dict)
 
         ax4.set_title("Goal distance to the closest node")
         ax5.set_title("Goal reaching accuracy")
@@ -164,6 +187,18 @@ def update_plots(figure, main_subplots, environment, current_simulation: Simulat
             ax5.plot(abscissa_values, means, color=simulation.color, label=simulation.agent.name)
             ax5.fill_between(abscissa_values, means + stds, means - stds,
                              color=simulation.color, alpha=settings.std_area_transparency)
+
+        # Now we will plot the same for the current simulation in dotted line
+
+        # Plot the closest node distance from goal
+        means, _ = current_simulation.data_holder.get_node_distances_evolution(last_seed_only=True)
+        abscissa_values = [x * settings.nb_interactions_before_evaluation for x in range(1, len(means) + 1)]
+        ax4.plot(abscissa_values, means, "--", color=current_simulation.color, label=current_simulation.agent.name)
+
+        # Plot the average accuracy
+        means, _ = current_simulation.data_holder.get_accuracy_evolution(last_seed_only=True)
+        ax5.plot(abscissa_values, means, "--", color=current_simulation.color, label=current_simulation.agent.name)
+
         ax4.legend()
         ax5.legend()
 

@@ -1,2 +1,1 @@
 import environments.grid_world.discrete_grid_world
-from environments import mujoco_maze

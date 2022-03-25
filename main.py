@@ -1,3 +1,5 @@
+import os
+import sys
 from datetime import datetime
 
 from pre_train import pre_train
@@ -12,6 +14,14 @@ from agents import TopologyLearnerMode, TopologyLearner
 # Simulations starting, build the global output directory
 create_dir(settings.global_output_directory)
 
+# Create and set up a standard output file
+if settings.redirect_std_output:
+    standard_output_file_name = settings.global_output_directory + "std_output.txt"
+    os.mknod(standard_output_file_name)
+    print("standard output file created at " + standard_output_file_name)
+    sys.stdout = open(standard_output_file_name, "w")
+
+# Run simulations
 for simulation in simulations:
     for seed_id in range(settings.nb_seeds):
         # Change the seed output directory to the new seed
@@ -39,18 +49,18 @@ for simulation in simulations:
         while True:
             # Prepare video rendering
             video_output = False
-            if settings.rendering_start_at_episode <= episode_id and \
+            if episode_id != 0 and settings.rendering_start_at_episode <= episode_id and \
                     settings.nb_episodes_between_two_records is not None and \
                     episode_id % settings.nb_episodes_between_two_records == 0:
                 video_output = True
                 episode_images = []
 
             # Start episode loop
-            state = environment.reset()
-            agent.on_episode_start(state, TopologyLearnerMode.LEARN_ENV, episode_id)
-            if settings.nb_episode_before_graph_update is not None and \
+            if episode_id != 0 and settings.nb_episode_before_graph_update is not None and \
                     (episode_id + 1) % settings.nb_episode_before_graph_update == 0:
                 update_plots(figure, subplots, environment, simulation, simulations, episode_id)
+            state = environment.reset()
+            agent.on_episode_start(state, TopologyLearnerMode.LEARN_ENV)
 
             time_steps = 0
             while not done:

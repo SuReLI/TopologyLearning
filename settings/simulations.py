@@ -56,12 +56,12 @@ simulations = [
     Simulation(
         DFSingleAgentTL(environment=environment, tolerance_radius=tolerance_radius, state_space=state_space,
                         action_space=environment.action_space, device=settings.device, topology_manager_class=gbs.GWR,
-                        name="DF + GWR", reach_distance=reach_distance)
+                        name="DFGWR", reach_distance=reach_distance, random_exploration_duration=70)
     ),
     Simulation(
         EFSingleAgentTL(environment=environment, tolerance_radius=tolerance_radius, state_space=state_space,
                         action_space=environment.action_space, device=settings.device, topology_manager_class=gbs.GWR,
-                        name="EF + GWR", reach_distance=reach_distance)
+                        name="EFGWR", reach_distance=reach_distance, random_exploration_duration=70)
     )
 ]
 

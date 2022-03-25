@@ -26,10 +26,16 @@ def evaluation(simulation, evaluation_id):
     data_holder: DataHolder = simulation.data_holder
     data_holder.on_evaluation_start()
     selected_goals = ([], [])
+
+    explorations = 0
+    for _, params in simulation.agent.topology.nodes(data=True):
+        explorations += params["explorations"]
+    average_explorations_per_nodes = explorations / simulation.agent.topology.number_of_nodes()
     for test_id in range(settings.nb_tests):
         directory = simulation.outputs_directory + "tests/eval_" + str(evaluation_id) + "/"
         filename = "test_" + str(test_id)
         data_holder.on_test(test(directory, filename, test_agent, environment, selected_goals))
+    data_holder.on_evaluation(average_explorations_per_nodes)
     data_holder.on_evaluation_end()
     return selected_goals
 
@@ -74,11 +80,14 @@ def test(directory, filename, agent, environment, selected_goals: tuple, video=T
     goal = choice(oracle)
     state = environment.reset()
     agent.on_episode_start(state, TopologyLearnerMode.GO_TO, 0, goal)
-    closest_node_weights = agent.get_node_for_state(state, data=True)[1]["weights"]
-    closest_node_distance = np.linalg.norm(closest_node_weights - goal, 2)
+
+    closest_node_weights = min(agent.topology.nodes(data=True),
+                               key=lambda x: np.linalg.norm(goal - x[1]["weights"], 2)
+                               )[1]["weights"]
+    closest_node_distance = np.linalg.norm(goal - closest_node_weights, 2)
 
     if video:
-        if isinstance(environment, DiscreteGridWorld):
+        if isinstance(environment.unwrapped, DiscreteGridWorld):
             image = get_test_image(environment, agent, goal)
         images.append(image)
         save_image(image, images_directory, str(0) + ".png")

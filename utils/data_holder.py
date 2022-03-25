@@ -22,13 +22,17 @@ class DataHolder:
         self.old_seeds_accuracies = None
         #  '-> It will be a numpy array, and we can't guess how many evaluations will be done in a seed. So it will be
         #  initialised at the end of the first seed
-        self.tests_agent_distances = []
         self.evaluations_average_agent_distances = []  # Each element is an average over every tests inside the evaluation.
+        self.tests_agent_distances = []
+
+        # Average explorations per nodes
+        self.old_seeds_average_explorations_per_nodes = None
+        self.evaluations_average_explorations_per_nodes = []
 
         # Goal closest node distance
         self.old_seeds_node_distances = None
-        self.tests_node_distances = []
         self.evaluations_average_node_distances = []
+        self.tests_node_distances = []
 
     def on_evaluation_start(self):
         self.tests_agent_distances.append([])
@@ -43,6 +47,10 @@ class DataHolder:
         self.tests_agent_distances[-1].append(goal_reaching_success)
         self.tests_node_distances[-1].append(goal_closest_node_distance)
 
+    def on_evaluation(self, params):
+        average_explorations_per_node = params
+        self.evaluations_average_explorations_per_nodes.append(average_explorations_per_node)
+
     def on_evaluation_end(self):
         self.evaluations_average_agent_distances.append(mean(self.tests_agent_distances[-1]))
         self.evaluations_average_node_distances.append(mean(self.tests_node_distances[-1]))
@@ -55,27 +63,38 @@ class DataHolder:
         if self.old_seeds_accuracies is None:
             nb_evaluations = len(self.evaluations_average_agent_distances)
             self.old_seeds_accuracies = np.zeros((settings.nb_seeds, nb_evaluations))
+            self.old_seeds_average_explorations_per_nodes = np.zeros((settings.nb_seeds, nb_evaluations))
             self.old_seeds_node_distances = np.zeros((settings.nb_seeds, nb_evaluations))
 
         self.old_seeds_accuracies[self.current_seed] = np.array(self.evaluations_average_agent_distances)
+        self.old_seeds_average_explorations_per_nodes[self.current_seed] = \
+            np.array(self.evaluations_average_explorations_per_nodes)
         self.old_seeds_node_distances[self.current_seed] = np.array(self.evaluations_average_node_distances)
 
-        self.tests_agent_distances = []
         self.evaluations_average_agent_distances = []
-        self.tests_node_distances = []
+        self.tests_agent_distances = []
+        self.evaluations_average_explorations_per_nodes = []
         self.evaluations_average_node_distances = []
+        self.tests_node_distances = []
 
         self.current_seed += 1
 
-    def get_accuracy_evolution(self):
-        if self.current_seed == 0:
+    def get_accuracy_evolution(self, last_seed_only=False):
+        if self.current_seed == 0 or last_seed_only:
             return np.array(self.evaluations_average_agent_distances), \
                    np.zeros(len(self.evaluations_average_agent_distances))
         old_seeds_data = self.old_seeds_accuracies[:self.current_seed]
         return np.mean(old_seeds_data, axis=0), np.std(old_seeds_data, axis=0)
 
-    def get_node_distances_evolution(self):
-        if self.current_seed == 0:
+    def get_average_explorations_per_nodes(self, last_seed_only=False):
+        if self.current_seed == 0 or last_seed_only:
+            return np.array(self.evaluations_average_explorations_per_nodes), \
+                   np.zeros(len(self.evaluations_average_explorations_per_nodes))
+        old_seeds_data = self.old_seeds_average_explorations_per_nodes[:self.current_seed]
+        return np.mean(old_seeds_data, axis=0), np.std(old_seeds_data, axis=0)
+
+    def get_node_distances_evolution(self, last_seed_only=False):
+        if self.current_seed == 0 or last_seed_only:
             return np.array(self.evaluations_average_node_distances), \
                    np.zeros(len(self.evaluations_average_node_distances))
         old_seeds_data = self.old_seeds_node_distances[:self.current_seed]
