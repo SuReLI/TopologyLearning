@@ -1,17 +1,16 @@
 import math
 import os
 from queue import PriorityQueue
+from random import random
 from typing import Any, Tuple, Union, Dict, Optional
-import gym
 from gym import spaces
 import numpy as np
 from PIL import Image
 import pathlib
 
-from environments.grid_world import settings
-from environments.grid_world.utils.indexes import *
-from utils.sys_fun import create_dir
-from environments.grid_world.utils.images_fun import get_red_green_color
+from old.src.environments.grid_world import settings
+from old.src.utils.sys_fun import create_dir
+from old.src.environments.grid_world.utils.images_fun import get_red_green_color
 
 
 class Path:
@@ -91,17 +90,18 @@ def euclidean_distance(coordinates_1: tuple, coordinates_2: tuple) -> float:
     return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
 
-class DiscreteGridWorld(gym.Env):
+class DiscreteGridWorld:
     start_coordinates: Tuple[Union[int, Any], int]
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, map_id=settings.map_id):
+    def __init__(self, map_id=settings.map_id, stochasticity=0.0):
         map_name = "map" + str(map_id)
         self.grid = []
         self.start_coordinates = (0, 0)
         self.agent_coordinates = None
         self.width = None
         self.height = None
+        self.stochasticity = stochasticity
         map_path = str(pathlib.Path().absolute())
         path = ""
         if "/" in map_path:
@@ -111,6 +111,7 @@ class DiscreteGridWorld(gym.Env):
         else:
             raise Exception("No separator found in path: ", map_path)
         path = os.getcwd()
+        # path = path[:-6]
         path += "/environments/grid_world/maps/"
         self.load_map(path + map_name + ".txt")
         # self.load_map("implem/environments/grid_world/map1.txt")
@@ -122,6 +123,9 @@ class DiscreteGridWorld(gym.Env):
         self.window = None
 
         self.reset()
+
+    def set_goal(self, goal):
+        assert isinstance(goal, np.ndarray) and len(goal)
 
     def reset_with_map_id(self, map_id):
         self.__init__(map_id=map_id)
@@ -155,7 +159,7 @@ class DiscreteGridWorld(gym.Env):
 
     def get_state(self, x, y):
         """
-        Return a numpy array (state) that belongs to X and Y coordinates in the grid.
+        Return a numpy array (observation) that belongs to X and Y coordinates in the grid.
         """
         x_value = x / self.width
         y_value = y / self.height
@@ -163,6 +167,15 @@ class DiscreteGridWorld(gym.Env):
 
     def get_coordinates(self, state):
         return round(state[0].item() * self.width), round(state[1].item() * self.height)
+
+    def get_tile_dimensions(self) -> tuple:
+        """
+        Return a tile dimension in the observation space.
+        According to a coordinate od a tile, the corresponding observation goes from 0 to 1 in x, and same in y.
+        This function return the tile width and height in this observation space.
+        Example: return (0.1, 0.1) if the grid size is 10 x 10, return (0.05, 0.1) if the grid size is 20 x 10.
+        """
+        return 1 / self.width, 1 / self.height
 
     def is_valid_coordinates(self, x, y):
         return 0 <= x < self.width and 0 <= y < self.height
@@ -184,7 +197,27 @@ class DiscreteGridWorld(gym.Env):
         return True
 
     def get_new_coordinates(self, action):
+        """
+        Compute the expected agent's new coordinates. This function ignore walls, and the reachability of the returned
+        tile should be computed once a coordinate is returned.
+        """
         agent_x, agent_y = self.agent_coordinates
+
+        # Change the action according to environment's stochasticity and to a random value
+        rand_val = random()
+        if self.stochasticity != 0.0 and rand_val < self.stochasticity * 2:
+            if rand_val < self.stochasticity:
+                if action == 0:
+                    action = 3
+                else:
+                    action -= 1
+            else:
+                if action == 3:
+                    action = 0
+                else:
+                    action += 1
+
+        # Compute the new agent's coordinates using the selected action
         if Direction(action) == Direction.TOP:
             agent_y -= 1
         elif Direction(action) == Direction.BOTTOM:
@@ -203,9 +236,9 @@ class DiscreteGridWorld(gym.Env):
             done = self.is_terminal_tile(new_x, new_y)
             reward = -1 if not done else 1
             self.agent_coordinates = new_x, new_y
-            return self.get_state(self.agent_coordinates[0], self.agent_coordinates[1]), reward, done, None
+            return self.get_state(self.agent_coordinates[0], self.agent_coordinates[1]), reward, done
         else:
-            return self.get_state(self.agent_coordinates[0], self.agent_coordinates[1]), -1, False, None
+            return self.get_state(self.agent_coordinates[0], self.agent_coordinates[1]), -1, False
 
     def reset(self):
         self.agent_coordinates = self.start_coordinates
@@ -335,7 +368,7 @@ class DiscreteGridWorld(gym.Env):
         :param file_directory: destination where the image should be saved
         :param file_name: name of the future image (without .png)
         :param colors: list of colors of shape [[R1, G1, B1], [R1, G2, B2], ... ] and len = len(paths)
-        :param skills: state paths to draw, shape = [[state11, state12, ...], ...] and len = len(colors)
+        :param skills: observation paths to draw, shape = [[state11, state12, ...], ...] and len = len(colors)
         """
         # Generate image
         image = self.get_environment_background()
@@ -387,8 +420,8 @@ class DiscreteGridWorld(gym.Env):
     def best_path(self, state_1, state_2):
         """
         Return the shortest distance between two tiles, in number of action the agent needs to go from one to another.
-        :param state_1: Start state,
-        :param state_2: Destination state,
+        :param state_1: Start observation,
+        :param state_2: Destination observation,
         :return: Shortest path (using A*), as a list of action to move from state_1 to state_2.
         """
         # Remove trivial case
@@ -432,8 +465,8 @@ class DiscreteGridWorld(gym.Env):
     def show_path_on_image(self, state_1, state_2, file_directory, file_name, colors) -> None:
         """
         Save an image of the environment with many path draw on it
-        :param state_1: start state,
-        :param state_2: destination state,
+        :param state_1: start observation,
+        :param state_2: destination observation,
         :param file_directory: destination where the image should be saved
         :param file_name: name of the future image (without .png)
         :param colors: list of colors of shape [[R1, G1, B1], [R1, G2, B2], ... ] and len = len(paths)

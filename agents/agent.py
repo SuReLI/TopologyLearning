@@ -1,7 +1,8 @@
 import gym
 import numpy as np
-import torch
-from settings import settings
+from gym.spaces import Dict
+
+from old.src.settings import settings
 
 
 class Agent:
@@ -9,22 +10,36 @@ class Agent:
     An global agent class that describe the interactions between our agent and it's environment
     """
 
-    def __init__(self, state_space, action_space, device=settings.device, name="Random Agent"):
-        self.name = name  # The name is used inside plot legend, outputs directory path, and outputs file names
+    def __init__(self, **params):
+        self.init_params = params
+        self.state_space = params.get("state_space")
+        self.action_space = params.get("action_space")
+        self.device = params.get("device", settings.device)
+        self.name = params.get("name", "Random Agent")
 
-        self.state_space = state_space
-        self.state_shape = state_space.shape
-        self.state_size = state_space.shape[0]  # Assume state space is continuous
+        # Mandatory parameters
+        assert self.state_space is not None
+        assert self.action_space is not None
+
+        if isinstance(self.state_space, Dict):
+            self.state_size = self.state_space["observation"].shape[0] + self.state_space["observation"].shape[0]
+            self.state_shape = self.state_space["observation"].shape
+        else:
+            self.state_size = self.state_space.shape[0]  # Assume observation space is continuous
+            self.state_shape = self.state_space.shape
         assert len(self.state_shape) == 1
 
-        self.continuous = isinstance(action_space, gym.spaces.Box)
-        self.action_space = action_space
+        self.continuous = isinstance(self.action_space, gym.spaces.Box)
         self.nb_actions = self.action_space.shape[0] if self.continuous else self.action_space.n
         self.last_state = None  # Useful to store interaction when we receive (new_stare, reward, done) tuple
-        self.device = device
         self.episode_id = 0
         self.episode_time_step_id = 0
-        self.time_step_id = 0
+        self.simulation_time_step_id = 0
+        self.output_dir = None
+        self.sub_plots_shape = ()
+
+    def set_output_dir(self, output_dir):
+        self.output_dir = output_dir
 
     def on_simulation_start(self):
         """
@@ -42,9 +57,9 @@ class Agent:
         res = self.action_space.sample()
         return res
 
-    def on_action_stop(self, action, new_state, reward, done):
+    def on_action_stop(self, action, new_state, reward, done, learn=True):
         self.episode_time_step_id += 1
-        self.time_step_id += 1
+        self.simulation_time_step_id += 1
         self.last_state = new_state
 
     def on_episode_stop(self):
@@ -53,18 +68,11 @@ class Agent:
     def on_simulation_stop(self):
         pass
 
-    # Plot functions
-    def initiate_subplots(self, outer_figure):
-        """
-        Initialise subfigures using a given outer figure place.
-        """
-        pass
-
-    def update_plots(self, environment):
+    def update_plots(self, environment, sub_plots):
         """
         Update subfigures content
         """
         pass
 
     def reset(self):
-        self.__init__(self.state_space, self.action_space, self.device, self.name)
+        self.__init__(**self.init_params)

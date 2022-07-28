@@ -1,0 +1,5 @@
+from src.agents.ant_maze.graph_free.autonomous_goal_conditioned_sac_her import AutonomousSACHERAgent
+from src.agents.ant_maze.graph_free.goal_conditioned_sac import GoalConditionedSACAgent
+from src.agents.ant_maze.graph_free.goal_conditioned_sac_her import SACHERAgent
+from src.agents.ant_maze.graph_free.goal_conditioned_sac_her_diff import SACHERDiffAgent
+

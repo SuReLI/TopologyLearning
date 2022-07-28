@@ -1,0 +1,2 @@
+from src.environments.grid_world.discrete_grid_world import DiscreteGridWorld
+from src.environments.grid_world.goal_conditioned_discrete_grid_world import GoalConditionedDiscreteGridWorld

@@ -1,5 +1,5 @@
 from moviepy.video.io.ImageSequenceClip import ImageSequenceClip
-from utils.sys_fun import create_dir
+from old.src.utils.sys_fun import create_dir
 
 
 def get_red_green_color(value):
