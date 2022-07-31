@@ -199,9 +199,8 @@ class Layer:
         # Else goal is achieved
         return 0
 
-
-
-    # Finalize goal replay by filling in goal, reward, and finished boolean for the preliminary goal replay transitions created before
+    # Finalize goal replay by filling in goal, reward, and finished boolean for the preliminary goal replay
+    # transitions created before
     def finalize_goal_replay(self,goal_thresholds):
 
         # Choose transitions to serve as goals during goal replay.  The last transition will always be used
@@ -226,7 +225,9 @@ class Layer:
         if self.FLAGS.all_trans or self.FLAGS.HER:
             print("Selected Indices: ", indices)
 
-        # For each selected transition, update the goal dimension of the selected transition and all prior transitions by using the next state of the selected transition as the new goal.  Given new goal, update the reward and finished boolean as well.
+        # For each selected transition, update the goal dimension of the selected transition and all prior
+        # transitions by using the next state of the selected transition as the new goal. Given new goal,
+        # update the reward and finished boolean as well.
         for i in range(len(indices)):
             trans_copy = np.copy(self.temp_goal_replay_storage)
 
@@ -255,12 +256,12 @@ class Layer:
 
                 self.replay_buffer.add(trans_copy[index])
 
-
         # Clear storage for preliminary goal replay transitions at end of goal replay
         self.temp_goal_replay_storage = []
 
-
-    # Create transition penalizing subgoal if necessary.  The target Q-value when this transition is used will ignore next state as the finished boolena = True.  Change the finished boolean to False, if you would like the subgoal penalty to depend on the next state.
+    # Create transition penalizing subgoal if necessary.
+    # The target Q-value when this transition is used will ignore next state as the finished boolena = True.
+    # Change the finished boolean to False, if you would like the subgoal penalty to depend on the next state.
     def penalize_subgoal(self, subgoal, next_state, high_level_goal_achieved):
 
         transition = [self.current_state, subgoal, self.subgoal_penalty, next_state, self.goal, True, None]
@@ -296,7 +297,7 @@ class Layer:
 
     # Learn to achieve goals with actions belonging to appropriate time scale.
     # "goal_array" contains the goal states for the current layer and all higher layers
-    def train(self, agent, env, subgoal_test = False, episode_num = None):
+    def train(self, agent, env, subgoal_test=False, episode_num = None):
 
         # print("\nTraining Layer %d" % self.layer_number)
 
@@ -304,7 +305,7 @@ class Layer:
         self.goal = agent.goal_array[self.layer_number]
         self.current_state = agent.current_state
 
-        # Reset flag indicating whether layer has ran out of attempts.  This will be used for subgoal testing.
+        # Reset flag indicating whether layer has ran out of attempts. This will be used for subgoal testing.
         self.maxed_out = False
 
         # Display all subgoals if visualizing training and current layer is bottom layer
@@ -411,8 +412,6 @@ class Layer:
                 print("Goal Status: ", goal_status, "\n")
                 print("All Goals: ", agent.goal_array)
 
-
-
             # Update state of current layer
             self.current_state = agent.current_state
 
@@ -428,7 +427,8 @@ class Layer:
                     self.maxed_out = True
                     # print("Layer %d Out of Attempts" % self.layer_number)
 
-                # If not testing, finish goal replay by filling in missing goal and reward values before returning to prior level.
+                # If not testing, finish goal replay by filling in missing goal and reward values before returning
+                # to prior level.
                 if not agent.FLAGS.test:
                     if self.layer_number == agent.FLAGS.layers - 1:
                         goal_thresholds = env.end_goal_thresholds
