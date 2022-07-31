@@ -1,2 +1,0 @@
-from agents.goal_conditioned_rl_agents.Discrete.discrete_actions_agent import GCAgentDiscrete
-from agents.goal_conditioned_rl_agents.Discrete.dqn_her_diff import DqnHerDiffAgent
