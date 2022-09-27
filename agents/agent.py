@@ -1,8 +1,9 @@
+import copy
+
 import gym
 import numpy as np
 from gym.spaces import Dict
-
-from old.src.settings import settings
+import settings
 
 
 class Agent:
@@ -76,3 +77,6 @@ class Agent:
 
     def reset(self):
         self.__init__(**self.init_params)
+
+    def copy(self):
+        return copy.deepcopy(self)

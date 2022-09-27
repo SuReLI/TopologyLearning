@@ -11,9 +11,7 @@ class GoalConditionedAgent(Agent):
 
     def __init__(self, **params):
         super().__init__(**params)
-        self.goal_size = params.get("goal_size", None)
-        if self.goal_size is None:
-            self.goal_size = self.state_size
+        self.goal_size = params.get("goal_size", 2)
         self.current_goal = None
 
     def on_episode_start(self, *args):

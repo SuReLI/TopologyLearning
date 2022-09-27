@@ -1,1 +1,3 @@
-
+from .goal_conditioned_sac import GoalConditionedSacAgent
+from .goal_conditioned_sac_her import GoalConditionedSacHerAgent
+from .goal_conditioned_sac_her_diff import GoalConditionedSacHerDiffAgent

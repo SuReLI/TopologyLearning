@@ -1,1 +1,5 @@
-
+from .autonomous_goal_conditioned_dqn_her import AutonomousDQNHERAgent
+from .goal_conditioned_dqn import GCDQNAgent
+from .goal_conditioned_dqn_her import DQNHERAgent
+from .goal_conditioned_dqn_her_diff import DqnHerDiffAgent
+from .distributional_goal_conditioned_dqn import DistributionalDQN

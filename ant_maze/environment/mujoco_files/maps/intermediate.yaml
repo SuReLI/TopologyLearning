@@ -1,0 +1,63 @@
+# Walls description of an empty maze
+
+maze_name: "empty_room"
+tile_size: 0.6
+initial_spaces:
+  - fixed: [8, 12]
+reachable_spaces:
+  - low: [-19.5, 12.5]
+    high: [11.5, 19.5]
+  - low: [4.5, -11.5]
+    high: [11.5, 12.5]
+  - low: [11.5, -11.5]
+    high: [19.5, -4.5]
+  - low: [12.5, -4.5]
+    high: [19.5, 19.5]
+  - low: [3.5, -19.5]
+    high: [19.5, -12.5]
+  - low: [-11.5, -3.5]
+    high: [3.5, 3.5]
+  - low: [-3.5, -19.5]
+    high: [3.5, -3.5]
+  - low: [3.5, -11.5]
+    high: [4.5, -4.5]
+  - low: [-19.5, 4.5]
+    high: [4.5, 11.5]
+  - low: [-11.5, -19.5]
+    high: [-4.5, -3.5]
+  - low: [-19.5, -19.5]
+    high: [-12.5, 4.5]
+walls:
+ - name: "top_wall"
+   pos: "0 20 0.4"
+   size: "20.5 0.5 0.4"
+ - name: "left_wall"
+   pos: "-20 0 0.4"
+   size: "0.5 19.5 0.4"
+ - name: "bottom_wall"
+   pos: "0 -20 0.4"
+   size: "20.5 0.5 0.4"
+ - name: "right_wall"
+   pos: "20 0 0.4"
+   size: "0.5 19.5 0.4"
+ - name: "horizontal_inner_wall_1"
+   pos: "-7.5 12 0.4"
+   size: "12 0.5 0.4"
+ - name: "horizontal_inner_wall_2"
+   pos: "-4 4 0.4"
+   size: "8.5 0.5 0.4"
+ - name: "horizontal_inner_wall_3"
+   pos: "11.5 -12 0.4"
+   size: "8 0.5 0.4"
+ - name: "vertical_inner_wall_1"
+   pos: "-12 -8 0.4"
+   size: "0.5 11.5 0.4"
+ - name: "vertical_inner_wall_2"
+   pos: "-4 -11.5 0.4"
+   size: "0.5 8 0.4"
+ - name: "vertical_inner_wall_3"
+   pos: "4 -0.5 0.4"
+   size: "0.5 4 0.4"
+ - name: "vertical_inner_wall_4"
+   pos: "12 7.5 0.4"
+   size: "0.5 12 0.4"

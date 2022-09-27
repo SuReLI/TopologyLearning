@@ -1,0 +1,26 @@
+# Walls description of an empty maze
+
+maze_name: "empty_room"
+tile_size: 1.0
+initial_spaces:
+  - fixed: [0, 0]
+reachable_spaces:
+   - low: [-9.5, -9.5]
+     high: [9.5, 9.5]
+walls:
+ -
+   name: "east_wall"
+   pos: "12 0 0.4"
+   size: "0.25 12 0.4"
+ -
+   name: "north_wall"
+   pos: "0 12 0.4"
+   size: "12.25 0.25 0.4"
+ -
+   name: "west_wall"
+   pos: "-12 0 0.4"
+   size: "0.25 12 0.4"
+ -
+   name: "south_wall"
+   pos: "0 -12 0.4"
+   size: "12.25 0.25 0.4"

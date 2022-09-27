@@ -1,8 +1,7 @@
 import gym
 import numpy as np
 from gym.spaces import Dict
-
-from old.src.settings import settings
+import settings
 
 
 class Agent:

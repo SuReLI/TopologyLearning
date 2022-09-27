@@ -1,22 +1,22 @@
 # Goal conditioned deep Q-network
 
 import copy
-import pickle
 
 import numpy as np
 import torch
 from torch.nn import ReLU
 from torch.nn.functional import normalize
 
-from old.src.agents.utils.mlp import MLP
-from old.src.agents.utils.replay_buffer import ReplayBuffer
-from old.src.agents.gc_agent import GoalConditionedAgent
+from ..utils.mlp import MLP
+from ..utils.replay_buffer import ReplayBuffer
+from ..gc_agent import GoalConditionedAgent
 from torch import optim
 from torch.nn import functional
 from torch.distributions.normal import Normal
 
 
-class GoalConditionedSACAgent(GoalConditionedAgent):
+class GoalConditionedSacAgent(GoalConditionedAgent):
+
     def __init__(self, **params):
         params["name"] = params.get("name", "SAC")
         super().__init__(**params)
@@ -80,7 +80,7 @@ class GoalConditionedSACAgent(GoalConditionedAgent):
             goal_conditioned_state = torch.cat((state, goal), dim=-1)
 
             next_actions, _ = self.sample_action(goal_conditioned_state, actor_network=self.target_actor)
-            critic_input = torch.cat((goal_conditioned_state, next_actions), -1)
+            critic_input = torch.cat((goal_conditioned_state, next_actions), axis=-1)
             q_values = self.target_critic.forward(critic_input).view(-1)
         return q_values
 
@@ -124,21 +124,21 @@ class GoalConditionedSACAgent(GoalConditionedAgent):
             states, actions, rewards, new_states, done, goals = self.replay_buffer.sample(self.batch_size)
 
             # NEW concatenate states and goals, because we need to put them inside our model
-            goal_conditioned_states = torch.cat((states, goals), dim=-1)
-            goal_conditioned_new_states = torch.cat((new_states, goals), dim=-1)
+            goal_conditioned_states = torch.cat((states, goals), axis=-1)
+            goal_conditioned_new_states = torch.cat((new_states, goals), axis=-1)
 
             # Training critic
             with torch.no_grad():
                 next_actions, next_log_probs = \
                     self.sample_action(goal_conditioned_new_states, actor_network=self.target_actor)
-                critic_input = torch.cat((goal_conditioned_new_states, next_actions), -1)
+                critic_input = torch.cat((goal_conditioned_new_states, next_actions), axis=-1)
                 self.passed_logs.append(next_log_probs)
                 next_q_values = \
                     self.target_critic.forward(critic_input).view(-1)
 
             q_hat = self.reward_scale * rewards + self.gamma * (1 - done) * \
                 (next_q_values - self.critic_alpha * next_log_probs)
-            q_values = self.critic.forward(torch.cat((goal_conditioned_states, actions), -1)).view(-1)
+            q_values = self.critic.forward(torch.cat((goal_conditioned_states, actions), axis=-1)).view(-1)
             critic_loss = functional.mse_loss(q_values, q_hat)
             self.critic.learn(critic_loss)
             self.target_critic.converge_to(self.critic, tau=self.tau)
@@ -148,7 +148,7 @@ class GoalConditionedSACAgent(GoalConditionedAgent):
                     # Train actor
                     actions, log_probs = self.sample_action(goal_conditioned_states)
                     log_probs = log_probs.view(-1)
-                    critic_values = self.critic.forward(torch.cat((goal_conditioned_states, actions), -1)).view(-1)
+                    critic_values = self.critic.forward(torch.cat((goal_conditioned_states, actions), axis=-1)).view(-1)
 
                     actor_loss = self.actor_alpha * log_probs - critic_values
                     actor_loss = torch.mean(actor_loss)
@@ -161,30 +161,3 @@ class GoalConditionedSACAgent(GoalConditionedAgent):
             self.replay_buffer.append((self.last_state, action, reward, new_state, done, self.current_goal))
             self.learn()
         super().on_action_stop(action, new_state, reward, done, learn=learn)  # Replace self.last_state by the new_state
-
-    def save(self, path):
-        super().save(path)
-
-        # Save buffer
-        file = open('buffer.obj', 'wb')
-        pickle.dump(self.replay_buffer, file)
-        file.close()
-
-        # Save model
-        torch.save(self.actor.state_dict(), path + "actor.pt")
-        torch.save(self.target_actor.state_dict(), path + "target_actor.pt")
-        torch.save(self.critic.state_dict(), path + "critic.pt")
-        torch.save(self.target_critic.state_dict(), path + "target_critic.pt")
-
-    def load(self, path):
-        super().load(path)
-
-        file = open('buffer.obj', 'rb')
-        self.replay_buffer = pickle.load(file)
-        file.close()
-
-        # Save model
-        self.actor.load_state_dict(torch.load(path + "actor.pt", map_location=self.device))
-        self.target_actor.load_state_dict(torch.load(path + "target_actor.pt", map_location=self.device))
-        self.critic.load_state_dict(torch.load(path + "critic.pt", map_location=self.device))
-        self.target_critic.load_state_dict(torch.load(path + "target_critic.pt", map_location=self.device))

@@ -64,6 +64,10 @@ def get_output_directory():
 
 
 def generate_video(images, output_directory: str, filename):
+
+    if output_directory[-1] != "/":
+        output_directory += "/"
+
     if len(filename) < 4 or filename[-4:] != ".mp4":
         filename += ".mp4"
 
@@ -80,6 +84,7 @@ def generate_video(images, output_directory: str, filename):
 
 
 def save_image(image: np.ndarray, directory, file_name):
+    if directory[-1] != "/": directory += "/"
     image = Image.fromarray(image)
     create_dir(directory)
     if not file_name.endswith(".png"):
