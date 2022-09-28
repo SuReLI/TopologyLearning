@@ -358,28 +358,23 @@ def save_goals_image(environment, image_id, goals, results, seed_id):
 def main():
     global training_stopwatch, samples_stopwatch
     agents, environment = init()
-    """
-    for agent in agents:
-        for seed_id in range(5):
-        
+    for seed_id in range(10):
+        for agent in agents:
+            print("#################")
+            print("Agent ", agent.name, " seed ", seed_id, sep='')
+            print("#################")
+            training_stopwatch.start()
+            pre_train_environment = GoalConditionedDiscreteGridWorld(map_name=MapsIndex.EMPTY.value)
+            if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, DiscreteSORB):
+                start_state, reached_goals = pre_train_gc_agent(pre_train_environment, agent,
+                                                                nb_episodes=local_settings.pre_train_nb_episodes,
+                                                                time_steps_max_per_episode=local_settings.pre_train_nb_time_steps_per_episode)
+                if isinstance(agent, DiscreteSORB):
+                    agent.on_pre_training_done(start_state, reached_goals, environment.get_oracle())
+                else:
+                    agent.on_pre_training_done(start_state, reached_goals)
+            save_seed_results(local_settings.map_name, agent, *run_simulation(agent, environment, seed_id))
         print("")
-    """
-    agent = agents[1]
-    seed_id = 0
-    print("#################")
-    print("seed " + str(seed_id))
-    print("#################")
-    training_stopwatch.start()
-    pre_train_environment = GoalConditionedDiscreteGridWorld(map_name=MapsIndex.EMPTY.value)
-    if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, DiscreteSORB):
-        start_state, reached_goals = pre_train_gc_agent(pre_train_environment, agent,
-                                                        nb_episodes=local_settings.pre_train_nb_episodes,
-                                                        time_steps_max_per_episode=local_settings.pre_train_nb_time_steps_per_episode)
-        if isinstance(agent, DiscreteSORB):
-            agent.on_pre_training_done(start_state, reached_goals, environment.get_oracle())
-        else:
-            agent.on_pre_training_done(start_state, reached_goals)
-    save_seed_results(local_settings.map_name, agent, *run_simulation(agent, environment, seed_id))
 
 if __name__ == "__main__":
     main()
