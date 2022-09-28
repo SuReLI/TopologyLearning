@@ -101,11 +101,7 @@ def run_simulation(agent, environment, seed_id):
 
     seed_evaluations_results = []
     agent.on_simulation_start()
-
-    directory = os.path.dirname(__file__) + "/outputs/test_images/" + str(seed_id) + "/"
-    generate_graph_image(environment, agent.topology, directory,
-                         "test_img_eval_" + str("beg") + ".png")
-
+    
     # Train
     interaction_id = 0
     evaluation_id = 0
@@ -149,20 +145,8 @@ def run_simulation(agent, environment, seed_id):
                 result, goals, results = evaluation(agent)
                 seed_evaluations_results.append(result)
                 evaluation_id += 1
-
-                directory = os.path.dirname(__file__) + "/outputs/goals_image/"
-                create_dir(directory)
-                image = environment.render()
-                for goal, result in zip(goals, results):
-                    environment.place_point(image, goal, [0, 255, 0] if result else [255, 0, 0])
-                save_image(image, directory, "goals_" + str(evaluation_id) + ".png")
-
                 training_stopwatch.start()
         episode_id += 1
-        directory = os.path.dirname(__file__) + "/outputs/graph_images/" + str(seed_id) + "/"
-        create_dir(directory)
-        generate_graph_image(environment, agent.topology, directory,
-                             "test_img_eval_" + str("beg") + ".png")
         agent.on_episode_stop()
     training_stopwatch.stop()
 
