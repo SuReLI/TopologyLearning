@@ -1,6 +1,6 @@
 # Goal conditioned agent
 
-from old.src.agents.agent import Agent
+from agents.agent import Agent
 
 
 class GoalConditionedAgent(Agent):
