@@ -1,2 +1,0 @@
-model_checkpoint_path: "/home/disc/h.bonnavaud/Bureau/HAC_original/ant_environments/ant_reacher_3_levels/models/HAC.ckpt-99"
-all_model_checkpoint_paths: "/home/disc/h.bonnavaud/Bureau/HAC_original/ant_environments/ant_reacher_3_levels/models/HAC.ckpt-99"

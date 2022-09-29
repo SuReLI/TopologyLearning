@@ -17,7 +17,7 @@ from agents.graph_planning.topological_graph_planning_agent import PlanningTopol
 from utils.sys_fun import create_dir, save_image, generate_video, get_red_green_color
 import local_settings
 from grid_world.environment import GoalConditionedDiscreteGridWorld, MapsIndex
-from agents import DqnHerDiffAgent, DQNHERAgent, GCDQNAgent, DistributionalDQN, DiscreteSORB
+from agents import DqnHerDiffAgent, DQNHERAgent, GCDQNAgent, DistributionalDQN, DiscreteSORB, SORB
 
 
 from utils.stopwatch import Stopwatch
@@ -85,7 +85,7 @@ def episode_done(agent, interaction_id, reached=False):
         episodes).
     :return: boolean, True if the episode is done
     """
-    if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, DiscreteSORB):
+    if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, DiscreteSORB) or isinstance(agent, SORB):
         # NB: RGL and STC are subclasses of PlanningTopologyLearner
         return reached or agent.done
     elif isinstance(agent, DQNHERAgent):
@@ -265,7 +265,8 @@ def save_seed_results(environment_name, agent, results, seed_information):
 def pre_train_gc_agent(environment, agent, nb_episodes=400, time_steps_max_per_episode=200):
     global training_stopwatch
     print("Pretraining low level agent ... please wait a bit ...")
-    pre_training_agent = agent.goal_reaching_agent if isinstance(agent, PlanningTopologyLearner) else agent
+    pre_training_agent = agent.goal_reaching_agent if isinstance(agent, PlanningTopologyLearner) \
+                                                      or isinstance(agent, SORB) else agent
     reached_goals = []
     pre_training_agent.on_simulation_start()
     results = []
@@ -323,26 +324,31 @@ def init():
                                  device=settings.device)
 
     agents = [
-
-        # DQN
-        DQNHERAgent(state_space=environment.state_space, action_space=environment.action_space, device=settings.device),
-
-        # RGL
-        RGL(state_space=environment.state_space, action_space=environment.action_space, tolerance_radius=0.1,
-            random_exploration_duration=100, max_steps_to_reach=40, goal_reaching_agent=low_policy, verbose=False,
-            edges_distance_threshold=0.3, nodes_distance_threshold=0.1),
-
-        # SORB
-        DiscreteSORB(state_space=environment.state_space, action_space=environment.action_space, tolerance_radius=0.2,
-                     verbose=False, edges_distance_threshold=0.2, nb_nodes=400, max_interactions_per_edge=40,
-                     max_final_interactions=50, environment=environment),
-
-        # TI-STC
-        STC(state_space=environment.state_space, action_space=environment.action_space, tolerance_radius=0.1,
-            random_exploration_duration=100, max_steps_to_reach=40, re_usable_policy=True,
-            goal_reaching_agent=low_policy, verbose=False, edges_similarity_threshold=0.65,
-            nodes_similarity_threshold=0.8, oriented_graph=False, translation_invariant_tc_network=True, name="TI-STC")
+        SORB(state_space=environment.state_space, action_space=environment.action_space, tolerance_radius=0.1,
+             random_exploration_duration=100, max_steps_to_reach=40, goal_reaching_agent=low_policy.copy(),
+             verbose=False, edges_distance_threshold=0.3, nodes_distance_threshold=0.1)
     ]
+
+    """
+    # DQN
+    DQNHERAgent(state_space=environment.state_space, action_space=environment.action_space, device=settings.device),
+
+    # RGL
+    RGL(state_space=environment.state_space, action_space=environment.action_space, tolerance_radius=0.1,
+        random_exploration_duration=100, max_steps_to_reach=40, goal_reaching_agent=low_policy, verbose=False,
+        edges_distance_threshold=0.3, nodes_distance_threshold=0.1),
+
+    # SORB
+    DiscreteSORB(state_space=environment.state_space, action_space=environment.action_space, tolerance_radius=0.2,
+                 verbose=False, edges_distance_threshold=0.2, nb_nodes=400, max_interactions_per_edge=40,
+                 max_final_interactions=50, environment=environment),
+
+    # TI-STC
+    STC(state_space=environment.state_space, action_space=environment.action_space, tolerance_radius=0.1,
+        random_exploration_duration=100, max_steps_to_reach=40, re_usable_policy=True,
+        goal_reaching_agent=low_policy, verbose=False, edges_similarity_threshold=0.65,
+        nodes_similarity_threshold=0.8, oriented_graph=False, translation_invariant_tc_network=True, name="TI-STC")
+    """
     """
     agent = STC_TL(observation_space=environment.observation_space, action_space=environment.action_space,
                             tolerance_margin=tiles_dimensions, random_exploration_duration=100)
@@ -381,11 +387,12 @@ def main():
             print("#################")
             training_stopwatch.start()
             pre_train_environment = GoalConditionedDiscreteGridWorld(map_name=MapsIndex.EMPTY.value)
-            if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, DiscreteSORB):
+            if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, DiscreteSORB) \
+                    or isinstance(agent, SORB):
                 start_state, reached_goals = pre_train_gc_agent(pre_train_environment, agent,
                                                                 nb_episodes=local_settings.pre_train_nb_episodes,
                                                                 time_steps_max_per_episode=local_settings.pre_train_nb_time_steps_per_episode)
-                if isinstance(agent, DiscreteSORB):
+                if isinstance(agent, DiscreteSORB) or isinstance(agent, SORB):
                     agent.on_pre_training_done(start_state, reached_goals, environment.get_oracle())
                 else:
                     agent.on_pre_training_done(start_state, reached_goals)

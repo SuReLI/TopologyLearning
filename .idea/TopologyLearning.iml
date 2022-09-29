@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
-    <content url="file://$MODULE_DIR$" />
-    <orderEntry type="inheritedJdk" />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/grid_world/outputs/goals_image" />
+      <excludeFolder url="file://$MODULE_DIR$/grid_world/outputs/goals_images" />
+      <excludeFolder url="file://$MODULE_DIR$/grid_world/outputs/test_images" />
+      <excludeFolder url="file://$MODULE_DIR$/old/src/agents/ant_maze/graph_for_planning" />
+      <excludeFolder url="file://$MODULE_DIR$/old/src/environments/d4rl" />
+      <excludeFolder url="file://$MODULE_DIR$/old/src/simulations/outputs" />
+      <excludeFolder url="file://$MODULE_DIR$/old/src/outputs" />
+      <excludeFolder url="file://$MODULE_DIR$/point_maze/outputs" />
+      <excludeFolder url="file://$MODULE_DIR$/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/share" />
+    </content>
+    <orderEntry type="jdk" jdkName="Python 3.8 (MFTL)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-  </component>
-  <component name="PyDocumentationSettings">
-    <option name="format" value="PLAIN" />
-    <option name="myDocStringFormat" value="Plain" />
-  </component>
-  <component name="PyNamespacePackagesService">
-    <option name="namespacePackageFolders">
-      <list>
-        <option value="$MODULE_DIR$/ant_maze" />
-      </list>
-    </option>
   </component>
 </module>

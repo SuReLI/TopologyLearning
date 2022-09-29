@@ -3,7 +3,7 @@ from enum import Enum
 
 class MapsIndex(Enum):
     EMPTY = "empty_room"
-    FOUR_ROOM = "four_room"
+    FOUR_ROOMS = "four_rooms"
     HARD = "hard_maze"
     MEDIUM = "medium_maze"
     EXTREME = "extreme_maze"
