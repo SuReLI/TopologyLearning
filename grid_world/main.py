@@ -313,7 +313,7 @@ def init():
 
         # RGL
         RGL(state_space=environment.state_space, action_space=environment.action_space, tolerance_radius=0.1,
-            random_exploration_duration=100, max_steps_to_reach=40, goal_reaching_agent=low_policy, verbose=False,
+            random_exploration_duration=100, max_steps_to_reach=40, goal_reaching_agent=low_policy.copy(), verbose=False,
             edges_distance_threshold=0.3, nodes_distance_threshold=0.1),
 
         # SORB
@@ -324,7 +324,7 @@ def init():
         # TI-STC
         STC(state_space=environment.state_space, action_space=environment.action_space, tolerance_radius=0.1,
             random_exploration_duration=100, max_steps_to_reach=40, re_usable_policy=True,
-            goal_reaching_agent=low_policy, verbose=False, edges_similarity_threshold=0.65,
+            goal_reaching_agent=low_policy.copy(), verbose=False, edges_similarity_threshold=0.65,
             nodes_similarity_threshold=0.8, oriented_graph=False, translation_invariant_tc_network=True, name="TI-STC")
     ]
     """
@@ -364,7 +364,7 @@ def main():
             print("Agent ", agent.name, " seed ", seed_id, sep='')
             print("#################")
             training_stopwatch.start()
-            pre_train_environment = GoalConditionedDiscreteGridWorld(map_name=MapsIndex.EMPTY.value)
+            pre_train_environment = GoalConditionedDiscreteGridWorld(map_name=MapsIndex.EMPTY.value)MapsIndex.EMPTY
             if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, DiscreteSORB):
                 start_state, reached_goals = pre_train_gc_agent(pre_train_environment, agent,
                                                                 nb_episodes=local_settings.pre_train_nb_episodes,
