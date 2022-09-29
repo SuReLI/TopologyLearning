@@ -364,7 +364,7 @@ def main():
             print("Agent ", agent.name, " seed ", seed_id, sep='')
             print("#################")
             training_stopwatch.start()
-            pre_train_environment = GoalConditionedDiscreteGridWorld(map_name=MapsIndex.EMPTY.value)MapsIndex.EMPTY
+            pre_train_environment = GoalConditionedDiscreteGridWorld(map_name=MapsIndex.EMPTY.value)
             if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, DiscreteSORB):
                 start_state, reached_goals = pre_train_gc_agent(pre_train_environment, agent,
                                                                 nb_episodes=local_settings.pre_train_nb_episodes,
