@@ -85,7 +85,7 @@ def episode_done(agent, interaction_id, reached=False):
         episodes).
     :return: boolean, True if the episode is done
     """
-    if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, DiscreteSORB) or isinstance(agent, SORB):
+    if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, SORB):
         # NB: RGL and STC are subclasses of PlanningTopologyLearner
         return reached or agent.done
     elif isinstance(agent, DQNHERAgent):
@@ -155,7 +155,7 @@ def run_simulation(agent, environment, seed_id):
         "samples_average_duration": samples_stopwatch.get_duration() / interaction_id,
         "nb_total_interactions": interaction_id
     }
-    if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, DiscreteSORB) or isinstance(agent, SORB):
+    if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, SORB):
         seed_information["nodes_in_graph"] = len(agent.topology.nodes())
         seed_information["edges_in_graph"] = len(agent.topology.edges())
         seed_information["graph"] = agent.topology
@@ -354,11 +354,11 @@ def main():
             print("#################")
             training_stopwatch.start()
             pre_train_environment = GoalConditionedDiscreteGridWorld(map_name=MapsIndex.EMPTY.value)
-            if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, DiscreteSORB) or isinstance(agent, SORB):
+            if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, SORB):
                 start_state, reached_goals = pre_train_gc_agent(pre_train_environment, agent,
                                                                 nb_episodes=local_settings.pre_train_nb_episodes,
                                                                 time_steps_max_per_episode=local_settings.pre_train_nb_time_steps_per_episode)
-                if isinstance(agent, DiscreteSORB) or isinstance(agent, SORB):
+                if isinstance(agent, SORB):
                     agent.on_pre_training_done(start_state, reached_goals, environment.get_oracle())
                 else:
                     agent.on_pre_training_done(start_state, reached_goals)
