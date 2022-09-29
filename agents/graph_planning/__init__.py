@@ -1,4 +1,3 @@
-from .discrete_sorb import DiscreteSORB
 from .sorb import SORB
 from .rgl import RGL
 from .stc import STC
