@@ -1,4 +1,5 @@
 import os
+import sys
 from copy import deepcopy
 from random import choice
 import numpy as np
@@ -99,13 +100,12 @@ class SORB(Agent):
         self.last_node_reached = None
         self.sub_goals = []
         state, self.final_goal = args
-        assert self.final_goal is not None
-        if self.topology.nodes:  # Verify if the pretraining is done
+        if self.topology.nodes:
             self.init_path(state, self.final_goal)
         if self.sub_goals:
             self.current_goal = self.final_goal
         super().on_episode_start(state)
-        self.goal_reaching_agent.on_episode_start(state, self.current_goal)
+        self.goal_reaching_agent.on_episode_start(state, self.next_goal())
 
     def get_node_state(self, node_id):
         return self.topology.nodes()[node_id]["state"]
@@ -118,6 +118,17 @@ class SORB(Agent):
     def on_action_stop(self, action, new_state, reward, done, learn=False):
         self.current_edge_interactions += 1
         control_agent_episode_done = False
+
+        """
+        image = self.environment.render()
+        self.environment.place_point(image, self.final_goal, [255, 0, 0])
+        self.environment.place_point(image, new_state, [0, 255, 0], 7)
+        for sg in self.sub_goals:
+            pos = self.get_node_state(sg)
+            self.environment.place_point(image, self.get_node_state(sg), [0, 0, 255])
+        save_image(image, self.output_directory, "img_" + str(self.episode_time_step_id))
+        """
+
         if not learn:  # We only learn at pretraining, we will not use graph there
             # Did we have sub-goals left, and did we reach the next one?
             if self.sub_goals:
@@ -153,6 +164,7 @@ class SORB(Agent):
                         if self.verbose:
                             print("We fail to reach the final goal")
                         self.done = True
+        super(SORB, self).on_action_stop(action, new_state, reward, done, learn=learn)
         self.goal_reaching_agent.on_action_stop(action, new_state, reward, done or self.done or control_agent_episode_done,
                                                 learn=learn)
 
