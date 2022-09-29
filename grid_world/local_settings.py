@@ -9,6 +9,9 @@ pre_train_nb_episodes = 300
 pre_train_nb_time_steps_per_episode = 60
 
 # Simulation
+if map_name == MapsIndex.FOUR_ROOMS.value:
+    nb_evaluations_max = 100
+    dqn_max_steps = 300
 if map_name == MapsIndex.MEDIUM.value:
     nb_evaluations_max = 100
     dqn_max_steps = 300
