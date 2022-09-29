@@ -15,7 +15,7 @@ from agents.graph_planning.stc import STC
 from agents.graph_planning.rgl import RGL
 from agents.graph_planning.topological_graph_planning_agent import PlanningTopologyLearner, TopologyLearnerMode
 from utils.sys_fun import create_dir, save_image, generate_video, get_red_green_color
-import .local_settings
+from . import local_settings
 from grid_world.environment import GoalConditionedDiscreteGridWorld, MapsIndex
 from agents import DqnHerDiffAgent, DQNHERAgent, GCDQNAgent, DistributionalDQN, DiscreteSORB
 
