@@ -1,10 +1,10 @@
 import random
-
+import settings
 import numpy as np
 import torch
 
 
-default_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+default_device = settings.device
 
 
 def to_tensor(data_list, device):

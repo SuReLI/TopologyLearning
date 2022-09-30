@@ -3,6 +3,7 @@ import torch
 from torch import nn, optim
 from torch.nn.modules import Module
 from torch.optim import Optimizer
+import settings
 
 
 class MLP(Module):
@@ -11,7 +12,7 @@ class MLP(Module):
     mlp = MLP(input_size, 64, ReLU(), 64, ReLU(), output_size, Sigmoid())
     """
 
-    default_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    default_device = settings.device
 
     def __init__(self, input_size, *layers_data, device=default_device, learning_rate=0.01,
                  optimizer_class=optim.Adam):
