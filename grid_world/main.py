@@ -311,9 +311,7 @@ def init():
         # RGL
         RGL(state_space=environment.state_space, action_space=environment.action_space, tolerance_radius=0.1,
             random_exploration_duration=100, max_steps_to_reach=40, goal_reaching_agent=low_policy.copy(), verbose=False,
-            edges_distance_threshold=0.3, nodes_distance_threshold=0.1)
-    ]
-    """,
+            edges_distance_threshold=0.3, nodes_distance_threshold=0.1),
 
         # DQN
         DQNHERAgent(state_space=environment.state_space, action_space=environment.action_space, device=settings.device),
@@ -328,6 +326,8 @@ def init():
             random_exploration_duration=100, max_steps_to_reach=40, re_usable_policy=True,
             goal_reaching_agent=low_policy.copy(), verbose=False, edges_similarity_threshold=0.65,
             nodes_similarity_threshold=0.8, oriented_graph=False, translation_invariant_tc_network=True, name="TI-STC"),
+    ]
+    """
     """
     return agents, environment
 
@@ -347,7 +347,7 @@ def save_goals_image(environment, image_id, goals, results, seed_id):
 def main():
     global training_stopwatch, samples_stopwatch
     agents, environment = init()
-    for seed_id in range(1):
+    for seed_id in range(10):
         for agent in agents:
             print("#################")
             print("Agent ", agent.name, " seed ", seed_id, sep='')
