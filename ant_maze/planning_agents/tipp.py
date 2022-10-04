@@ -165,7 +165,7 @@ class TIPP(PlanningTopologyLearner):
                     # We failed reaching the next waypoint
                     if self.last_node_passed is not None and learn:
                         self.on_edge_failed(self.last_node_passed, self.next_node_way_point)
-                        # self.topology.edges[self.last_node_passed, self.next_node_way_point]["cost"] = float('inf')
+                        # self.topology.edges[self.last_node_passed, self.next_way_point]["cost"] = float('inf')
                     self.nb_failures_on_edges += 1
                     if self.verbose:
                         print("We failed reaching this way point ... We're done with this episode.")

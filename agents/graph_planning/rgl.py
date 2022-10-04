@@ -1,10 +1,10 @@
 import copy
 import math
-
 import networkx as nx
 import numpy as np
 import torch
 
+from ant_maze.plot_trajectory import plot_trajectory
 from ..agent import Agent
 from .topological_graph_planning_agent import PlanningTopologyLearner, TopologyLearnerMode
 
@@ -53,7 +53,7 @@ class RGL(PlanningTopologyLearner):
         Precondition: An exploration trajectory has been made.
         """
         assert self.last_exploration_trajectory != []
-
+        # plot_trajectory(self.last_exploration_trajectory)
         for state in self.last_exploration_trajectory:
             links_to_do = []
             for node_id, node_parameters in self.topology.nodes(data=True):
@@ -84,76 +84,6 @@ class RGL(PlanningTopologyLearner):
                             self.create_edge(new_node, link_to_do["node"], cost=link_to_do["cost"])
                         else:
                             self.create_edge(link_to_do["node"], new_node, cost=link_to_do["cost"])
-
-    def on_action_stop(self, action, new_state, reward, done, learn=True):
-        learn = self.mode != TopologyLearnerMode.GO_TO
-        if self.random_exploration_steps_left is not None:
-            assert self.mode == TopologyLearnerMode.LEARN_ENV
-            self.last_exploration_trajectory.append(new_state)
-            self.random_exploration_steps_left -= 1
-            if self.random_exploration_steps_left == 0:
-                if self.verbose:
-                    print("Finished random exploration. We're done with this episode")
-                self.extend_graph()
-                self.done = True
-            else:
-                if self.verbose:
-                    print("We continue random exploration for " + str(self.random_exploration_steps_left)
-                          + " more time steps.")
-        elif self.nb_trial_out_graph_left is not None:
-            assert self.mode == TopologyLearnerMode.GO_TO
-            self.nb_trial_out_graph_left -= 1
-            if self.nb_trial_out_graph_left == 0:
-                if self.verbose:
-                    print("We're done trying to reach the final goal.")
-                self.done = True
-            elif self.verbose:
-                print("We continue to reach global goal for " + str(self.nb_trial_out_graph_left)
-                      + " more time steps.")
-        else:  # We are trying to reach a sub-goal
-            reached = self.reached(new_state)
-            reward = 1 if reached else 0
-            self.goal_reaching_agent.on_action_stop(action, new_state, reward, done=reached, learn=False)
-
-            if reached:
-                # The next sub-goal have been reached, we can remove it and continue to the next one
-                if self.last_node_passed is not None and learn:
-                    self.on_edge_crossed(self.last_node_passed, self.next_node_way_point)
-                self.last_node_passed = self.next_node_way_point
-                self.next_node_way_point = self.get_next_node_waypoint()
-                self.current_subtask_steps = 0
-                self.goal_reaching_agent.on_episode_stop()
-                if self.next_node_way_point is None:
-                    self.on_path_done(new_state)
-                    if self.verbose:
-                        print("Path is done.")
-                else:
-                    if self.verbose:
-                        print("Reached a way point. Next one is " + str(self.next_node_way_point) + ".")
-                    self.next_goal = self.get_goal_from_node(self.next_node_way_point)
-                    self.goal_reaching_agent.on_episode_start(new_state, self.next_goal)
-            else:
-                self.current_subtask_steps += 1
-                if self.current_subtask_steps > self.max_steps_to_reach:
-                    # We failed reaching the next waypoint
-                    if self.last_node_passed is not None and learn:
-                        self.on_edge_failed(self.last_node_passed, self.next_node_way_point)
-                        # self.topology.edges[self.last_node_passed, self.next_node_way_point]["cost"] = float('inf')
-                    if self.verbose:
-                        print("We failed reaching this way point ... We're done with this episode.")
-                    self.done = True
-                else:
-                    if self.verbose:
-                        print("Trying to reach way point " + str(self.next_node_way_point) + ". Time steps left = "
-                              + str(self.max_steps_to_reach - self.current_subtask_steps))
-
-        # Increment the counter of the node related to 'new_state'.
-        self.topology.nodes[self.get_node_for_state(new_state)]["reached"] += 1
-        Agent.on_action_stop(self, action, new_state, reward, done)
-
-        if self.verbose:
-            print("Interaction: observation=" + str(self.last_state) + ", action=" + str(action) + ", new_state="
-                  + str(new_state) + ", agent goal=" + str(self.goal_reaching_agent.current_goal))
 
     def get_states_distance(self, state_1, state_2):
         return self.get_distance_estimation(state_1, state_2)

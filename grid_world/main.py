@@ -183,13 +183,13 @@ def evaluation(agent):
     results = []
     goals = []
     for test_id in range(local_settings.nb_tests_per_evaluation):
-        result, goal = test(test_agent, env)
+        result, goal = eval_episode(test_agent, env)
         results.append(result)
         goals.append(goal)
     return mean(results), goals, results
 
 
-def test(agent, environment):
+def eval_episode(agent, environment):
     """
     Test the agent over a single goal reaching task. Return the result that will be directly passed to the DataHolder.
     return tuple(the closest node distance from goal, success in {0, 1})
@@ -219,8 +219,9 @@ def test(agent, environment):
     return float(reached), goal
 
 
-def save_seed_results(environment_name, agent, results, seed_information):
+def save_seed_results(environment_name, agent, pre_train_nb_interactions, results, seed_information):
     # Find outputs directory
+    seed_information["pre_train_nb_interactions"] = pre_train_nb_interactions
     seeds_outputs_directory = os.path.dirname(__file__) + "/outputs/seeds/" + environment_name + "/" \
                               + agent.name + "/"
     create_dir(seeds_outputs_directory)
@@ -251,6 +252,7 @@ def pre_train_gc_agent(environment, agent, nb_episodes=400, time_steps_max_per_e
     print("Pretraining low level agent ... please wait a bit ...")
     pre_training_agent = agent.goal_reaching_agent if isinstance(agent, PlanningTopologyLearner) \
                                                       or isinstance(agent, SORB) else agent
+    nb_interactions = 0
     reached_goals = []
     pre_training_agent.on_simulation_start()
     results = []
@@ -262,6 +264,7 @@ def pre_train_gc_agent(environment, agent, nb_episodes=400, time_steps_max_per_e
         training_stopwatch.stop()
         state, goal = environment.reset()
         training_stopwatch.start()
+        nb_interactions += 1
         if isinstance(agent, STC):
             last_trajectory.append(state)
         # Ate the end of the pre-training, the agent will have an accuracy of 1 (100 %). Then, we add every goals to
@@ -300,7 +303,7 @@ def pre_train_gc_agent(environment, agent, nb_episodes=400, time_steps_max_per_e
             agent.store_tc_training_samples(last_trajectory)
             last_trajectory = []
     training_stopwatch.stop()
-    return start_state, reached_goals
+    return start_state, reached_goals, nb_interactions
 
 def init():
     environment = GoalConditionedDiscreteGridWorld(map_name=local_settings.map_name)
@@ -349,20 +352,24 @@ def main():
     agents, environment = init()
     for seed_id in range(10):
         for agent in agents:
+            agent.reset()
             print("#################")
             print("Agent ", agent.name, " seed ", seed_id, sep='')
             print("#################")
             training_stopwatch.start()
             pre_train_environment = GoalConditionedDiscreteGridWorld(map_name=MapsIndex.EMPTY.value)
             if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, SORB):
-                start_state, reached_goals = pre_train_gc_agent(pre_train_environment, agent,
-                                                                nb_episodes=local_settings.pre_train_nb_episodes,
-                                                                time_steps_max_per_episode=local_settings.pre_train_nb_time_steps_per_episode)
+                start_state, reached_goals, pre_train_nb_interactions \
+                    = pre_train_gc_agent(pre_train_environment, agent, nb_episodes=local_settings.pre_train_nb_episodes,
+                                         time_steps_max_per_episode=local_settings.pre_train_nb_time_steps_per_episode)
                 if isinstance(agent, SORB):
                     agent.on_pre_training_done(start_state, reached_goals, environment.get_oracle())
                 else:
                     agent.on_pre_training_done(start_state, reached_goals)
-            save_seed_results(local_settings.map_name, agent, *run_simulation(agent, environment, seed_id))
+            else:
+                pre_train_nb_interactions = 0
+            save_seed_results(local_settings.map_name, agent, pre_train_nb_interactions,
+                              *run_simulation(agent, environment, seed_id))
         print("")
 
 if __name__ == "__main__":

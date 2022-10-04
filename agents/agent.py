@@ -55,8 +55,7 @@ class Agent:
         self.episode_time_step_id = 0
 
     def action(self, state):
-        res = self.action_space.sample()
-        return res
+        return self.action_space.sample()
 
     def on_action_stop(self, action, new_state, reward, done, learn=True):
         self.episode_time_step_id += 1

@@ -1,5 +1,7 @@
 import copy
+import math
 from enum import Enum
+from random import random
 
 import networkx as nx
 import numpy as np
@@ -71,6 +73,7 @@ class PlanningTopologyLearner(Agent):
         self.nodes_attributes = params.get("nodes_attributes", {})
         self.edges_attributes = params.get("edges_attributes", {})
         #  -> Default nodes and edges attributes on creation as a dict, like {nb_explorations: 0} for nodes.
+
         self.random_exploration_duration = params.get("random_exploration_duration", 90)
         #  -> Duration of any explorations from a node we want to explore from, in number of interactions.
 
@@ -83,6 +86,10 @@ class PlanningTopologyLearner(Agent):
         self.verbose = params.get("verbose", False)
 
         super().__init__(**params)
+        # Copy params and store them in self
+        self.init_params = {}
+        for k, v in params.items():
+            self.init_params[k] = copy.deepcopy(v) if k != "goal_reaching_agent" else v.copy()
 
         # LOW-LEVEL ACTIONS PLANNING ARGUMENTS
 
@@ -98,7 +105,7 @@ class PlanningTopologyLearner(Agent):
         self.goal_reaching_agent = params.get("goal_reaching_agent", default_goal_reaching_agent)
         self.oriented_graph = params.get("oriented_graph", True)
         self.topology = nx.DiGraph() if self.oriented_graph else nx.Graph()
-        self.next_node_way_point = None
+        self.next_way_point = None
 
         # The number of episode will depend on the task we are doing. In any mode, the agent choose when he's done doing
         # the task.
@@ -126,14 +133,20 @@ class PlanningTopologyLearner(Agent):
              actions for a fixed duration, to sample random states next to this node.  
              - Use the randomly sampled states to add new nodes to our graph.
         """
+        self.under_exploration = False
         self.last_node_explored = None
         self.last_exploration_trajectory = []  # Trajectory made once we reached last exploration waypoint.
         # Once we reached a node that has been selected as interesting for exploration, we will explore using a random
         # policy for a fixed duration.
-        self.random_exploration_steps_left = None
-        self.higher_node_id = -1  # Id of the younger node. To know which id to give to a new node.
+        self.random_exploration_steps = None
         self.current_exploration_nodes_path = None
         self.explored_node_choice_criteria = "explorations"  # Can be "explorations" or "reached"
+        self.higher_node_id = -1  # Id of the younger node. To know which id to give to a new node.
+
+        self.nb_exploration = params.get("nb_explorations", 1)
+        self.nb_explorations_so_far = 0
+        self.choose_exploration_target = params.get("choose_exploration_target", False)
+        self.exploration_goal_range = params.get("exploration_goal_range", 2)
 
         """
         GOAL REACHING ATTRIBUTES
@@ -144,7 +157,7 @@ class PlanningTopologyLearner(Agent):
         """
         # How many interaction we did to reach the goal since the last node in path:
         # Counter of how many times steps left before to consider we failed reaching the goal
-        self.nb_trial_out_graph_left = None
+        self.nb_trial_out_graph = None
         self.final_goal = None
         self.current_goal_reaching_nodes_path = None
 
@@ -177,50 +190,65 @@ class PlanningTopologyLearner(Agent):
             self.set_exploration_path(state)
         elif self.mode == TopologyLearnerMode.GO_TO:
             _, _, goal = args
-            fill = np.zeros(self.state_space.shape[0] - 2)
+            fill = np.zeros(self.state_space.shape[0] - len(goal))
             self.final_goal = np.concatenate((goal, fill))[self.state_to_goal_filter]
             # self.final_goal = goal
-        self.next_node_way_point = self.get_next_node_waypoint()
-        if self.next_node_way_point is None:
+        self.next_way_point = self.get_next_waypoint()
+        if self.next_way_point is None:
             # We started on the node to reach. Happen when our graph have a single node.
             # The following function should make our agent explore if it's in the right mode.
             self.on_path_done(state)
         else:
-            self.next_goal = self.get_goal_from_node(self.next_node_way_point)
+            if isinstance(self.next_way_point, int):
+                self.next_goal = self.get_goal_from_node(self.next_way_point)
+            else:
+                assert isinstance(self.next_way_point, np.ndarray)
+                self.next_goal = self.next_way_point.copy()
             self.goal_reaching_agent.on_episode_start(state, self.next_goal)
         if self.verbose:
-            print("New episode. Mode = ", self.mode.name, " Selected next node = " + str(self.next_node_way_point))
+            print("New episode. Mode = ", self.mode.name, " Selected next node = " + str(self.next_way_point))
 
     def action(self, state):
-        if self.random_exploration_steps_left is not None:
+        if self.random_exploration_steps is not None:
             return self.action_space.sample()
         return self.goal_reaching_agent.action(state)
 
     def on_action_stop(self, action, new_state, reward, done, learn=True):
         learn = self.mode == TopologyLearnerMode.LEARN_ENV
-        if self.random_exploration_steps_left is not None:
-            assert self.mode == TopologyLearnerMode.LEARN_ENV
+        if self.under_exploration:
             self.last_exploration_trajectory.append(new_state)
-            self.random_exploration_steps_left -= 1
-            if self.random_exploration_steps_left == 0:
-                if self.verbose:
-                    print("Finished random exploration. We're done with this episode")
+        if self.random_exploration_steps is not None:
+            assert self.mode == TopologyLearnerMode.LEARN_ENV
+            self.random_exploration_steps -= 1
+            if self.random_exploration_steps == 0:
+                self.nb_explorations_so_far += 1
+                if self.nb_explorations_so_far < self.nb_exploration:
+                    # Simulate that we didn't explore yet, select the last reached node as the next sub_goal
+                    self.next_goal = self.last_node_passed
+                    self.goal_reaching_agent.on_episode_start(new_state, self.next_goal)
+                    self.random_exploration_steps = None
+                    if self.verbose:
+                        print(str(self.nb_explorations_so_far) + " exploration"
+                              + "s" if self.nb_explorations_so_far > 1 else "" + "finished")
+                elif self.verbose:
+                    print("Finished exploration.")
                 self.extend_graph()
                 self.done = True
             else:
                 if self.verbose:
-                    print("We continue random exploration for " + str(self.random_exploration_steps_left)
+                    print("We continue random exploration for " + str(self.random_exploration_steps)
                           + " more time steps.")
-        elif self.nb_trial_out_graph_left is not None:
+        elif self.nb_trial_out_graph is not None:
             assert self.mode == TopologyLearnerMode.GO_TO
-            self.nb_trial_out_graph_left -= 1
-            if self.nb_trial_out_graph_left == 0:
+            self.nb_trial_out_graph += 1
+            if self.nb_trial_out_graph >= self.max_steps_to_reach:
                 if self.verbose:
                     print("We're done trying to reach the final goal.")
                 self.done = True
             elif self.verbose:
-                print("We continue to reach global goal for " + str(self.nb_trial_out_graph_left)
+                print("We continue to reach global goal for " + str(self.nb_trial_out_graph)
                       + " more time steps.")
+
             reached = self.reached(new_state, goal=self.final_goal)
             reward = 1.0 if reached else 0.0  # Will not be used if self.re_usable_policy == True
             self.goal_reaching_agent.on_action_stop(action, new_state, reward, done=reached,
@@ -230,48 +258,64 @@ class PlanningTopologyLearner(Agent):
             reward = 1.0 if reached else 0.0  # Will not be used if self.re_usable_policy == True
             self.goal_reaching_agent.on_action_stop(action, new_state, reward, done=reached,
                                                     learn=not self.re_usable_policy)
-
-            while self.reached(new_state):
-                reached_one = True
+            if reached:
                 # The next sub-goal have been reached, we can remove it and continue to the next one
-                if self.last_node_passed is not None and learn and \
-                        self.topology.edges[self.last_node_passed, self.next_node_way_point]["potential"]:
-                    self.on_edge_crossed(self.last_node_passed, self.next_node_way_point)
-
-                self.last_node_passed = self.next_node_way_point
-                self.next_node_way_point = self.get_next_node_waypoint()
+                if self.last_node_passed is not None and learn and isinstance(self.last_node_passed, int) \
+                        and isinstance(self.next_way_point, int):
+                    self.on_edge_crossed(self.last_node_passed, self.next_way_point)
+                self.last_node_passed = self.next_way_point
+                self.next_way_point = self.get_next_waypoint()
                 self.current_subtask_steps = 0
                 self.goal_reaching_agent.on_episode_stop()
-                if self.next_node_way_point is None:
+                if self.next_way_point is None:
                     self.on_path_done(new_state)
                     if self.verbose:
                         print("Path is done.")
                 else:
                     if self.verbose:
-                        print("Reached a way point. Next one is " + str(self.next_node_way_point) + ".")
-                    self.next_goal = self.get_goal_from_node(self.next_node_way_point)
+                        print("Reached a way point. Next one is " + str(self.next_way_point) + ".")
+                    if isinstance(self.next_way_point, np.ndarray):
+                        self.next_goal = self.next_way_point.copy()
+                    elif isinstance(self.next_way_point, int):
+                        self.next_goal = self.get_goal_from_node(self.next_way_point)
+                    else:
+                        raise Exception("Unhandled way-point type.")
                     self.goal_reaching_agent.on_episode_start(new_state, self.next_goal)
-            if not reached:
+            else:
                 self.current_subtask_steps += 1
                 if self.current_subtask_steps > self.max_steps_to_reach:
-                    # We failed reaching the next waypoint
-                    if self.last_node_passed is not None and learn:
-                        self.on_edge_failed(self.last_node_passed, self.next_node_way_point)
-                    if self.verbose:
-                        print("We failed reaching this way point ... We're done with this episode.")
-                    self.done = True
+                    if self.under_exploration:
+                        if self.current_exploration_nodes_path:
+                            self.next_way_point = self.current_exploration_nodes_path.pop(0)
+                            if isinstance(self.next_way_point, np.ndarray):
+                                self.next_goal = self.next_way_point.copy()
+                            elif isinstance(self.next_way_point, int):
+                                self.next_goal = self.get_goal_from_node(self.next_way_point)
+                            else:
+                                raise Exception("Unhandled way-point type.")
+                            self.goal_reaching_agent.on_episode_stop()
+                            self.goal_reaching_agent.on_episode_start(self.last_state, self.next_goal)
+                        else:
+                            self.goal_reaching_agent.on_episode_stop()
+                            self.extend_graph()
+                            self.done = True
+                    else:
+                        # We failed reaching the next waypoint
+                        if self.last_node_passed is not None and learn and isinstance(self.last_node_passed, int) \
+                                and isinstance(self.next_way_point, int):
+                            self.on_edge_failed(self.last_node_passed, self.next_way_point)
+                        if self.verbose:
+                            print("We failed reaching this way point ... We're done with this episode.")
+                        self.done = True
                 else:
                     if self.verbose:
-                        print("Trying to reach way point " + str(self.next_node_way_point) + ". Time steps left = "
+                        print("Trying to reach way point " + str(self.next_way_point) + ". Time steps left = "
                               + str(self.max_steps_to_reach - self.current_subtask_steps))
-
         # Increment the counter of the node related to 'new_state'.
         self.topology.nodes[self.get_node_for_state(new_state)]["reached"] += 1
-
         super().on_action_stop(action, new_state, reward, done)
-
         if self.verbose:
-            print("Interaction: state=" + str(self.last_state) + ", action=" + str(action) + ", new_state="
+            print("Interaction: observation=" + str(self.last_state) + ", action=" + str(action) + ", new_state="
                   + str(new_state) + ", agent goal=" + str(self.goal_reaching_agent.current_goal))
 
     def on_edge_crossed(self, last_node_passed, next_node_way_point):
@@ -291,13 +335,15 @@ class PlanningTopologyLearner(Agent):
 
         # Reset episodes variables
         self.last_node_passed = None
-        self.nb_trial_out_graph_left = None
-        self.random_exploration_steps_left = None
+        self.nb_trial_out_graph = None
+        self.random_exploration_steps = None
         self.current_goal_reaching_nodes_path = None
         self.current_exploration_nodes_path = None
         self.last_exploration_trajectory = []
         self.current_subtask_steps = 0
         self.done = False
+        self.nb_explorations_so_far = 0
+        self.under_exploration = False
         return self.goal_reaching_agent.on_episode_stop()
 
     """
@@ -308,7 +354,7 @@ class PlanningTopologyLearner(Agent):
             goal = self.next_goal
         return np.linalg.norm(state[self.state_to_goal_filter] - goal) < self.tolerance_radius
 
-    def get_next_node_waypoint(self):
+    def get_next_waypoint(self):
         if self.mode == TopologyLearnerMode.LEARN_ENV:
             return self.get_exploration_next_node_waypoint()
         elif self.mode == TopologyLearnerMode.GO_TO:
@@ -339,22 +385,45 @@ class PlanningTopologyLearner(Agent):
         we reached the closest node from our final goal.
         """
         if self.mode == TopologyLearnerMode.GO_TO:
-            assert new_episode_start_state is not None  # We need it in this mode.
             if self.verbose:
                 print("Reached last node. Trying to reach the goal for a duration of "
                       + str(self.max_steps_to_reach) + " time steps.")
-            self.nb_trial_out_graph_left = self.max_steps_to_reach
+            self.nb_trial_out_graph = 0
             self.next_goal = self.final_goal
             self.goal_reaching_agent.on_episode_start(new_episode_start_state, self.final_goal)
         else:
             if self.verbose:
                 print("Reached last node. Starting random exploration for a duration of "
                       + str(self.random_exploration_duration) + " time steps.")
-            assert self.last_exploration_trajectory == []
+            self.under_exploration = True
             self.next_goal = None
             self.last_node_explored = self.last_node_passed
             assert self.last_node_explored is not None
-            self.random_exploration_steps_left = self.random_exploration_duration
+            if self.choose_exploration_target:
+                assert self.current_exploration_nodes_path == []
+                for target_id in range(self.nb_exploration):
+                    last_node_explored_state = self.get_goal_from_node(self.last_node_explored)
+                    target_goal = self.sample_exploration_target(self.last_node_explored)
+                    # print("Choose exploration target ", target_goal, " for last state ", last_node_explored_state)
+                    # Add target to sub-goals
+                    self.current_exploration_nodes_path.append(target_goal)
+                self.next_way_point = self.current_exploration_nodes_path.pop(0)
+                self.next_goal = self.next_way_point.copy()  # The only case where self.next_way_point is a state.
+                self.goal_reaching_agent.on_episode_start(self.last_state, self.next_goal)
+            else:
+                self.random_exploration_steps = self.random_exploration_duration
+
+    def sample_exploration_target(self, explored_node):
+        last_node_explored_state = self.get_goal_from_node(explored_node)
+        # Choose exploration direction
+        angle = random() * 2 * math.pi - math.pi
+        # Select a target
+        x_diff = math.cos(angle) * self.exploration_goal_range
+        y_diff = math.sin(angle) * self.exploration_goal_range
+        target_goal = last_node_explored_state.copy()
+        target_goal[:2] += [x_diff, y_diff]
+        return target_goal
+
 
     def get_reachable_from(self, node):
         """
@@ -533,10 +602,18 @@ class PlanningTopologyLearner(Agent):
         except:
             self.remove_graph_around(node_2)
 
-    def copy(self):
-        goal_reaching_agent = self.goal_reaching_agent.copy()
-        topology = copy.deepcopy(self.topology)
-        agent_copy = self.__init__(self.init_params)
-        agent_copy.goal_reaching_agent = goal_reaching_agent
-        agent_copy.topology = topology
-        return agent_copy
+    def __deepcopy__(self, memo):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        memo[id(self)] = result
+        for k, v in self.__dict__.items():
+            if k == "goal_reaching_agent":
+                setattr(result, k, self.goal_reaching_agent.copy())
+            elif k == "init_params":
+                new_dict = {}
+                for k_, v_ in v.items():
+                    new_dict[k_] = copy.deepcopy(v_) if k_ != "goal_reaching_agent" else v_.copy()
+                setattr(result, k, new_dict)
+            else:
+                setattr(result, k, copy.deepcopy(v, memo))
+        return result

@@ -1,3 +1,4 @@
+import copy
 import os
 import sys
 from copy import deepcopy
@@ -64,12 +65,12 @@ class SORB(Agent):
                 estimates_distance = self.get_distance_estimation(first_attributes["state"], second_attributes["state"],
                                                                   normalised=True)
                 if estimates_distance <= self.edges_distance_threshold:
-                    self.topology.add_edge(first_node, second_node, weight=estimates_distance)
+                    self.topology.add_edge(first_node, second_node, cost=estimates_distance)
 
     def init_path(self, state, goal):
         start_node = self.get_node_for_state(state)
         final_node = self.get_node_for_state(goal)
-        self.sub_goals = nx.shortest_path(self.topology, start_node, final_node, "weight")
+        self.sub_goals = nx.shortest_path(self.topology, start_node, final_node, "cost")
 
     def get_node_for_state(self, state, data=False, reachable_only=True):
         """
@@ -151,7 +152,7 @@ class SORB(Agent):
                         if self.verbose:
                             print("We fail to reach the next sub-goal")
                         if self.last_node_reached is not None:
-                            self.topology.get_edge_data(self.last_node_reached, self.sub_goals[0])["weight"] = float("inf")
+                            self.topology.get_edge_data(self.last_node_reached, self.sub_goals[0])["cost"] = float("inf")
                         self.done = True
             else:  # We are trying to reach the final goal after we reached every sub-goals.
                 reached = (new_state == self.final_goal).all()
@@ -199,5 +200,12 @@ class SORB(Agent):
             return state
         else:
             return state[:2]
+    def copy(self):
+        control_agent = self.goal_reaching_agent.copy()
+        del self.goal_reaching_agent
+        new_agent = copy.deepcopy(self)
+        new_agent.goal_reaching_agent = control_agent.copy()
+        self.goal_reaching_agent = control_agent.copy()
+        return new_agent
 
 

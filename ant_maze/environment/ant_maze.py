@@ -70,6 +70,9 @@ class AntMaze:
 
         self.goal = None
 
+    def sample_reachable_state(self):
+        return choices(self.reachable_spaces, weights=self.reachable_spaces_areas)[0].sample()
+
     # Get state, which concatenates joint positions and velocities
     def get_state(self):
         return np.concatenate((self.sim.data.qpos, self.sim.data.qvel))
@@ -99,7 +102,7 @@ class AntMaze:
 
         # Choose a goal. Weights are used to keep a uniform sampling over the reachable space,
         # since boxes don't cover areas of the same size.
-        goal_position = choices(self.reachable_spaces, weights=self.reachable_spaces_areas)[0].sample()
+        goal_position = self.sample_reachable_state()
         torso_height = np.random.uniform(0.45, 0.55, (1,))
         self.goal = np.concatenate((goal_position, torso_height))
         if self.show:

@@ -1,0 +1,27 @@
+models_1: apprentissage original avec g - s pour la politique de plus bas niveau.
+    accuracy = [0.0, 0.0, 0.0, 2.0, 2.0, 21.0, 23.0, 28.999999999999996, 47.0, 67.0, 46.0, 63.0, 77.0, 79.0, 71.0, 73.0,
+        57.99999999999999, 69.0, 81.0, 71.0, 72.0, 80.0, 74.0, 67.0, 70.0, 79.0, 70.0, 68.0, 74.0, 73.0, 78.0, 70.0,
+        34.0, 78.0, 74.0, 65.0, 71.0, 76.0, 77.0, 68.0, 77.0, 76.0, 67.0]
+
+models_2: idem avec h=20
+    accuracy = [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 0.0, 3.0, 9.0, 10.0, 19.0, 8.0, 8.0, 13.0, 14.000000000000002, 22.0,
+        21.0, 31.0, 28.999999999999996, 21.0, 44.0, 32.0, 54.0, 47.0, 47.0, 38.0, 36.0, 56.00000000000001, 45.0,
+        55.00000000000001, 61.0, 57.99999999999999, 62.0, 56.99999999999999, 68.0, 61.0, 64.0, 57.99999999999999, 70.0,
+        78.0, 73.0, 71.0, 77.0, 75.0, 79.0, 82.0, 73.0, 75.0, 73.0, 81.0, 76.0, 84.0, 92.0, 85.0, 81.0, 85.0, 83.0,
+        77.0, 85.0, 83.0, 80.0, 78.0, 85.0, 80.0, 90.0, 87.0, 87.0, 85.0, 89.0, 83.0]
+
+précédement dans ANT REACHER
+=============================================
+
+models_3: idem que ci-dessus mais dans le bon labyrinthe
+
+models_4: idem mais avec un critic invariant
+
+models 5: entraînement classique, avec un acteur invariant mais pas le critique, et avec un environnement qui choisit un
+    angle aléatoire à chaque début d'épisode.
+
+models_5: idem que ci-dessus mais avec un point de départ fixe à chaque épisodes, et avec des buts aléatoires sur
+    l'ensemble de l'environnement.
+
+models_6: idem que ci-dessus. Ajout d'une sauvegarde des informations de pré-entrainement.
+

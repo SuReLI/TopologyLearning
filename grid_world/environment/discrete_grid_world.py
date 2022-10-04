@@ -347,6 +347,10 @@ class DiscreteGridWorld:
             file_name += ".png"
         image.save(file_directory + file_name)
 
+    def sample_reachable_state(self):
+        state_coordinates = np.flip(random.choice(np.argwhere(self.maze_map != 1)))
+        return self.get_state(*state_coordinates)
+
     def place_point(self, image: np.ndarray, state, color: np.ndarray, width=5):
         """
         Modify the input image
