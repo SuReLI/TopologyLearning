@@ -1,24 +1,22 @@
 """
 A script to test goal based RL agent, that are used to reach sub-goals.
 """
+import copy
+import math
 import os
 import pickle
 import sys
-from copy import deepcopy
 from statistics import mean
 
 import numpy as np
 from matplotlib import pyplot as plt
-
 import settings
-from agents.graph_planning.stc import STC
-from agents.graph_planning.rgl import RGL
-from agents.graph_planning.topological_graph_planning_agent import PlanningTopologyLearner, TopologyLearnerMode
 from ant_maze.environment import AntMaze
 from utils.sys_fun import create_dir, save_image, generate_video, get_red_green_color
 import local_settings
-from grid_world.environment import GoalConditionedDiscreteGridWorld, MapsIndex
-from agents import DqnHerDiffAgent, DQNHERAgent, GCDQNAgent, DistributionalDQN, SORB
+from local_settings import MapsIndex
+from agents import SORB, PlanningTopologyLearner, TopologyLearnerMode, STC, RGL
+from ant_maze.control_policy.agent import AntMazeControlPolicy
 
 
 from utils.stopwatch import Stopwatch
@@ -37,12 +35,12 @@ def generate_graph_image(env, network, directory, file_name):
     # Fill image
     #  - Build nodes
     for node_id, attributes in network.nodes(data=True):
-        env.place_point(image, attributes["state"], [125, 255, 0], width=5)
+        env.place_point(image, attributes["state"], [125, 255, 0], width=30)
 
     #  - Build edges
     for node_1, node_2, attributes in network.edges(data=True):
-        color = [255, 0, 0] if attributes["weight"] == float("inf") else [0, 255, 0]
-        env.place_edge(image, network.nodes[node_1]["state"], network.nodes[node_2]["state"], color, width=5)
+        color = [255, 0, 0] if attributes["cost"] == float("inf") else [0, 255, 0]
+        env.place_edge(image, network.nodes[node_1]["state"], network.nodes[node_2]["state"], color, width=25)
 
     # Save image
     create_dir(directory)  # Make sure the directory exists
@@ -86,11 +84,12 @@ def episode_done(agent, interaction_id, reached=False):
         episodes).
     :return: boolean, True if the episode is done
     """
-    if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, DiscreteSORB):
+    if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, SORB):
         # NB: RGL and STC are subclasses of PlanningTopologyLearner
-        return reached or agent.done
-    elif isinstance(agent, DQNHERAgent):
-        return reached or interaction_id >= local_settings.dqn_max_steps
+        result = reached or agent.done
+        return result
+    elif isinstance(agent, AntMazeControlPolicy):
+        return reached or interaction_id >= local_settings.her_max_steps
     else:
         raise Exception("Unknown agent type.")
 
@@ -158,12 +157,13 @@ def run_simulation(agent, environment, seed_id):
                     environment.place_point(image, goal, [0, 255, 0] if result else [255, 0, 0])
                 save_image(image, directory, "goals_" + str(evaluation_id) + ".png")
 
+                directory = os.path.dirname(__file__) + "/outputs/graph_images/" + str(seed_id) + "/"
+                create_dir(directory)
+                generate_graph_image(environment, agent.topology, directory,
+                                     "test_img_eval_" + str(evaluation_id) + ".png")
+
                 training_stopwatch.start()
         episode_id += 1
-        directory = os.path.dirname(__file__) + "/outputs/graph_images/" + str(seed_id) + "/"
-        create_dir(directory)
-        generate_graph_image(environment, agent.topology, directory,
-                             "test_img_eval_" + str("beg") + ".png")
         agent.on_episode_stop()
     training_stopwatch.stop()
 
@@ -172,7 +172,7 @@ def run_simulation(agent, environment, seed_id):
         "samples_average_duration": samples_stopwatch.get_duration() / interaction_id,
         "nb_total_interactions": interaction_id
     }
-    if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, DiscreteSORB):
+    if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, SORB):
         seed_information["nodes_in_graph"] = len(agent.topology.nodes())
         seed_information["edges_in_graph"] = len(agent.topology.edges())
         seed_information["graph"] = agent.topology
@@ -188,7 +188,10 @@ def run_simulation(agent, environment, seed_id):
 
 def evaluation(agent):
     # Get an agent copy and prepare it to the test
-    test_agent = deepcopy(agent)
+    if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, SORB):
+        test_agent = copy.deepcopy(agent)
+    else:
+        test_agent = agent.copy()
     environment = AntMaze(maze_name=local_settings.map_name, show=False)
     #  '-> So we can test our agent at any time in a parallel environment, even in the middle of an episode
 
@@ -200,13 +203,13 @@ def evaluation(agent):
     results = []
     goals = []
     for test_id in range(local_settings.nb_tests_per_evaluation):
-        result, goal = test(test_agent, environment)
+        result, goal = eval_episode(test_agent, environment)
         results.append(result)
         goals.append(goal)
     return mean(results), goals, results
 
 
-def test(agent, environment):
+def eval_episode(agent, environment):
     """
     Test the agent over a single goal reaching task. Return the result that will be directly passed to the DataHolder.
     return tuple(the closest node distance from goal, success in {0, 1})
@@ -321,17 +324,22 @@ def pre_train_gc_agent(environment, agent, nb_episodes=400, time_steps_max_per_e
 
 def init():
     environment = AntMaze(maze_name=local_settings.map_name, show=False)
-    low_policy = DqnHerDiffAgent(state_space=environment.observation_space, action_space=environment.action_space,
-                                 device=settings.device)
+    low_policy = AntMazeControlPolicy(environment, state_space=environment.observation_space,
+                                      action_space=environment.action_space,
+                                      device=settings.device)
 
     agents = [
         # RGL
-        RGL(state_space=environment.observation_space, action_space=environment.action_space, tolerance_radius=0.1,
-            random_exploration_duration=100, max_steps_to_reach=40, goal_reaching_agent=low_policy, verbose=False,
-            edges_distance_threshold=0.3, nodes_distance_threshold=0.1),
+        RGL(state_space=environment.observation_space, action_space=environment.action_space, tolerance_radius=0.3,
+            random_exploration_duration=900, max_steps_to_reach=80, goal_reaching_agent=low_policy, verbose=False,
+            edges_distance_threshold=1, nodes_distance_threshold=0.8, choose_exploration_target=False,
+            exploration_goal_range=4, nb_explorations=1)
+    ]
+    """
+        ,
 
         # SORB
-        DiscreteSORB(state_space=environment.observation_space, action_space=environment.action_space,
+        SORB(state_space=environment.observation_space, action_space=environment.action_space,
                      tolerance_radius=0.2, verbose=False, edges_distance_threshold=0.2, nb_nodes=400,
                      max_interactions_per_edge=40, max_final_interactions=50, environment=environment),
 
@@ -340,19 +348,6 @@ def init():
             random_exploration_duration=100, max_steps_to_reach=40, re_usable_policy=True,
             goal_reaching_agent=low_policy, verbose=False, edges_similarity_threshold=0.65,
             nodes_similarity_threshold=0.8, oriented_graph=False, translation_invariant_tc_network=True, name="TI-STC")
-    ]
-    """
-    agent = STC_TL(observation_space=environment.observation_space, action_space=environment.action_space,
-                            tolerance_margin=tiles_dimensions, random_exploration_duration=100)
-    agent = SORB(observation_space=environment.observation_space, action_space=environment.action_space,
-                          tolerance_margin=tiles_dimensions, random_exploration_duration=100
-                          oracle=environment.get_oracle())
-    agent = AutonomousDQNHERAgent(observation_space=environment.observation_space,
-                                           action_space=environment.action_space)
-    agent = SORB_NO_ORACLE(observation_space=environment.observation_space, action_space=environment.action_space,
-                                    tolerance_margin=tiles_dimensions, random_exploration_duration=100)
-    agent = TIPP_GWR(observation_space=environment.observation_space, action_space=environment.action_space,
-                              tolerance_margin=tiles_dimensions, random_exploration_duration=100)
     """
     return agents, environment
 
@@ -372,23 +367,57 @@ def save_goals_image(environment, image_id, goals, results, seed_id):
 def main():
     global training_stopwatch, samples_stopwatch
     agents, environment = init()
+    start_state, _ = environment.reset()
+
+    # Load pre_training information
+    models_directory = os.path.dirname(__file__) + "/control_policy/models/"
+    with open(models_directory + "reached_sub_goals.pkl", 'rb') as f:
+        reached_goals = pickle.load(f)
+
     for agent in agents:
+        """
+        r = 11.7
+        gran = r / 20
+        points = []
+        values = []
+        initial_qpos = np.array([0.55, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0, -1.0, 0.0, 1.0])
+        state = np.concatenate((np.array([0., 0.]), initial_qpos, np.zeros(14)))
+        for i in range(40):
+            for j in range(40):
+                a = (i - 19.5) * gran
+                b = (j - 19.5) * gran
+                points.append([a, b])
+                goal = np.concatenate((np.array([a, b]), state[2:5]))
+
+                # Compute angle to the goal.
+
+                x = (i - 19.5) / 20
+                y = (j - 19.5) / 20
+                angle = math.acos(x) if y > 0 else -math.acos(x)
+                state[6] = angle / math.pi
+                agent.goal_reaching_agent.current_goal = goal
+                action = agent.goal_reaching_agent.action(state)
+                values.append(agent.goal_reaching_agent.layers[0].critic.get_Q_value(state[np.newaxis], goal[np.newaxis], action[np.newaxis]))
+
+        mini = min(values)
+        maxi = max(values)
+        colors = [get_red_green_color((v - mini) / (maxi - mini), hexadecimal=False) for v in values]
+        points = np.array(points)
+        colors = np.array(colors) / 255
+        plt.scatter(points[:, 0], points[:, 1], c=colors)
+        plt.show()
+        """
         for seed_id in range(5):
             print("#################")
             print("seed " + str(seed_id))
             print("#################")
             training_stopwatch.start()
-            pre_train_environment = AntMaze(maze_name=MapsIndex.EMPTY.value, show=False)
-            if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, DiscreteSORB):
-                start_state, reached_goals = pre_train_gc_agent(pre_train_environment, agent,
-                                                                nb_episodes=local_settings.pre_train_nb_episodes,
-                                                                time_steps_max_per_episode=local_settings.pre_train_nb_time_steps_per_episode)
-                if isinstance(agent, DiscreteSORB):
-                    agent.on_pre_training_done(start_state, reached_goals, environment.get_oracle())
-                else:
-                    agent.on_pre_training_done(start_state, reached_goals)
+            if isinstance(agent, SORB):
+                vertices = [environment.sample_reachable_state() for i in range(agent.nb_nodes)]
+                agent.on_pre_training_done(start_state, reached_goals, vertices)
+            elif isinstance(agent, PlanningTopologyLearner):
+                agent.on_pre_training_done(start_state, reached_goals)
             save_seed_results(local_settings.map_name, agent, *run_simulation(agent, environment, seed_id))
-
         print("\n")
 
 if __name__ == "__main__":

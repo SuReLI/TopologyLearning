@@ -2,7 +2,7 @@ from grid_world.environment.maps.maps_index import MapsIndex
 from datetime import timedelta
 
 
-map_name = MapsIndex.MEDIUM.value
+map_name = MapsIndex.FOUR_ROOMS.value
 
 # Pre_training
 pre_train_nb_episodes = 300
@@ -16,7 +16,7 @@ if map_name == MapsIndex.MEDIUM.value:
     nb_evaluations_max = 100
     dqn_max_steps = 300
 elif map_name == MapsIndex.HARD.value:
-    nb_evaluations_max = 400
+    nb_evaluations_max = 300
     dqn_max_steps = 1000
 elif map_name == MapsIndex.EXTREME.value:
     nb_evaluations_max = 700

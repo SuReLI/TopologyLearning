@@ -3,12 +3,13 @@ from .layer import Layer
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 import os
+from agents.gc_agent import GoalConditionedAgent
 
 
 # Below class instantiates an agent
-class AntMazeControlPolicy:
-    def __init__(self, env):
-
+class AntMazeControlPolicy(GoalConditionedAgent):
+    def __init__(self, env, **params):
+        super().__init__(**params)
         self.sess = tf.Session()
         self.nb_layers = 3
         self.h = 20
@@ -24,8 +25,8 @@ class AntMazeControlPolicy:
         # Initialize actor/critic networks.  Load saved parameters if not retraining
         self.initialize_networks()
 
-    def action(self, state, goal):
-        goal_ = np.concatenate((goal, state[len(goal):5]))
+    def action(self, state):
+        goal_ = np.concatenate((self.current_goal, state[len(self.current_goal):5]))
         action = self.layers[0].actor.get_action(state[np.newaxis], goal_[np.newaxis])[0]
         """
         sub_goal_1 = self.layers[2].actor.get_action(np.reshape(state, (1, len(state))),
@@ -40,11 +41,14 @@ class AntMazeControlPolicy:
         return action
 
     def get_q_value(self, state, goal):
+        # Get action
         goal_ = np.concatenate((goal, state[len(goal):5]))
-        action = self.action(state, goal_)
+        action = self.layers[0].actor.get_action(state[np.newaxis], goal_[np.newaxis])[0]
+
+        # Get q-value for this action
         state_ = np.concatenate((np.zeros(len(goal)), state[len(goal):]))
         goal_ = np.concatenate((goal - state[:len(goal)], state[len(goal):3], state[3:5]))
-        q_value = self.layers[0].critic.get_Q_value(state_[np.newaxis], goal_[np.newaxis], action[np.newaxis])
+        q_value = self.layers[0].critic.get_Q_value(state_[np.newaxis], goal_[np.newaxis], action[np.newaxis]).item()
         return q_value
 
     def initialize_networks(self):
@@ -63,3 +67,7 @@ class AntMazeControlPolicy:
         self.sess.run(tf.global_variables_initializer())
 
         self.saver.restore(self.sess, tf.train.latest_checkpoint(self.model_dir))
+
+    def copy(self):
+        GoalConditionedAgent.__init__(self, **self.init_params)
+        return self  # This agent don't learn and don't need to be copied.

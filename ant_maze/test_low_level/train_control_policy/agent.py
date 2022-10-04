@@ -130,7 +130,7 @@ class Agent():
 
 
     # Train agent for an episode
-    def train(self,env, episode_num, total_episodes):
+    def train(self, env, episode_num, total_episodes):
 
         # Select final goal from final goal space, defined in "design_agent_and_env.py"
         self.goal_array[self.FLAGS.layers - 1] = env.get_next_goal(self.FLAGS.test)
@@ -154,7 +154,7 @@ class Agent():
             self.learn()
 
         # Return whether end goal was achieved
-        return goal_status[self.FLAGS.layers-1], trajectory
+        return goal_status[self.FLAGS.layers-1], trajectory, self.goal_array[self.FLAGS.layers - 1]
 
 
     # Save performance evaluations

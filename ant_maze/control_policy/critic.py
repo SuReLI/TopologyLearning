@@ -2,7 +2,7 @@ import tensorflow.compat.v1 as tf
 
 tf.disable_v2_behavior()
 import numpy as np
-from .utils import layer
+from .hac_utils import layer
 
 
 class Critic:
