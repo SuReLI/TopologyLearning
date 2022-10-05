@@ -8,7 +8,7 @@ from .utils.indexes import Colors
 
 
 class GoalConditionedDiscreteGridWorld(DiscreteGridWorld):
-    def __init__(self, map_name:str = MapsIndex.EMPTY.value):
+    def __init__(self, map_name: str = MapsIndex.EMPTY.value):
         super().__init__(map_name=map_name)
         self.goal_coordinates = None
         self.goal = None

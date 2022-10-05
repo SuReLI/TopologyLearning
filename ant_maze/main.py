@@ -27,20 +27,43 @@ samples_stopwatch = Stopwatch()
 training_stopwatch = Stopwatch()
 # The last one is used to know how long the training time is, without tests and samples complexity.
 
-def generate_graph_image(env, network, directory, file_name):
+def generate_graph_image(env, network, directory, file_name, trajectory=None, selected_targets=None):
 
     # Build image
     image = env.render()
 
     # Fill image
     #  - Build nodes
+    nodes_attributes = [attributes for _, attributes in network.nodes(data=True)]
+    if nodes_attributes:
+        min_explorations = min(nodes_attributes, key=lambda val: val["explorations"])["explorations"]
+        max_explorations = max(nodes_attributes, key=lambda val: val["explorations"])["explorations"]
+    else:
+        min_explorations = 0
+        max_explorations = 0
     for node_id, attributes in network.nodes(data=True):
-        env.place_point(image, attributes["state"], [125, 255, 0], width=30)
+        if max_explorations - min_explorations == 0:
+            color_value = 1
+        else:
+            color_value = attributes["explorations"] - min_explorations / (max_explorations - min_explorations)
+        color = get_red_green_color(color_value, hexadecimal=False)
+        env.place_point(image, attributes["state"], color, width=30)
 
     #  - Build edges
     for node_1, node_2, attributes in network.edges(data=True):
         color = [255, 0, 0] if attributes["cost"] == float("inf") else [0, 255, 0]
         env.place_edge(image, network.nodes[node_1]["state"], network.nodes[node_2]["state"], color, width=25)
+
+    if trajectory is not None:
+        for state in trajectory:
+            if state == []:
+                continue
+            env.place_point(image, state, np.array([0, 0, 255]), width=20)
+
+    if selected_targets:
+        for target in selected_targets:
+            env.place_point(image, target, np.array([125, 125, 125]), width=12)
+
 
     # Save image
     create_dir(directory)  # Make sure the directory exists
@@ -102,10 +125,6 @@ def run_simulation(agent, environment, seed_id):
     seed_evaluations_results = []
     agent.on_simulation_start()
 
-    directory = os.path.dirname(__file__) + "/outputs/test_images/" + str(seed_id) + "/"
-    generate_graph_image(environment, agent.topology, directory,
-                         "test_img_eval_" + str("beg") + ".png")
-
     # Train
     interaction_id = 0
     evaluation_id = 0
@@ -164,6 +183,13 @@ def run_simulation(agent, environment, seed_id):
 
                 training_stopwatch.start()
         episode_id += 1
+
+        directory = os.path.dirname(__file__) + "/outputs/graph_images/" + str(seed_id) + "/"
+        create_dir(directory)
+        generate_graph_image(environment, agent.topology, directory, "test_img_eval_" + str(evaluation_id) + "_"
+                             + str(episode_id) + ".png", trajectory=agent.last_exploration_trajectory,
+                             selected_targets=agent.selected_targets)
+
         agent.on_episode_stop()
     training_stopwatch.stop()
 
@@ -331,9 +357,9 @@ def init():
     agents = [
         # RGL
         RGL(state_space=environment.observation_space, action_space=environment.action_space, tolerance_radius=0.3,
-            random_exploration_duration=900, max_steps_to_reach=80, goal_reaching_agent=low_policy, verbose=False,
-            edges_distance_threshold=1, nodes_distance_threshold=0.8, choose_exploration_target=False,
-            exploration_goal_range=4, nb_explorations=1)
+            exploration_duration=30, max_steps_to_reach=80, goal_reaching_agent=low_policy, verbose=False,
+            edges_distance_threshold=0.6, nodes_distance_threshold=0.4, choose_exploration_target=True,
+            exploration_goal_range=5, nb_explorations=10)
     ]
     """
         ,

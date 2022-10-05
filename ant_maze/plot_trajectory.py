@@ -14,5 +14,7 @@ def plot_trajectory(trajectory):
     bg_image = environment.render()
     for state in trajectory:
         environment.place_point(bg_image, state, np.array([0, 0, 255]), width=20)
+
+
     plt.imshow(bg_image)
     plt.show()

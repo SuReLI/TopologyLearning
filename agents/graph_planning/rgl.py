@@ -4,7 +4,6 @@ import networkx as nx
 import numpy as np
 import torch
 
-from ant_maze.plot_trajectory import plot_trajectory
 from ..agent import Agent
 from .topological_graph_planning_agent import PlanningTopologyLearner, TopologyLearnerMode
 
@@ -53,13 +52,20 @@ class RGL(PlanningTopologyLearner):
         Precondition: An exploration trajectory has been made.
         """
         assert self.last_exploration_trajectory != []
-        # plot_trajectory(self.last_exploration_trajectory)
+        if self.choose_exploration_target:
+            exploration_trajectory = []
+            for i in range(self.exploration_duration):
+                for trajectory in self.last_exploration_trajectory:
+                    if len(trajectory) > i:
+                        exploration_trajectory.append(trajectory[i])
+            self.last_exploration_trajectory = exploration_trajectory
         for state in self.last_exploration_trajectory:
             links_to_do = []
             for node_id, node_parameters in self.topology.nodes(data=True):
                 node_position = node_parameters["state"]  # Position of node in the observation space
                 forward_estimated_distance = self.get_distance_estimation(state, node_position)
                 backward_estimated_distance = self.get_distance_estimation(node_position, state)
+
                 if forward_estimated_distance < self.nodes_distance_threshold or \
                         backward_estimated_distance < self.nodes_distance_threshold:
                     break
@@ -69,7 +75,7 @@ class RGL(PlanningTopologyLearner):
                     links_to_do.append({"node": node_id, "forward": False, "cost": backward_estimated_distance})
             else:
                 # => this observation is far enough from any nodes
-                if links_to_do:  # Prevent to create unliked nodes
+                if any([not link["forward"] for link in links_to_do]):  # Prevent to create unreachable nodes
                     # Create node
                     new_node = self.create_node(state)
 
@@ -85,28 +91,14 @@ class RGL(PlanningTopologyLearner):
                         else:
                             self.create_edge(link_to_do["node"], new_node, cost=link_to_do["cost"])
 
-    def get_states_distance(self, state_1, state_2):
-        return self.get_distance_estimation(state_1, state_2)
+                    # Make sure we created enough links to be able to reach it in the future.
+                    try:
+                        assert nx.shortest_path(self.topology, 0, new_node)
+                    except:
+                        other = links_to_do[0]["node"]
+                        forward_estimated_distance = self.get_distance_estimation(state,
+                                                                                  self.topology.nodes[other]["state"])
+                        backward_estimated_distance = self.get_distance_estimation(self.topology.nodes[other]["state"],
+                                                                                   state)
+                        a = 1
 
-    def on_edge_crossed(self, last_node_passed, next_node_way_point):
-        edge_attributes = self.topology.edges[last_node_passed, next_node_way_point]
-        edge_attributes["cost"] = max(1, edge_attributes["cost"] / 2)
-
-    def on_edge_failed(self, last_node_passed, next_node_way_point):
-        edge_attributes = self.topology.edges[last_node_passed, next_node_way_point]
-        edge_attributes["cost"] = float("inf")
-
-    def create_edge(self, first_node, second_node, **params):
-        """
-        Create an edge between the two given nodes. If potential is True, it means that the edge weight will be lower in
-        exploration path finding (to encourage the agent to test it) or higher in go to mode (to bring a lower
-        probability of failure).
-        """
-        attributes = copy.deepcopy(self.edges_attributes)
-        for key, value in params.items():
-            attributes[key] = value
-        attributes["cost"] = params.get("cost", 1.)  # Set to one only if it's unset.
-        self.topology.add_edge(first_node, second_node, **attributes)
-
-    def shortest_path(self, node_from, node_to_reach):
-        return nx.shortest_path(self.topology, node_from, node_to_reach, "cost")

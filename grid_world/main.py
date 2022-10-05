@@ -1,23 +1,23 @@
 """
 A script to test goal based RL agent, that are used to reach sub-goals.
 """
+from datetime import datetime
 import os
 import pickle
 import sys
-from copy import deepcopy
+from copy import deepcopy, copy
+import random
 from statistics import mean
-
-import numpy as np
-from matplotlib import pyplot as plt
-
+import numpy
+import torch
 import settings
 from agents.graph_planning.stc import STC
 from agents.graph_planning.rgl import RGL
 from agents.graph_planning.topological_graph_planning_agent import PlanningTopologyLearner, TopologyLearnerMode
-from utils.sys_fun import create_dir, save_image, generate_video, get_red_green_color
+from utils.sys_fun import create_dir, save_image
 import local_settings
 from grid_world.environment import GoalConditionedDiscreteGridWorld, MapsIndex
-from agents import DqnHerDiffAgent, DQNHERAgent, GCDQNAgent, DistributionalDQN, SORB
+from agents import DqnHerDiffAgent, DQNHERAgent, SORB
 
 
 from utils.stopwatch import Stopwatch
@@ -27,6 +27,10 @@ samples_stopwatch = Stopwatch()
 # average sample complexity at the end.
 training_stopwatch = Stopwatch()
 # The last one is used to know how long the training time is, without tests and samples complexity.
+
+SEEDS = {}
+OUTPUT_DIRECTORY = ""
+SIMULATION_ID = 0
 
 def generate_graph_image(env, network, directory, file_name):
 
@@ -40,7 +44,7 @@ def generate_graph_image(env, network, directory, file_name):
 
     #  - Build edges
     for node_1, node_2, attributes in network.edges(data=True):
-        color = [255, 0, 0] if attributes["weight"] == float("inf") else [0, 255, 0]
+        color = [255, 0, 0] if attributes["cost"] == float("inf") else [0, 255, 0]
         env.place_edge(image, network.nodes[node_1]["state"], network.nodes[node_2]["state"], color, width=5)
 
     # Save image
@@ -93,13 +97,13 @@ def episode_done(agent, interaction_id, reached=False):
     else:
         raise Exception("Unknown agent type.")
 
-def run_simulation(agent, environment, seed_id):
+def run_simulation(agent, environment, simulation_id):
     global training_stopwatch, samples_stopwatch
     training_stopwatch.reset()
     samples_stopwatch.reset()  # Will be started everytime we ask the environment to compute agent's position.
     training_stopwatch.start()
 
-    seed_evaluations_results = []
+    simulation_evaluations_results = []
     agent.on_simulation_start()
     
     # Train
@@ -115,7 +119,7 @@ def run_simulation(agent, environment, seed_id):
         training_stopwatch.start()
         advancement = interaction_id / (local_settings.nb_interactions_before_evaluation
                                     * local_settings.nb_evaluations_max) * 100
-        print("Seed ", seed_id, ", episode ", episode_id, ", advancement: ", advancement, "%", sep='', end="\r")
+        print("Simulation ", simulation_id, ", episode ", episode_id, ", advancement: ", advancement, "%", sep='', end="\r")
 
         if isinstance(agent, PlanningTopologyLearner):
             agent.on_episode_start(state, TopologyLearnerMode.LEARN_ENV)
@@ -143,30 +147,30 @@ def run_simulation(agent, environment, seed_id):
                 training_stopwatch.stop()
                 # evaluation_start_time = datetime.now()
                 result, goals, results = evaluation(agent)
-                seed_evaluations_results.append(result)
+                simulation_evaluations_results.append(result)
                 evaluation_id += 1
                 training_stopwatch.start()
         episode_id += 1
         agent.on_episode_stop()
     training_stopwatch.stop()
 
-    seed_information = {
+    simulation_information = {
         "learning_time": training_stopwatch.get_duration(),
         "samples_average_duration": samples_stopwatch.get_duration() / interaction_id,
         "nb_total_interactions": interaction_id
     }
     if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, SORB):
-        seed_information["nodes_in_graph"] = len(agent.topology.nodes())
-        seed_information["edges_in_graph"] = len(agent.topology.edges())
-        seed_information["graph"] = agent.topology
+        simulation_information["nodes_in_graph"] = len(agent.topology.nodes())
+        simulation_information["edges_in_graph"] = len(agent.topology.edges())
+        simulation_information["graph"] = agent.topology
 
     print(end="\x1b[2K")
-    print("Seed ", seed_id, " advancement: Done.", sep='')
-    print("accuracy_evolution = ", seed_evaluations_results, sep='')
+    print("Simulation ", simulation_id, " advancement: Done.", sep='')
+    print("accuracy_evolution = ", simulation_evaluations_results, sep='')
 
     # Stop simulation ...
     agent.on_simulation_stop()
-    return seed_evaluations_results, seed_information
+    return simulation_evaluations_results, simulation_information
 
 
 def evaluation(agent):
@@ -219,32 +223,23 @@ def eval_episode(agent, environment):
     return float(reached), goal
 
 
-def save_seed_results(environment_name, agent, pre_train_nb_interactions, results, seed_information):
-    # Find outputs directory
-    seed_information["pre_train_nb_interactions"] = pre_train_nb_interactions
-    seeds_outputs_directory = os.path.dirname(__file__) + "/outputs/seeds/" + environment_name + "/" \
-                              + agent.name + "/"
-    create_dir(seeds_outputs_directory)
+def save_simulation_results(environment_name, agent, pre_train_nb_interactions, results, simulation_information, environment):
+    global OUTPUT_DIRECTORY, SIMULATION_ID
 
-    # Get filename: Iterates through saved seeds to find an available id
-    next_seed_id = 0  # Will be incremented for each saved seed we find.
-    for filename in os.listdir(seeds_outputs_directory):
-        if filename.startswith('seed_'):
-            try:
-                seed_id = int(filename.replace("seed_", ""))
-            except:
-                continue
-            next_seed_id = max(next_seed_id, seed_id + 1)
-    new_seed_directory = seeds_outputs_directory + "seed_" + str(next_seed_id) + "/"
-    create_dir(new_seed_directory)
-
-    with open(new_seed_directory + 'seed_info.pkl', 'wb') as f:
-        pickle.dump(seed_information, f)
-    with open(new_seed_directory + 'seed_abscissa.pkl', 'wb') as f:
+    simulation_information["pre_train_nb_interactions"] = pre_train_nb_interactions
+    simulation_information["simulations_value"] = SEEDS
+    with open(OUTPUT_DIRECTORY + 'simulation_info.pkl', 'wb') as f:
+        pickle.dump(simulation_information, f)
+    with open(OUTPUT_DIRECTORY + 'simulation_abscissa.pkl', 'wb') as f:
         pickle.dump([(i + 1) * local_settings.nb_interactions_before_evaluation for i in range(len(results))], f)
-    with open(new_seed_directory + 'seed_results.pkl', 'wb') as f:
+    with open(OUTPUT_DIRECTORY + 'simulation_results.pkl', 'wb') as f:
         pickle.dump(results, f)
-    print(" >> seed saved in directory ", new_seed_directory)
+
+    # Save graph representation if exists
+    if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, SORB):
+        generate_graph_image(environment, agent.topology, OUTPUT_DIRECTORY, "final_graph_representation.png")
+    print(" >> simulation (", environment_name, ", ", agent.name, ", ", SIMULATION_ID, ") saved in directory ",
+          OUTPUT_DIRECTORY)
 
 
 def pre_train_gc_agent(environment, agent, nb_episodes=400, time_steps_max_per_episode=200):
@@ -305,38 +300,73 @@ def pre_train_gc_agent(environment, agent, nb_episodes=400, time_steps_max_per_e
     training_stopwatch.stop()
     return start_state, reached_goals, nb_interactions
 
-def init():
+def init(agent_name):
+    global SEEDS, OUTPUT_DIRECTORY, SIMULATION_ID
+
+    # Init seeds
+    seed = random.randrange(sys.maxsize)
+    SEEDS["torch"] = copy(seed)
+    torch.manual_seed(seed)
+
+    seed = random.randrange(2**32 - 1)  # Maximum seed range allowed by numpy
+    SEEDS["numpy"] = copy(seed)
+    numpy.random.seed(seed)
+
+    seed = random.randrange(sys.maxsize)
+    SEEDS["random.random"] = copy(seed)
+    random.seed(seed)
+
+    # Initialise environment
     environment = GoalConditionedDiscreteGridWorld(map_name=local_settings.map_name)
+
+    # Initialise agent
     low_policy = DqnHerDiffAgent(state_space=environment.state_space, action_space=environment.action_space,
                                  device=settings.device)
-
-    agents = [
-        # RGL
-        RGL(state_space=environment.state_space, action_space=environment.action_space, tolerance_radius=0.1,
-            random_exploration_duration=100, max_steps_to_reach=40, goal_reaching_agent=low_policy.copy(), verbose=False,
-            edges_distance_threshold=0.3, nodes_distance_threshold=0.1)
-    ]
-    """,
-
-        # DQN
-        DQNHERAgent(state_space=environment.state_space, action_space=environment.action_space, device=settings.device),
-
-        # SORB
-        SORB(state_space=environment.state_space, action_space=environment.action_space, tolerance_radius=0.2,
+    if agent_name.lower() == "rgl":
+        agent = RGL(state_space=environment.state_space, action_space=environment.action_space, tolerance_radius=0.1,
+                    random_exploration_duration=100, max_steps_to_reach=40, goal_reaching_agent=low_policy.copy(),
+                    verbose=False, edges_distance_threshold=0.3, nodes_distance_threshold=0.1)
+    elif agent_name.lower() == "stc":
+        agent = STC(state_space=environment.state_space, action_space=environment.action_space, tolerance_radius=0.1,
+                    random_exploration_duration=100, max_steps_to_reach=40, re_usable_policy=True,
+                    goal_reaching_agent=low_policy.copy(), verbose=False, edges_similarity_threshold=0.65,
+                    nodes_similarity_threshold=0.8, oriented_graph=False, translation_invariant_tc_network=True,
+                    name="TI-STC")
+    elif agent_name.lower() == "sorb":
+        agent = SORB(state_space=environment.state_space, action_space=environment.action_space, tolerance_radius=0.2,
                      verbose=False, edges_distance_threshold=0.2, nb_nodes=400, max_interactions_per_edge=40,
-                     max_final_interactions=50, goal_reaching_agent=low_policy.copy()),
+                     max_final_interactions=50, goal_reaching_agent=low_policy.copy())
+    elif agent_name.lower() == "dqn":
+        agent = DQNHERAgent(state_space=environment.state_space, action_space=environment.action_space,
+                             device=settings.device)
+    else:
+        raise Exception("Unknown agent name " + agent_name)
 
-        # TI-STC
-        STC(state_space=environment.state_space, action_space=environment.action_space, tolerance_radius=0.1,
-            random_exploration_duration=100, max_steps_to_reach=40, re_usable_policy=True,
-            goal_reaching_agent=low_policy.copy(), verbose=False, edges_similarity_threshold=0.65,
-            nodes_similarity_threshold=0.8, oriented_graph=False, translation_invariant_tc_network=True, name="TI-STC"),
-    """
-    return agents, environment
+    # Create a directory for this simulation and set the stdout into a file inside this directory
+    simulation_outputs_directory = os.path.dirname(__file__) + "/outputs/simulations/" + local_settings.map_name + "/" \
+                              + agent.name + "/"
+    create_dir(simulation_outputs_directory)
+
+    # Get filename: Iterates through saved simulations to find an available id
+    SIMULATION_ID = 0  # Will be incremented for each saved simulation we find.
+    for filename in os.listdir(simulation_outputs_directory):
+        if filename.startswith('simulation_'):
+            try:
+                simulation_id = int(filename.replace("simulation_", ""))
+            except:
+                continue
+            SIMULATION_ID = max(SIMULATION_ID, simulation_id + 1)
+    OUTPUT_DIRECTORY = simulation_outputs_directory + "simulation_" + str(SIMULATION_ID) + "/"
+    create_dir(OUTPUT_DIRECTORY)
+
+    # Redirect stdout to a file within this directory
+    sys.stdout = open(OUTPUT_DIRECTORY + 'standard_output.txt', 'w')
+
+    return agent, environment
 
 
-def save_goals_image(environment, image_id, goals, results, seed_id):
-    directory = os.path.dirname(__file__) + "/outputs/goals_images/" + str(seed_id) + "/"
+def save_goals_image(environment, image_id, goals, results, simulation_id):
+    directory = os.path.dirname(__file__) + "/outputs/goals_images/" + str(simulation_id) + "/"
     create_dir(directory)
     filename = "goals_" + str(image_id)
 
@@ -347,30 +377,32 @@ def save_goals_image(environment, image_id, goals, results, seed_id):
 
     save_image(image, directory, filename)
 
-def main():
-    global training_stopwatch, samples_stopwatch
-    agents, environment = init()
-    for seed_id in range(5):
-        for agent in agents:
-            agent.reset()
-            print("#################")
-            print("Agent ", agent.name, " seed ", seed_id, sep='')
-            print("#################")
-            training_stopwatch.start()
-            pre_train_environment = GoalConditionedDiscreteGridWorld(map_name=MapsIndex.EMPTY.value)
-            if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, SORB):
-                start_state, reached_goals, pre_train_nb_interactions \
-                    = pre_train_gc_agent(pre_train_environment, agent, nb_episodes=local_settings.pre_train_nb_episodes,
-                                         time_steps_max_per_episode=local_settings.pre_train_nb_time_steps_per_episode)
-                if isinstance(agent, SORB):
-                    agent.on_pre_training_done(start_state, reached_goals, environment.get_oracle())
-                else:
-                    agent.on_pre_training_done(start_state, reached_goals)
-            else:
-                pre_train_nb_interactions = 0
-            save_seed_results(local_settings.map_name, agent, pre_train_nb_interactions,
-                              *run_simulation(agent, environment, seed_id))
-        print("")
+def main(agent_name):
+    global training_stopwatch, samples_stopwatch, SIMULATION_ID
+
+    agent, environment = init(agent_name)
+
+    agent.reset()
+    print("#################")
+    print("Running a simulation on grid_world ...")
+    print("Agent ", agent.name, sep='')
+    print("Map ", local_settings.map_name, sep='')
+    print("Simulation id: ", local_settings.map_name, "/", agent.name, "/simulation_", SIMULATION_ID, sep='')
+    print("#################")
+    training_stopwatch.start()
+    pre_train_environment = GoalConditionedDiscreteGridWorld(map_name=MapsIndex.EMPTY.value)
+    if isinstance(agent, PlanningTopologyLearner) or isinstance(agent, SORB):
+        start_state, reached_goals, pre_train_nb_interactions \
+            = pre_train_gc_agent(pre_train_environment, agent, nb_episodes=local_settings.pre_train_nb_episodes,
+                                 time_steps_max_per_episode=local_settings.pre_train_nb_time_steps_per_episode)
+        if isinstance(agent, SORB):
+            agent.on_pre_training_done(start_state, reached_goals, environment.get_oracle())
+        else:
+            agent.on_pre_training_done(start_state, reached_goals)
+    else:
+        pre_train_nb_interactions = 0
+    save_simulation_results(local_settings.map_name, agent, pre_train_nb_interactions,
+                            *run_simulation(agent, environment, SIMULATION_ID), environment)
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1])

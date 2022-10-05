@@ -46,7 +46,7 @@ class PlanningTopologyLearner(Agent):
          - max_steps_per_edge: In any mode, define the number of time steps the agent has to reach the next sub-goal.
          Passed this duration, reaching the next goal is considered failed (look inside
          self.on_reaching_waypoint_failed to see the consequences).
-         - random_exploration_duration: number of time steps during which we will explore using random actions, once our
+         - exploration_duration: number of time steps during which we will explore using random actions, once our
          last sub-goal is reached and during an exploration episode.
          - trial_out_graph: In GO_TO mode, this variable defines the number of time steps during which the agent can try
          to reach the final goal once the  last sub-goal is reached.
@@ -74,7 +74,7 @@ class PlanningTopologyLearner(Agent):
         self.edges_attributes = params.get("edges_attributes", {})
         #  -> Default nodes and edges attributes on creation as a dict, like {nb_explorations: 0} for nodes.
 
-        self.random_exploration_duration = params.get("random_exploration_duration", 90)
+        self.exploration_duration = params.get("exploration_duration", 90)
         #  -> Duration of any explorations from a node we want to explore from, in number of interactions.
 
         # SUB-GOALS PLANNING ARGUMENTS
@@ -135,7 +135,6 @@ class PlanningTopologyLearner(Agent):
         """
         self.under_exploration = False
         self.last_node_explored = None
-        self.last_exploration_trajectory = []  # Trajectory made once we reached last exploration waypoint.
         # Once we reached a node that has been selected as interesting for exploration, we will explore using a random
         # policy for a fixed duration.
         self.random_exploration_steps = None
@@ -147,6 +146,9 @@ class PlanningTopologyLearner(Agent):
         self.nb_explorations_so_far = 0
         self.choose_exploration_target = params.get("choose_exploration_target", False)
         self.exploration_goal_range = params.get("exploration_goal_range", 2)
+        # Trajectory made once we reached last exploration waypoint.
+        self.last_exploration_trajectory = [[]] if self.choose_exploration_target else []
+        self.selected_targets = []
 
         """
         GOAL REACHING ATTRIBUTES
@@ -188,6 +190,7 @@ class PlanningTopologyLearner(Agent):
             if len(self.topology.nodes()) == 0:
                 self.create_node(state)  # Create node on state with id=0 for topology initialisation
             self.set_exploration_path(state)
+            assert self.current_exploration_nodes_path
         elif self.mode == TopologyLearnerMode.GO_TO:
             _, _, goal = args
             fill = np.zeros(self.state_space.shape[0] - len(goal))
@@ -216,7 +219,10 @@ class PlanningTopologyLearner(Agent):
     def on_action_stop(self, action, new_state, reward, done, learn=True):
         learn = self.mode == TopologyLearnerMode.LEARN_ENV
         if self.under_exploration:
-            self.last_exploration_trajectory.append(new_state)
+            if self.choose_exploration_target:
+                self.last_exploration_trajectory[-1].append(new_state)
+            else:
+                self.last_exploration_trajectory.append(new_state)
         if self.random_exploration_steps is not None:
             assert self.mode == TopologyLearnerMode.LEARN_ENV
             self.random_exploration_steps -= 1
@@ -260,15 +266,18 @@ class PlanningTopologyLearner(Agent):
                                                     learn=not self.re_usable_policy)
             if reached:
                 # The next sub-goal have been reached, we can remove it and continue to the next one
-                if self.last_node_passed is not None and learn and isinstance(self.last_node_passed, int) \
-                        and isinstance(self.next_way_point, int):
-                    self.on_edge_crossed(self.last_node_passed, self.next_way_point)
-                self.last_node_passed = self.next_way_point
+                if not self.under_exploration:
+                    if self.last_node_passed is not None and learn:
+                        assert self.last_node_passed != self.next_way_point
+                        self.on_edge_crossed(self.last_node_passed, self.next_way_point)
+                    self.last_node_passed = self.next_way_point
                 self.next_way_point = self.get_next_waypoint()
                 self.current_subtask_steps = 0
                 self.goal_reaching_agent.on_episode_stop()
+
                 if self.next_way_point is None:
-                    self.on_path_done(new_state)
+                    if not self.under_exploration:
+                        self.on_path_done(new_state)
                     if self.verbose:
                         print("Path is done.")
                 else:
@@ -280,10 +289,13 @@ class PlanningTopologyLearner(Agent):
                         self.next_goal = self.get_goal_from_node(self.next_way_point)
                     else:
                         raise Exception("Unhandled way-point type.")
+                    if self.under_exploration:
+                        self.last_exploration_trajectory.append([])  # Prepare a new exploration
                     self.goal_reaching_agent.on_episode_start(new_state, self.next_goal)
             else:
                 self.current_subtask_steps += 1
-                if self.current_subtask_steps > self.max_steps_to_reach:
+                if self.current_subtask_steps > \
+                        (self.exploration_duration if self.under_exploration else self.max_steps_to_reach):
                     if self.under_exploration:
                         if self.current_exploration_nodes_path:
                             self.next_way_point = self.current_exploration_nodes_path.pop(0)
@@ -293,6 +305,7 @@ class PlanningTopologyLearner(Agent):
                                 self.next_goal = self.get_goal_from_node(self.next_way_point)
                             else:
                                 raise Exception("Unhandled way-point type.")
+                            self.last_exploration_trajectory.append([])  # Prepare a new exploration
                             self.goal_reaching_agent.on_episode_stop()
                             self.goal_reaching_agent.on_episode_start(self.last_state, self.next_goal)
                         else:
@@ -320,15 +333,11 @@ class PlanningTopologyLearner(Agent):
 
     def on_edge_crossed(self, last_node_passed, next_node_way_point):
         edge_attributes = self.topology.edges[last_node_passed, next_node_way_point]
-        edge_attributes["potential"] = False
-        edge_attributes["exploration_cost"] = 1.
-        edge_attributes["go_to_cost"] = 1.
+        edge_attributes["cost"] = max(1, edge_attributes["cost"] / 2)
 
     def on_edge_failed(self, last_node_passed, next_node_way_point):
         edge_attributes = self.topology.edges[last_node_passed, next_node_way_point]
-        edge_attributes["potential"] = False
-        edge_attributes["exploration_cost"] = float('inf')
-        edge_attributes["go_to_cost"] = float('inf')
+        edge_attributes["cost"] = float("inf")
 
     def on_episode_stop(self, learn=True):
         super().on_episode_stop()
@@ -339,11 +348,12 @@ class PlanningTopologyLearner(Agent):
         self.random_exploration_steps = None
         self.current_goal_reaching_nodes_path = None
         self.current_exploration_nodes_path = None
-        self.last_exploration_trajectory = []
+        self.last_exploration_trajectory = [[]] if self.choose_exploration_target else []
         self.current_subtask_steps = 0
         self.done = False
         self.nb_explorations_so_far = 0
         self.under_exploration = False
+        self.selected_targets = []
         return self.goal_reaching_agent.on_episode_stop()
 
     """
@@ -363,11 +373,7 @@ class PlanningTopologyLearner(Agent):
             raise Exception("Unknown mode.")
 
     def shortest_path(self, node_from, node_to_reach):
-        if self.mode == TopologyLearnerMode.LEARN_ENV:
-            attribute = "exploration_cost"
-        else:
-            attribute = "go_to_cost"
-        return nx.shortest_path(self.topology, node_from, node_to_reach, attribute)
+        return nx.shortest_path(self.topology, node_from, node_to_reach, "cost")
 
     def get_path_to(self, state, goal) -> list:
         """
@@ -394,7 +400,7 @@ class PlanningTopologyLearner(Agent):
         else:
             if self.verbose:
                 print("Reached last node. Starting random exploration for a duration of "
-                      + str(self.random_exploration_duration) + " time steps.")
+                      + str(self.exploration_duration) + " time steps.")
             self.under_exploration = True
             self.next_goal = None
             self.last_node_explored = self.last_node_passed
@@ -402,21 +408,23 @@ class PlanningTopologyLearner(Agent):
             if self.choose_exploration_target:
                 assert self.current_exploration_nodes_path == []
                 for target_id in range(self.nb_exploration):
-                    last_node_explored_state = self.get_goal_from_node(self.last_node_explored)
-                    target_goal = self.sample_exploration_target(self.last_node_explored)
+                    # Choose exploration direction
+                    angle = (target_id / self.nb_exploration) * 2 * math.pi - math.pi
+                    target_goal = self.sample_exploration_target(self.last_node_explored, angle)
                     # print("Choose exploration target ", target_goal, " for last state ", last_node_explored_state)
                     # Add target to sub-goals
                     self.current_exploration_nodes_path.append(target_goal)
+                    self.selected_targets.append(target_goal.copy())
+                    if target_id < self.nb_exploration - 1:
+                        self.current_exploration_nodes_path.append(self.last_node_explored)
                 self.next_way_point = self.current_exploration_nodes_path.pop(0)
                 self.next_goal = self.next_way_point.copy()  # The only case where self.next_way_point is a state.
                 self.goal_reaching_agent.on_episode_start(self.last_state, self.next_goal)
             else:
-                self.random_exploration_steps = self.random_exploration_duration
+                self.random_exploration_steps = self.exploration_duration
 
-    def sample_exploration_target(self, explored_node):
+    def sample_exploration_target(self, explored_node, angle):
         last_node_explored_state = self.get_goal_from_node(explored_node)
-        # Choose exploration direction
-        angle = random() * 2 * math.pi - math.pi
         # Select a target
         x_diff = math.cos(angle) * self.exploration_goal_range
         y_diff = math.sin(angle) * self.exploration_goal_range
@@ -458,10 +466,7 @@ class PlanningTopologyLearner(Agent):
         best_node = min(self.topology.nodes(data=True), key=lambda x: x[1][self.explored_node_choice_criteria])[0]
 
         # Find the shortest path through our topology to the best node
-        try:
-            self.current_exploration_nodes_path = self.shortest_path(node_from, best_node)
-        except:
-            pass
+        self.current_exploration_nodes_path = self.shortest_path(node_from, best_node)
         self.topology.nodes[best_node]["explorations"] += 1
 
     """
@@ -538,7 +543,7 @@ class PlanningTopologyLearner(Agent):
         self.topology.add_node(node_id, **attributes)
         return node_id
 
-    def create_edge(self, first_node, second_node, potential=True, **params):
+    def create_edge(self, first_node, second_node, **params):
         """
         Create an edge between the two given nodes. If potential is True, it means that the edge weight will be lower in
         exploration path finding (to encourage the agent to test it) or higher in go to mode (to bring a lower
@@ -547,10 +552,7 @@ class PlanningTopologyLearner(Agent):
         attributes = copy.deepcopy(self.edges_attributes)
         for key, value in params.items():
             attributes[key] = value
-        if potential:
-            attributes["potential"] = True
-            attributes["exploration_cost"] = 0.
-            attributes["go_to_cost"] = float("inf")
+        attributes["cost"] = params.get("cost", 1.)  # Set to one only if it's unset.
         self.topology.add_edge(first_node, second_node, **attributes)
 
     def extend_graph(self):

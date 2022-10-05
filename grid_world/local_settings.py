@@ -2,7 +2,7 @@ from grid_world.environment.maps.maps_index import MapsIndex
 from datetime import timedelta
 
 
-map_name = MapsIndex.FOUR_ROOMS.value
+map_name = MapsIndex.MEDIUM.value
 
 # Pre_training
 pre_train_nb_episodes = 300
