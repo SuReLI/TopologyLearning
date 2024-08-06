@@ -60,7 +60,7 @@ class AntMaze(GoalDirectedMDP):
         if random_orientation=True, env.reset() with reset the agent with a random orientation. Else, agent's orientation
         if 0.
         """
-
+        self.env_name = "ant_maze_hbrl"
         self.random_orientation = random_orientation
         self.maze_name = maze_name
         self.image_resolution_per_tile = image_resolution_per_tile
