@@ -55,7 +55,7 @@ for specific_settings in settings_set:
 stopwatch.stop()
 if webhook_link != "":
     base_message = "Launch script " + launch_name + " on " + socket.gethostname() + ","
-    message =  base_message + " finished with a total of " + str(nb_simulations) + " simulation in " \
+    message = base_message + " finished with a total of " + str(nb_simulations) + " simulation in " \
         + str(stopwatch.get_duration()) + " seconds."
     try:
         send_discord_message(message, webhook_link=webhook_link)

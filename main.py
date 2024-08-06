@@ -187,9 +187,9 @@ def init(settings: Settings):
                 settings.agents_params.get("tolerance_radius", 0.8)
 
             settings.agents_params["edges_distance_threshold"] = \
-                settings.agents_params.get("edges_distance_threshold", 0.08)
+                settings.agents_params.get("edges_distance_threshold", 0.045)
             settings.agents_params["nodes_distance_threshold"] = \
-                settings.agents_params.get("nodes_distance_threshold", 0.04)
+                settings.agents_params.get("nodes_distance_threshold", 0.017)
 
             control_algorithm = SAC
             agent = RGL(TILO, control_algorithm, environment.state_space, environment.action_space,
