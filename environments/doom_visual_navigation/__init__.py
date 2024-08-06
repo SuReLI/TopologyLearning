@@ -1,1 +1,0 @@
-from .doom_navigation_environment import DoomNavigationEnvironment, DoomMapIndex
