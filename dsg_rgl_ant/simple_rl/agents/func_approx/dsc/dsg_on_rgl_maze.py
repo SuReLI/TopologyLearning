@@ -531,7 +531,7 @@ if __name__ == "__main__":
         raise Exception("Unknown map name ", map_name, " got from map index ", args.map_id)
     root_directory = os.path.dirname("..")
     maze_scale = 4 if map_name == "u_maze" else 1
-    overall_mdp = AntMaze(maze_name=map_name, dense_reward=args.test, maze_scale=maze_scale, show=True)
+    overall_mdp = AntMaze(maze_name=map_name, dense_reward=args.test, maze_scale=maze_scale)
     state_dim = overall_mdp.state_size
     action_dim = overall_mdp.action_size
 
