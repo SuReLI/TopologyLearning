@@ -1,9 +1,9 @@
 import copy
 import random
 
-from simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
 
-from simple_rl.tasks.cleanup.CleanUpMDPClass import CleanUpMDP
+from dsg_rgl_ant.simple_rl.tasks.cleanup.CleanUpMDPClass import CleanUpMDP
 
 
 class CleanUpState(State):

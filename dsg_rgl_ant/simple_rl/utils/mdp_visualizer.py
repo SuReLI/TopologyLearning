@@ -13,7 +13,7 @@ except ImportError:
 
 
 # Other imports.
-from simple_rl.utils.chart_utils import color_ls
+from dsg_rgl_ant.simple_rl.utils.chart_utils import color_ls
 
 def val_to_color(val, good_col=(169, 193, 249), bad_col=(249, 193, 169)):
     '''
@@ -266,7 +266,7 @@ def visualize_interaction(mdp, draw_state, cur_state=None, scr_width=720, scr_he
     '''
     screen = pygame.display.set_mode((scr_width, scr_height))
 
-    from simple_rl.agents import RandomAgent
+    from dsg_rgl_ant.simple_rl.agents import RandomAgent
     agent = RandomAgent
 
     # Setup and draw initial state.

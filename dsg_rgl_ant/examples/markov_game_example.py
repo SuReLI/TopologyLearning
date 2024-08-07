@@ -6,9 +6,9 @@ import sys
 
 # Other imports.
 import srl_example_setup
-from simple_rl.agents import QLearningAgent, FixedPolicyAgent
-from simple_rl.tasks import RockPaperScissorsMDP
-from simple_rl.run_experiments import play_markov_game 
+from dsg_rgl_ant.simple_rl.agents import QLearningAgent, FixedPolicyAgent
+from dsg_rgl_ant.simple_rl.tasks import RockPaperScissorsMDP
+from dsg_rgl_ant.simple_rl.run_experiments import play_markov_game 
 
 def main(open_plot=True):
     # Setup MDP, Agents.

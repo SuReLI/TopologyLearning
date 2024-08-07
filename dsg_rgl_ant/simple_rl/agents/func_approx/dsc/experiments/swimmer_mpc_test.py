@@ -3,8 +3,8 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
-from simple_rl.tasks.d4rl_swimmer_maze.D4RLSwimmerMazeMDPClass import D4RLSwimmerMDP
-from simple_rl.agents.func_approx.dsc.dynamics.mpc import MPC
+from dsg_rgl_ant.simple_rl.tasks.d4rl_swimmer_maze.D4RLSwimmerMazeMDPClass import D4RLSwimmerMDP
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.dynamics.mpc import MPC
 
 mdp = D4RLSwimmerMDP(seed=0, render=False, difficulty="easy", goal_directed=True)
 

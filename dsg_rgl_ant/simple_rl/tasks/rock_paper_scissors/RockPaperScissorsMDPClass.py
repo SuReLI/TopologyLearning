@@ -4,8 +4,8 @@
 import random
 
 # Other imports
-from simple_rl.mdp.markov_game.MarkovGameMDPClass import MarkovGameMDP
-from simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.mdp.markov_game.MarkovGameMDPClass import MarkovGameMDP
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
 
 class RockPaperScissorsMDP(MarkovGameMDP):
     ''' Class for a Rock Paper Scissors Game '''

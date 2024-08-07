@@ -2,9 +2,9 @@ import gym
 import numpy as np
 import random
 
-from simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
-from simple_rl.tasks.point_reacher.PointReacherStateClass import PointReacherState
-from simple_rl.tasks.point_maze.environments.point_maze_env import PointMazeEnv
+from dsg_rgl_ant.simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
+from dsg_rgl_ant.simple_rl.tasks.point_reacher.PointReacherStateClass import PointReacherState
+from dsg_rgl_ant.simple_rl.tasks.point_maze.environments.point_maze_env import PointMazeEnv
 
 
 class D4RLPointMazeMDP(GoalDirectedMDP):

@@ -1,7 +1,7 @@
 # Other imports.
-from simple_rl.tasks.maze_1d.Maze1DPOMDPClass import Maze1DPOMDP
-from simple_rl.pomdp.BeliefMDPClass import BeliefMDP
-from simple_rl.planning.BeliefSparseSamplingClass import BeliefSparseSampling
+from dsg_rgl_ant.simple_rl.tasks.maze_1d.Maze1DPOMDPClass import Maze1DPOMDP
+from dsg_rgl_ant.simple_rl.pomdp.BeliefMDPClass import BeliefMDP
+from dsg_rgl_ant.simple_rl.planning.BeliefSparseSamplingClass import BeliefSparseSampling
 
 def main():
 	pomdp = Maze1DPOMDP()

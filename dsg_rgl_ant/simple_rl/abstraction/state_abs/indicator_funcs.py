@@ -4,7 +4,7 @@ import random
 from decimal import Decimal
 
 # Other imports.
-from simple_rl.tasks import FourRoomMDP
+from dsg_rgl_ant.simple_rl.tasks import FourRoomMDP
 
 def _four_rooms(state_x, state_y, vi, actions, epsilon=0.0):
     if not isinstance(vi.mdp, FourRoomMDP):

@@ -8,10 +8,10 @@ import argparse
 import numpy as np
 from copy import deepcopy
 from collections import deque
-from simple_rl.agents.func_approx.dsc.experiments.utils import *
-from simple_rl.tasks.d4rl_ant_maze.D4RLAntMazeMDPClass import D4RLAntMazeMDP
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.experiments.utils import *
+from dsg_rgl_ant.simple_rl.tasks.d4rl_ant_maze.D4RLAntMazeMDPClass import D4RLAntMazeMDP
 
-from simple_rl.agents.func_approx.td3.TD3AgentClass import TD3
+from dsg_rgl_ant.simple_rl.agents.func_approx.td3.TD3AgentClass import TD3
 
 
 class OnlineModelBasedSkillChaining(object):

@@ -2,7 +2,7 @@
 import numpy as np
 
 # Other imports.
-from simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
 
 class PointReacherState(State):
     def __init__(self, position, theta, velocity, theta_dot, done):

@@ -6,7 +6,8 @@ import random
 from collections import defaultdict
 
 # Other imports.
-from simple_rl.planning.PlannerClass import Planner
+from dsg_rgl_ant.simple_rl.planning.PlannerClass import Planner
+
 
 class MCTS(Planner):
 

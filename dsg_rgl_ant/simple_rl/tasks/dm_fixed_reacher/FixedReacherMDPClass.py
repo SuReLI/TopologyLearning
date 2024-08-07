@@ -6,8 +6,8 @@ from PIL import Image
 # Other imports.
 from dm_control import suite
 from dm_control import viewer
-from simple_rl.mdp.MDPClass import MDP
-from simple_rl.tasks.dm_fixed_reacher.FixedReacherStateClass import FixedReacherState
+from dsg_rgl_ant.simple_rl.mdp.MDPClass import MDP
+from dsg_rgl_ant.simple_rl.tasks.dm_fixed_reacher.FixedReacherStateClass import FixedReacherState
 
 
 class FixedReacherMDP(MDP):

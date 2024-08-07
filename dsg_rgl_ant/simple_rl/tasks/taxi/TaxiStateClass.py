@@ -1,7 +1,7 @@
 ''' TaxiStateClass.py: Contains the TaxiState class. '''
 
 # Other imports
-from simple_rl.mdp.oomdp.OOMDPStateClass import OOMDPState
+from dsg_rgl_ant.simple_rl.mdp.oomdp.OOMDPStateClass import OOMDPState
 
 class TaxiState(OOMDPState):
     ''' Class for Taxi World States '''

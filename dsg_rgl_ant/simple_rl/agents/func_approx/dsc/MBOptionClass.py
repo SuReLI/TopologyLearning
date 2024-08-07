@@ -7,8 +7,8 @@ from copy import deepcopy
 from collections import deque
 from scipy.spatial import distance
 from thundersvm import OneClassSVM, SVC
-from simple_rl.agents.func_approx.dsc.dynamics.mpc import MPC
-from simple_rl.agents.func_approx.td3.TD3AgentClass import TD3
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.dynamics.mpc import MPC
+from dsg_rgl_ant.simple_rl.agents.func_approx.td3.TD3AgentClass import TD3
 
 
 class ModelBasedOption(object):

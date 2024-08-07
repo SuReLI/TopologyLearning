@@ -17,14 +17,14 @@ import itertools
 from tqdm import tqdm
 
 # Other imports.
-from simple_rl.mdp.StateClass import State
-from simple_rl.agents.func_approx.dsc.OptionClass import Option
-from simple_rl.agents.func_approx.dsc.utils import *
-from simple_rl.agents.func_approx.ddpg.utils import *
-from simple_rl.agents.func_approx.exploration.utils import *
-from simple_rl.agents.func_approx.dqn.DQNAgentClass import DQNAgent
-from simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
-from simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent, LearnedSalientEvent
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.OptionClass import Option
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.utils import *
+from dsg_rgl_ant.simple_rl.agents.func_approx.ddpg.utils import *
+from dsg_rgl_ant.simple_rl.agents.func_approx.exploration.utils import *
+from dsg_rgl_ant.simple_rl.agents.func_approx.dqn.DQNAgentClass import DQNAgent
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent, LearnedSalientEvent
 
 
 class SkillChaining(object):
@@ -1014,43 +1014,43 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	if args.env == "point-reacher":
-		from simple_rl.tasks.point_reacher.PointReacherMDPClass import PointReacherMDP
+		from dsg_rgl_ant.simple_rl.tasks.point_reacher.PointReacherMDPClass import PointReacherMDP
 		overall_mdp = PointReacherMDP(seed=args.seed, dense_reward=args.dense_reward, render=args.render)
 		state_dim = 6
 		action_dim = 2
 	elif args.env == "ant-reacher":
-		from simple_rl.tasks.ant_reacher.AntReacherMDPClass import AntReacherMDP
+		from dsg_rgl_ant.simple_rl.tasks.ant_reacher.AntReacherMDPClass import AntReacherMDP
 		overall_mdp = AntReacherMDP(seed=args.seed, render=args.render, goal_state=np.array((8, 8)), task_agnostic=False)
 		state_dim = overall_mdp.state_space_size()
 		action_dim = overall_mdp.action_space_size()
 	elif args.env == "d4rl-point-maze-easy":
-		from simple_rl.tasks.d4rl_point_maze.D4RLPointMazeMDPClass import D4RLPointMazeMDP
+		from dsg_rgl_ant.simple_rl.tasks.d4rl_point_maze.D4RLPointMazeMDPClass import D4RLPointMazeMDP
 		overall_mdp = D4RLPointMazeMDP(difficulty="easy", seed=args.seed, render=args.render, goal_directed=True)
 		state_dim = 6
 		action_dim = 2
 	elif args.env == "d4rl-ant-maze":
-		from simple_rl.tasks.d4rl_ant_maze.D4RLAntMazeMDPClass import D4RLAntMazeMDP
+		from dsg_rgl_ant.simple_rl.tasks.d4rl_ant_maze.D4RLAntMazeMDPClass import D4RLAntMazeMDP
 		overall_mdp = D4RLAntMazeMDP(maze_size="umaze", seed=args.seed,
 									 render=args.render, goal_state=np.array((0., 8.)))
 		state_dim = overall_mdp.state_space_size()
 		action_dim = overall_mdp.action_space_size()
 	elif "reacher" in args.env.lower():
-		from simple_rl.tasks.dm_fixed_reacher.FixedReacherMDPClass import FixedReacherMDP
+		from dsg_rgl_ant.simple_rl.tasks.dm_fixed_reacher.FixedReacherMDPClass import FixedReacherMDP
 		overall_mdp = FixedReacherMDP(seed=args.seed, difficulty=args.difficulty, render=args.render)
 		state_dim = overall_mdp.init_state.features().shape[0]
 		action_dim = overall_mdp.env.action_spec().minimum.shape[0]
 	elif "maze" in args.env.lower():
-		from simple_rl.tasks.point_maze.PointMazeMDPClass import PointMazeMDP
+		from dsg_rgl_ant.simple_rl.tasks.point_maze.PointMazeMDPClass import PointMazeMDP
 		overall_mdp = PointMazeMDP(dense_reward=args.dense_reward, seed=args.seed, render=args.render)
 		state_dim = 6
 		action_dim = 2
 	elif "point" in args.env.lower():
-		from simple_rl.tasks.point_env.PointEnvMDPClass import PointEnvMDP
+		from dsg_rgl_ant.simple_rl.tasks.point_env.PointEnvMDPClass import PointEnvMDP
 		overall_mdp = PointEnvMDP(control_cost=args.control_cost, render=args.render)
 		state_dim = 4
 		action_dim = 2
 	else:
-		from simple_rl.tasks.gym.GymMDPClass import GymMDP
+		from dsg_rgl_ant.simple_rl.tasks.gym.GymMDPClass import GymMDP
 		overall_mdp = GymMDP(args.env, render=args.render)
 		state_dim = overall_mdp.env.observation_space.shape[0]
 		action_dim = overall_mdp.env.action_space.shape[0]

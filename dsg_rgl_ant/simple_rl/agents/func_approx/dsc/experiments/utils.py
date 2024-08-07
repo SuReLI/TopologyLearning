@@ -4,7 +4,7 @@ import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 from treelib import Tree, Node
-from simple_rl.agents.func_approx.dqn.DQNAgentClass import DQNAgent
+from dsg_rgl_ant.simple_rl.agents.func_approx.dqn.DQNAgentClass import DQNAgent
 
 
 class SkillTree(object):

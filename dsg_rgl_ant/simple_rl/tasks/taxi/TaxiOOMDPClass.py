@@ -15,10 +15,10 @@ import random
 import copy
 
 # Other imports.
-from simple_rl.mdp.oomdp.OOMDPClass import OOMDP
-from simple_rl.mdp.oomdp.OOMDPObjectClass import OOMDPObject
-from simple_rl.tasks.taxi.TaxiStateClass import TaxiState
-from simple_rl.tasks.taxi import taxi_helpers
+from dsg_rgl_ant.simple_rl.mdp.oomdp.OOMDPClass import OOMDP
+from dsg_rgl_ant.simple_rl.mdp.oomdp.OOMDPObjectClass import OOMDPObject
+from dsg_rgl_ant.simple_rl.tasks.taxi.TaxiStateClass import TaxiState
+from dsg_rgl_ant.simple_rl.tasks.taxi import taxi_helpers
 
 
 class TaxiOOMDP(OOMDP):
@@ -149,7 +149,7 @@ class TaxiOOMDP(OOMDP):
         sys.exit(1)
 
     def visualize_interaction(self):
-        from simple_rl.utils.mdp_visualizer import visualize_interaction
+        from dsg_rgl_ant.simple_rl.utils.mdp_visualizer import visualize_interaction
         from taxi_visualizer import _draw_state
         visualize_interaction(self, _draw_state)
         raw_input("Press anything to quit ")

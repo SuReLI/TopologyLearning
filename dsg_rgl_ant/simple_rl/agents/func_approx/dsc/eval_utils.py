@@ -6,9 +6,9 @@ import glob
 import os
 import ipdb
 
-from simple_rl.mdp.StateClass import State
-from simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
-from simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
 
 # ---------––––––––---------––––––––---------––––––––
 # Eval utils

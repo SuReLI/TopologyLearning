@@ -6,9 +6,9 @@ import logging
 
 # Other imports.
 import srl_example_setup
-from simple_rl.agents import RandomAgent, LinearQAgent
-from simple_rl.tasks import GymMDP
-from simple_rl.run_experiments import run_agents_on_mdp
+from dsg_rgl_ant.simple_rl.agents import RandomAgent, LinearQAgent
+from dsg_rgl_ant.simple_rl.tasks import GymMDP
+from dsg_rgl_ant.simple_rl.run_experiments import run_agents_on_mdp
 
 def main(open_plot=True):
     # Gym MDP

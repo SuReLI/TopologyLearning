@@ -2,9 +2,9 @@ import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 import networkx.algorithms.shortest_paths as shortest_paths
-from simple_rl.agents.func_approx.dsc.OptionClass import Option
-from simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
-from simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.OptionClass import Option
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
 
 
 class GraphSearch(object):

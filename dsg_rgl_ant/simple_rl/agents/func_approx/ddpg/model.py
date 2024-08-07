@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 
 # Other imports.
-from simple_rl.agents.func_approx.ddpg.hyperparameters import *
+from dsg_rgl_ant.simple_rl.agents.func_approx.ddpg.hyperparameters import *
 
 class Critic(nn.Module):
     def __init__(self, state_dim, action_dim, h1=HIDDEN_1, h2=HIDDEN_2, device=torch.device("cpu"), seed=0):

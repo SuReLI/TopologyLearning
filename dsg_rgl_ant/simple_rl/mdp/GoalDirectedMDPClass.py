@@ -1,8 +1,8 @@
 import ipdb
 import numpy as np
 from scipy.spatial import distance
-from simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
-from simple_rl.mdp import MDP, State
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
+from dsg_rgl_ant.simple_rl.mdp import MDP, State
 
 
 class GoalDirectedMDP(MDP):

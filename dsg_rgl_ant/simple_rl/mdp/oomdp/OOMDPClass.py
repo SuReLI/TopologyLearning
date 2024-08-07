@@ -8,8 +8,8 @@ From:
 '''
 
 # Other imports.
-from simple_rl.mdp.MDPClass import MDP
-from simple_rl.mdp.oomdp.OOMDPObjectClass import OOMDPObject
+from dsg_rgl_ant.simple_rl.mdp.MDPClass import MDP
+from dsg_rgl_ant.simple_rl.mdp.oomdp.OOMDPObjectClass import OOMDPObject
 
 class OOMDP(MDP):
     ''' Abstract class for an Object Oriented Markov Decision Process. '''

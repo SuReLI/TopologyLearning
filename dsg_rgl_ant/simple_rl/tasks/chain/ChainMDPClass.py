@@ -4,8 +4,8 @@
 from __future__ import print_function
 
 # Other imports.
-from simple_rl.mdp.MDPClass import MDP
-from simple_rl.tasks.chain.ChainStateClass import ChainState
+from dsg_rgl_ant.simple_rl.mdp.MDPClass import MDP
+from dsg_rgl_ant.simple_rl.tasks.chain.ChainStateClass import ChainState
 
 class ChainMDP(MDP):
     ''' Implementation for a standard Chain MDP '''
@@ -55,7 +55,7 @@ class ChainMDP(MDP):
         elif action == "reset":
             return ChainState(1)
         else:
-            raise ValueError("(simple_rl Error): Unrecognized action! (" + action + ")")
+            raise ValueError("(dsg_rgl_ant.simple_rl Error): Unrecognized action! (" + action + ")")
 
     def __str__(self):
         return "chain-" + str(self.num_states)

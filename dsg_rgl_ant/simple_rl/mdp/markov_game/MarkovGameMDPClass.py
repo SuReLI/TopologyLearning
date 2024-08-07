@@ -4,7 +4,7 @@
 from __future__ import print_function
 
 # Other imports.
-from simple_rl.mdp.MDPClass import MDP
+from dsg_rgl_ant.simple_rl.mdp.MDPClass import MDP
 
 class MarkovGameMDP(MDP):
     ''' Abstract class for a Markov Decision Process. '''

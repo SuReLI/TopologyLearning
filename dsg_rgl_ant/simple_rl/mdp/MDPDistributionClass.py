@@ -157,7 +157,7 @@ class MDPDistribution(object):
 
 def main():
     # Simple test code.
-    from simple_rl.tasks import GridWorldMDP
+    from dsg_rgl_ant.simple_rl.tasks import GridWorldMDP
 
     mdp_distr = {}
     height, width = 8, 8

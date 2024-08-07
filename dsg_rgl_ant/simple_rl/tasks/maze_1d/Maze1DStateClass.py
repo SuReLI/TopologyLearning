@@ -1,4 +1,4 @@
-from simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
 
 class Maze1DState(State):
     ''' Class for 1D Maze POMDP States '''

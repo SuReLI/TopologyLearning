@@ -7,15 +7,15 @@ import random
 import networkx as nx
 from copy import deepcopy
 from collections import defaultdict
-from simple_rl.tasks.hbrl_ant_maze.ant_maze import AntMaze
+from dsg_rgl_ant.simple_rl.tasks.hbrl_ant_maze.ant_maze import AntMaze
 import networkx.algorithms.shortest_paths as shortest_paths
-from simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
-from simple_rl.agents.func_approx.dsc.ModelBasedDSC import ModelBasedSkillChaining
-from simple_rl.agents.func_approx.dsc.MBSkillGraphPlanner import SkillGraphPlanner
-from simple_rl.agents.func_approx.dsc.MBOptionClass import ModelBasedOption
-from simple_rl.agents.func_approx.dsc.utils import *
-from simple_rl.mdp import MDP, State
-from simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.ModelBasedDSC import ModelBasedSkillChaining
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.MBSkillGraphPlanner import SkillGraphPlanner
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.MBOptionClass import ModelBasedOption
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.utils import *
+from dsg_rgl_ant.simple_rl.mdp import MDP, State
+from dsg_rgl_ant.simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
 
 
 class DeepSkillGraphAgent(object):
@@ -489,7 +489,7 @@ if __name__ == "__main__":
     max_interactions = None
     nb_interaction_before_test = 50000
     if args.env == "point-reacher":
-        from simple_rl.tasks.point_reacher.PointReacherMDPClass import PointReacherMDP
+        from dsg_rgl_ant.simple_rl.tasks.point_reacher.PointReacherMDPClass import PointReacherMDP
 
         overall_mdp = PointReacherMDP(seed=args.seed,
                                       dense_reward=args.dense_reward,
@@ -498,28 +498,28 @@ if __name__ == "__main__":
         state_dim = 6
         action_dim = 2
     elif args.env == "ant-reacher":
-        from simple_rl.tasks.ant_reacher.AntReacherMDPClass import AntReacherMDP
+        from dsg_rgl_ant.simple_rl.tasks.ant_reacher.AntReacherMDPClass import AntReacherMDP
         overall_mdp = AntReacherMDP(seed=args.seed,
                                     render=args.render)
         state_dim = overall_mdp.state_space_size()
         action_dim = overall_mdp.action_space_size()
     elif args.env == "d4rl-ant-maze":
-        from simple_rl.tasks.d4rl_ant_maze.D4RLAntMazeMDPClass import D4RLAntMazeMDP
+        from dsg_rgl_ant.simple_rl.tasks.d4rl_ant_maze.D4RLAntMazeMDPClass import D4RLAntMazeMDP
         overall_mdp = D4RLAntMazeMDP(maze_size="umaze", seed=args.seed, render=args.render)
         state_dim = overall_mdp.state_space_size()
         action_dim = overall_mdp.action_space_size()
     elif args.env == "d4rl-medium-ant-maze":
-        from simple_rl.tasks.d4rl_ant_maze.D4RLAntMazeMDPClass import D4RLAntMazeMDP
+        from dsg_rgl_ant.simple_rl.tasks.d4rl_ant_maze.D4RLAntMazeMDPClass import D4RLAntMazeMDP
         overall_mdp = D4RLAntMazeMDP(maze_size="medium", seed=args.seed, render=args.render)
         state_dim = overall_mdp.state_space_size()
         action_dim = overall_mdp.action_space_size()
     elif args.env == "d4rl-hard-ant-maze":
-        from simple_rl.tasks.d4rl_ant_maze.D4RLAntMazeMDPClass import D4RLAntMazeMDP
+        from dsg_rgl_ant.simple_rl.tasks.d4rl_ant_maze.D4RLAntMazeMDPClass import D4RLAntMazeMDP
         overall_mdp = D4RLAntMazeMDP(maze_size="large", seed=args.seed, render=args.render)
         state_dim = overall_mdp.state_space_size()
         action_dim = overall_mdp.action_space_size()
     elif args.env == "d4rl-medium-point-maze":
-        from simple_rl.tasks.d4rl_point_maze.D4RLPointMazeMDPClass import D4RLPointMazeMDP
+        from dsg_rgl_ant.simple_rl.tasks.d4rl_point_maze.D4RLPointMazeMDPClass import D4RLPointMazeMDP
         overall_mdp = D4RLPointMazeMDP(seed=args.seed,
                                        render=args.render,
                                        difficulty="medium",
@@ -541,13 +541,13 @@ if __name__ == "__main__":
         root_directory = os.path.dirname("..")
 
         if args.mon_env == 1:
-            from simple_rl.tasks.hbrl_ant_maze.ant_maze import AntMaze
+            from dsg_rgl_ant.simple_rl.tasks.hbrl_ant_maze.ant_maze import AntMaze
             overall_mdp = AntMaze(maze_name=args.map)
             state_dim = overall_mdp.state_size
             action_dim = overall_mdp.action_size
 
             # map_name = args.map
-            # from simple_rl.tasks.d4rl_ant_maze.D4RLAntMazeMDPClass import D4RLAntMazeMDP
+            # from dsg_rgl_ant.simple_rl.tasks.d4rl_ant_maze.D4RLAntMazeMDPClass import D4RLAntMazeMDP
             # overall_mdp = D4RLAntMazeMDP(maze_size="umaze", seed=args.seed, render=args.render)
             # salient_events_ever = overall_mdp.get_all_target_events_ever()
             # state_dim = overall_mdp.state_space_size()
@@ -555,7 +555,7 @@ if __name__ == "__main__":
 
         else:
 
-            from simple_rl.tasks.d4rl_ant_maze.D4RLAntMazeMDPClass import D4RLAntMazeMDP
+            from dsg_rgl_ant.simple_rl.tasks.d4rl_ant_maze.D4RLAntMazeMDPClass import D4RLAntMazeMDP
             overall_mdp = D4RLAntMazeMDP(maze_size="umaze", seed=args.seed, render=args.render)
             salient_events_ever = overall_mdp.get_all_target_events_ever()
             state_dim = overall_mdp.state_space_size()
@@ -564,7 +564,7 @@ if __name__ == "__main__":
         salient_events_ever = overall_mdp.get_all_target_events_ever()
 
     elif args.env == "d4rl-hard-point-maze":
-        from simple_rl.tasks.d4rl_point_maze.D4RLPointMazeMDPClass import D4RLPointMazeMDP
+        from dsg_rgl_ant.simple_rl.tasks.d4rl_point_maze.D4RLPointMazeMDPClass import D4RLPointMazeMDP
         overall_mdp = D4RLPointMazeMDP(seed=args.seed,
                                        render=args.render,
                                        difficulty="hard",

@@ -10,9 +10,9 @@ import random
 from collections import defaultdict
 
 # Other imports.
-from simple_rl.tasks import ChainMDP, GridWorldMDP, TaxiOOMDP, RandomMDP, FourRoomMDP, HanoiMDP
-from simple_rl.tasks.grid_world.GridWorldMDPClass import make_grid_world_from_file
-from simple_rl.mdp import MDPDistribution
+from dsg_rgl_ant.simple_rl.tasks import ChainMDP, GridWorldMDP, TaxiOOMDP, RandomMDP, FourRoomMDP, HanoiMDP
+from dsg_rgl_ant.simple_rl.tasks.grid_world.GridWorldMDPClass import make_grid_world_from_file
+from dsg_rgl_ant.simple_rl.mdp import MDPDistribution
 
 def make_markov_game(markov_game_class="grid_game"):
     return {"prison":PrisonersDilemmaMDP(),

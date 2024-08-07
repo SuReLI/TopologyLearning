@@ -6,7 +6,7 @@ Basic LinUCB implementation.
 import numpy as np
 
 # Other imports.
-from simple_rl.agents.AgentClass import Agent
+from dsg_rgl_ant.simple_rl.agents.AgentClass import Agent
 
 class LinUCBAgent(Agent):
     '''

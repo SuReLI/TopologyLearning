@@ -10,8 +10,8 @@ import random
 import sys
 
 # Other imports.
-from simple_rl.planning import ValueIteration
-from simple_rl.utils import mdp_visualizer as mdpv
+from dsg_rgl_ant.simple_rl.planning import ValueIteration
+from dsg_rgl_ant.simple_rl.utils import mdp_visualizer as mdpv
 
 
 def draw_state(screen,

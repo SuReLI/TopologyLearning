@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_style("white")
 from tqdm import tqdm
-from simple_rl.agents.func_approx.dsc.dynamics.option_dynamics_model import OptionDynamicsModel
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.dynamics.option_dynamics_model import OptionDynamicsModel
 
 
 class TestSkillDynamicsModel(object):

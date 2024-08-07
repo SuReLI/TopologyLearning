@@ -8,9 +8,9 @@ import numpy as np
 import time
 
 # Other imports.
-from simple_rl.mdp.markov_game.MarkovGameMDPClass import MarkovGameMDP
-from simple_rl.tasks.gather.GatherStateClass import GatherState
-from simple_rl.tasks.gather.GatherStateClass import GatherAgent
+from dsg_rgl_ant.simple_rl.mdp.markov_game.MarkovGameMDPClass import MarkovGameMDP
+from dsg_rgl_ant.simple_rl.tasks.gather.GatherStateClass import GatherState
+from dsg_rgl_ant.simple_rl.tasks.gather.GatherStateClass import GatherAgent
 
 # Static constants
 INITIAL_ORIENTATION = 'NORTH'

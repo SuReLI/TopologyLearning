@@ -1,11 +1,11 @@
 import os
-from simple_rl.mdp.MDPPlotterClass import MDPPlotter
+from dsg_rgl_ant.simple_rl.mdp.MDPPlotterClass import MDPPlotter
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
 
 
-# import simple_rl.agents.func_approx.dsc.BaseSalientEventClass
+# import dsg_rgl_ant.simple_rl.agents.func_approx.dsc.BaseSalientEventClass
 class AntMazePlotter(MDPPlotter):
     def __init__(self, experiment_name):
         MDPPlotter.__init__(self, "ant_maze", experiment_name)

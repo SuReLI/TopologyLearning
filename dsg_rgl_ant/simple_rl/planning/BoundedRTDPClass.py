@@ -5,10 +5,10 @@ from collections import defaultdict
 import copy
 
 # Other imports.
-from simple_rl.planning import Planner, ValueIteration
-from simple_rl.mdp.MDPClass import MDP
-from simple_rl.mdp.StateClass import State
-from simple_rl.utils.additional_datastructures import SimpleRLStack
+from dsg_rgl_ant.simple_rl.planning import Planner, ValueIteration
+from dsg_rgl_ant.simple_rl.mdp.MDPClass import MDP
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.utils.additional_datastructures import SimpleRLStack
 
 class BoundedRTDP(Planner):
     '''

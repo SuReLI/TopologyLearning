@@ -5,10 +5,10 @@ import sys
 
 # Other imports.
 import srl_example_setup
-from simple_rl.agents import QLearningAgent, RandomAgent
-from simple_rl.tasks import GridWorldMDP
-from simple_rl.run_experiments import run_agents_on_mdp
-from simple_rl.abstraction import AbstractionWrapper
+from dsg_rgl_ant.simple_rl.agents import QLearningAgent, RandomAgent
+from dsg_rgl_ant.simple_rl.tasks import GridWorldMDP
+from dsg_rgl_ant.simple_rl.run_experiments import run_agents_on_mdp
+from dsg_rgl_ant.simple_rl.abstraction import AbstractionWrapper
 
 def main(open_plot=True):
     # Setup MDP, Agents.

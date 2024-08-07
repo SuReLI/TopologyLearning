@@ -13,8 +13,8 @@
 # limitations under the License.
 # ==============================================================================
 
-from simple_rl.tasks.point_maze.environments.maze_env import MazeEnv
-from simple_rl.tasks.point_maze.environments.point import PointEnv
+from dsg_rgl_ant.simple_rl.tasks.point_maze.environments.maze_env import MazeEnv
+from dsg_rgl_ant.simple_rl.tasks.point_maze.environments.point import PointEnv
 
 
 class PointMazeEnv(MazeEnv):

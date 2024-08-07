@@ -1,13 +1,13 @@
 import copy
 import random
 
-from simple_rl.agents import QLearningAgent
-from simple_rl.agents import RandomAgent
-from simple_rl.mdp import OOMDP
-from simple_rl.mdp.oomdp.OOMDPObjectClass import OOMDPObject
-from simple_rl.planning import ValueIteration
-from simple_rl.run_experiments import run_agents_on_mdp
-from simple_rl.tasks.trench.TrenchOOMDPState import TrenchOOMDPState
+from dsg_rgl_ant.simple_rl.agents import QLearningAgent
+from dsg_rgl_ant.simple_rl.agents import RandomAgent
+from dsg_rgl_ant.simple_rl.mdp import OOMDP
+from dsg_rgl_ant.simple_rl.mdp.oomdp.OOMDPObjectClass import OOMDPObject
+from dsg_rgl_ant.simple_rl.planning import ValueIteration
+from dsg_rgl_ant.simple_rl.run_experiments import run_agents_on_mdp
+from dsg_rgl_ant.simple_rl.tasks.trench.TrenchOOMDPState import TrenchOOMDPState
 
 
 class TrenchOOMDP(OOMDP):

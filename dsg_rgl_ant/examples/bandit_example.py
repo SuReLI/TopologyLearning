@@ -5,9 +5,9 @@ import sys
 
 # Other imports.
 import srl_example_setup
-from simple_rl.agents import LinUCBAgent, QLearningAgent, RandomAgent
-from simple_rl.tasks import BanditMDP
-from simple_rl.run_experiments import run_agents_on_mdp
+from dsg_rgl_ant.simple_rl.agents import LinUCBAgent, QLearningAgent, RandomAgent
+from dsg_rgl_ant.simple_rl.tasks import BanditMDP
+from dsg_rgl_ant.simple_rl.run_experiments import run_agents_on_mdp
 
 def main(open_plot=True):
     # Setup MDP, Agents.

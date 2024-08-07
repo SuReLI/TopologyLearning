@@ -12,16 +12,16 @@ import random
 import networkx as nx
 from copy import deepcopy
 from collections import defaultdict
-from simple_rl.tasks.hbrl_ant_maze.ant_maze import AntMaze
+from dsg_rgl_ant.simple_rl.tasks.hbrl_ant_maze.ant_maze import AntMaze
 import networkx.algorithms.shortest_paths as shortest_paths
-from simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
-from simple_rl.agents.func_approx.dsc.ModelBasedDSC import ModelBasedSkillChaining
-from simple_rl.agents.func_approx.dsc.MBSkillGraphPlanner import SkillGraphPlanner
-from simple_rl.agents.func_approx.dsc.MBOptionClass import ModelBasedOption
-from simple_rl.agents.func_approx.dsc.utils import *
-from simple_rl.mdp import MDP, State
-from simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
-from simple_rl.tasks.hbrl_ant_maze.ant_maze import AntMaze
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.ModelBasedDSC import ModelBasedSkillChaining
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.MBSkillGraphPlanner import SkillGraphPlanner
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.MBOptionClass import ModelBasedOption
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.utils import *
+from dsg_rgl_ant.simple_rl.mdp import MDP, State
+from dsg_rgl_ant.simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
+from dsg_rgl_ant.simple_rl.tasks.hbrl_ant_maze.ant_maze import AntMaze
 
 
 class DeepSkillGraphAgent(object):

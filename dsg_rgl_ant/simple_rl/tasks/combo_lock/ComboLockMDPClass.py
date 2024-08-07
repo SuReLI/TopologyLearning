@@ -4,8 +4,8 @@
 from __future__ import print_function
 
 # Other imports.
-from simple_rl.mdp.MDPClass import MDP
-from simple_rl.tasks.chain.ChainStateClass import ChainState
+from dsg_rgl_ant.simple_rl.mdp.MDPClass import MDP
+from dsg_rgl_ant.simple_rl.tasks.chain.ChainStateClass import ChainState
 
 class ComboLockMDP(MDP):
     ''' Imeplementation for a standard Chain MDP '''

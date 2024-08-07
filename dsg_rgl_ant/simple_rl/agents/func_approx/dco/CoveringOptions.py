@@ -8,13 +8,13 @@ import torch.optim as optim
 import matplotlib.pyplot as plt
 from tensorboardX import SummaryWriter
 from torch.utils.data import DataLoader
-from simple_rl.agents.func_approx.dco.utils import *
-from simple_rl.agents.func_approx.dco.model import SpectrumNetwork, LinearNetwork, PositionNetwork
-from simple_rl.agents.func_approx.dco.dataset import DCODataset
-from simple_rl.agents.func_approx.dco.losses import get_loss_fn
-from simple_rl.agents.func_approx.dqn.DQNAgentClass import ReplayBuffer
-from simple_rl.agents.func_approx.dsc.SalientEventClass import DCOSalientEvent
-from simple_rl.agents.func_approx.dsc.utils import plot_dco_salient_event_comparison
+from dsg_rgl_ant.simple_rl.agents.func_approx.dco.utils import *
+from dsg_rgl_ant.simple_rl.agents.func_approx.dco.model import SpectrumNetwork, LinearNetwork, PositionNetwork
+from dsg_rgl_ant.simple_rl.agents.func_approx.dco.dataset import DCODataset
+from dsg_rgl_ant.simple_rl.agents.func_approx.dco.losses import get_loss_fn
+from dsg_rgl_ant.simple_rl.agents.func_approx.dqn.DQNAgentClass import ReplayBuffer
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SalientEventClass import DCOSalientEvent
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.utils import plot_dco_salient_event_comparison
 
 
 class CoveringOptions(object):

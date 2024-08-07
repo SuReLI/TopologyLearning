@@ -25,10 +25,10 @@ import numpy as np
 from collections import defaultdict
 
 # Non-standard imports.
-from simple_rl.planning import ValueIteration
-from simple_rl.experiments import Experiment
-from simple_rl.mdp import MarkovGameMDP
-from simple_rl.agents import FixedPolicyAgent
+from dsg_rgl_ant.simple_rl.planning import ValueIteration
+from dsg_rgl_ant.simple_rl.experiments import Experiment
+from dsg_rgl_ant.simple_rl.mdp import MarkovGameMDP
+from dsg_rgl_ant.simple_rl.agents import FixedPolicyAgent
 
 def play_markov_game(agent_ls, markov_game_mdp, instances=10, episodes=100, steps=30, verbose=False, open_plot=True):
     '''
@@ -452,7 +452,7 @@ def choose_mdp(mdp_name, env_name="Asteroids-v0"):
     '''
 
     # Other imports
-    from simple_rl.tasks import ChainMDP, GridWorldMDP, FourRoomMDP, TaxiOOMDP, RandomMDP, PrisonersDilemmaMDP, RockPaperScissorsMDP, GridGameMDP
+    from dsg_rgl_ant.simple_rl.tasks import ChainMDP, GridWorldMDP, FourRoomMDP, TaxiOOMDP, RandomMDP, PrisonersDilemmaMDP, RockPaperScissorsMDP, GridGameMDP
 
     # Taxi MDP.
     agent = {"x":1, "y":1, "has_passenger":0}
@@ -461,7 +461,7 @@ def choose_mdp(mdp_name, env_name="Asteroids-v0"):
     if mdp_name == "gym":
         # OpenAI Gym MDP.
         try:
-            from simple_rl.tasks.gym.GymMDPClass import GymMDP
+            from dsg_rgl_ant.simple_rl.tasks.gym.GymMDPClass import GymMDP
         except:
             raise ValueError("(simple_rl) Error: OpenAI gym not installed.")
         return GymMDP(env_name, render=True)
@@ -500,7 +500,7 @@ def main():
     gamma = mdp.get_gamma()
 
     # Setup agents.
-    from simple_rl.agents import RandomAgent, QLearningAgent
+    from dsg_rgl_ant.simple_rl.agents import RandomAgent, QLearningAgent
     
     random_agent = RandomAgent(actions)
     qlearner_agent = QLearningAgent(actions, gamma=gamma, explore="uniform")

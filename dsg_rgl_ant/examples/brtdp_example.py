@@ -3,10 +3,10 @@ from collections import defaultdict
 import copy
 
 # Other imports.
-from simple_rl.planning import Planner
-from simple_rl.planning import ValueIteration
-from simple_rl.tasks import GridWorldMDP
-from simple_rl.planning.BoundedRTDPClass import BoundedRTDP
+from dsg_rgl_ant.simple_rl.planning import Planner
+from dsg_rgl_ant.simple_rl.planning import ValueIteration
+from dsg_rgl_ant.simple_rl.tasks import GridWorldMDP
+from dsg_rgl_ant.simple_rl.planning.BoundedRTDPClass import BoundedRTDP
 
 class MonotoneLowerBound(Planner):
     def __init__(self, mdp, name='MonotoneUpperBound'):

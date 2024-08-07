@@ -13,13 +13,13 @@ import torch.optim as optim
 import torch.nn.functional as F
 
 # Other imports.
-from simple_rl.agents.AgentClass import Agent
-from simple_rl.agents.func_approx.ddpg.model import Actor, Critic, OrnsteinUhlenbeckActionNoise
-from simple_rl.agents.func_approx.ddpg.replay_buffer import ReplayBuffer
-from simple_rl.agents.func_approx.ddpg.hyperparameters import *
-from simple_rl.agents.func_approx.ddpg.utils import *
-from simple_rl.agents.func_approx.dsc.utils import *
-from simple_rl.agents.func_approx.exploration.DiscreteCountExploration import CountBasedDensityModel
+from dsg_rgl_ant.simple_rl.agents.AgentClass import Agent
+from dsg_rgl_ant.simple_rl.agents.func_approx.ddpg.model import Actor, Critic, OrnsteinUhlenbeckActionNoise
+from dsg_rgl_ant.simple_rl.agents.func_approx.ddpg.replay_buffer import ReplayBuffer
+from dsg_rgl_ant.simple_rl.agents.func_approx.ddpg.hyperparameters import *
+from dsg_rgl_ant.simple_rl.agents.func_approx.ddpg.utils import *
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.utils import *
+from dsg_rgl_ant.simple_rl.agents.func_approx.exploration.DiscreteCountExploration import CountBasedDensityModel
 
 
 class DDPGAgent(Agent):
@@ -452,7 +452,7 @@ if __name__ == "__main__":
     create_log_dir("initiation_set_plots/{}".format(args.experiment_name))
 
     if args.env == "d4rl-point-maze-easy":
-        from simple_rl.tasks.d4rl_point_maze.D4RLPointMazeMDPClass import D4RLPointMazeMDP
+        from dsg_rgl_ant.simple_rl.tasks.d4rl_point_maze.D4RLPointMazeMDPClass import D4RLPointMazeMDP
         overall_mdp = D4RLPointMazeMDP(difficulty=args.difficulty,
                                        seed=args.seed, render=args.render, goal_directed=args.goal_conditioned)
         state_dim = overall_mdp.init_state.features().shape[0]
@@ -460,22 +460,22 @@ if __name__ == "__main__":
             state_dim = overall_mdp.init_state.features().shape[0] + 2
         action_dim = overall_mdp.env.action_space.low.shape[0]
     elif "reacher" in args.env.lower():
-        from simple_rl.tasks.dm_fixed_reacher.FixedReacherMDPClass import FixedReacherMDP
+        from dsg_rgl_ant.simple_rl.tasks.dm_fixed_reacher.FixedReacherMDPClass import FixedReacherMDP
         overall_mdp = FixedReacherMDP(seed=args.seed, difficulty=args.difficulty, render=args.render)
         state_dim = overall_mdp.init_state.features().shape[0]
         action_dim = overall_mdp.env.action_spec().minimum.shape[0]
     elif "maze" in args.env.lower():
-        from simple_rl.tasks.point_maze.PointMazeMDPClass import PointMazeMDP
+        from dsg_rgl_ant.simple_rl.tasks.point_maze.PointMazeMDPClass import PointMazeMDP
         overall_mdp = PointMazeMDP(dense_reward=args.dense_reward, seed=args.seed, render=args.render)
         state_dim = 6
         action_dim = 2
     elif "point" in args.env.lower():
-        from simple_rl.tasks.point_env.PointEnvMDPClass import PointEnvMDP
+        from dsg_rgl_ant.simple_rl.tasks.point_env.PointEnvMDPClass import PointEnvMDP
         overall_mdp = PointEnvMDP(dense_reward=args.dense_reward, render=args.render)
         state_dim = 4
         action_dim = 2
     else:
-        from simple_rl.tasks.gym.GymMDPClass import GymMDP
+        from dsg_rgl_ant.simple_rl.tasks.gym.GymMDPClass import GymMDP
         overall_mdp = GymMDP(args.env, render=args.render)
         state_dim = overall_mdp.env.observation_space.shape[0]
         action_dim = overall_mdp.env.action_space.shape[0]

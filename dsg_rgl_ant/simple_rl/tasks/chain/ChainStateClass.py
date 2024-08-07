@@ -1,7 +1,7 @@
 ''' ChainStateClass.py: Contains the ChainStateClass class. '''
 
 # Other imports.
-from simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
 
 class ChainState(State):
     ''' Class for Chain MDP States '''

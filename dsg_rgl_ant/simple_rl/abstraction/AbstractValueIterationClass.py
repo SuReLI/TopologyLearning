@@ -3,12 +3,12 @@ import random
 from collections import defaultdict
 
 # Other imports.
-from simple_rl.utils import make_mdp
-from simple_rl.abstraction.action_abs.ActionAbstractionClass import ActionAbstraction
-from simple_rl.abstraction.state_abs.StateAbstractionClass import StateAbstraction
-from simple_rl.abstraction.abstr_mdp import abstr_mdp_funcs
-from simple_rl.planning.PlannerClass import Planner
-from simple_rl.planning.ValueIterationClass import ValueIteration
+from dsg_rgl_ant.simple_rl.utils import make_mdp
+from dsg_rgl_ant.simple_rl.abstraction.action_abs.ActionAbstractionClass import ActionAbstraction
+from dsg_rgl_ant.simple_rl.abstraction.state_abs.StateAbstractionClass import StateAbstraction
+from dsg_rgl_ant.simple_rl.abstraction.abstr_mdp import abstr_mdp_funcs
+from dsg_rgl_ant.simple_rl.planning.PlannerClass import Planner
+from dsg_rgl_ant.simple_rl.planning.ValueIterationClass import ValueIteration
 
 class AbstractValueIteration(ValueIteration):
     ''' AbstractValueIteration: Runs ValueIteration on an abstract MDP induced by the given state and action abstraction '''
@@ -16,9 +16,9 @@ class AbstractValueIteration(ValueIteration):
     def __init__(self, ground_mdp, state_abstr=None, action_abstr=None, vi_sample_rate=5, max_iterations=1000, amdp_sample_rate=5, delta=0.001):
         '''
         Args:
-            ground_mdp (simple_rl.MDP)
-            state_abstr (simple_rl.StateAbstraction)
-            action_abstr (simple_rl.ActionAbstraction)
+            ground_mdp (dsg_rgl_ant.simple_rl.MDP)
+            state_abstr (dsg_rgl_ant.simple_rl.StateAbstraction)
+            action_abstr (dsg_rgl_ant.simple_rl.ActionAbstraction)
             vi_sample_rate (int): Num samples per transition for running VI.
             max_iterations (int): Usual VI # Iteration bound.
             amdp_sample_rate (int): Num samples per abstract transition to use for computing R_abstract, T_abstract.

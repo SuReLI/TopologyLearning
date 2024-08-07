@@ -12,8 +12,8 @@ import time
 
 # Other imports.
 import gym
-from simple_rl.mdp.MDPClass import MDP
-from simple_rl.tasks.fixed_reacher.FixedReacherStateClass import FixedReacherState
+from dsg_rgl_ant.simple_rl.mdp.MDPClass import MDP
+from dsg_rgl_ant.simple_rl.tasks.fixed_reacher.FixedReacherStateClass import FixedReacherState
 
 class NormalizedEnv(gym.ActionWrapper):
     """ Wrap action """

@@ -3,11 +3,11 @@ import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 import networkx.algorithms.shortest_paths as shortest_paths
-from simple_rl.agents.func_approx.dsc.OptionClass import Option as MFOption
-from simple_rl.agents.func_approx.dsc.MBOptionClass import ModelBasedOption
-from simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
-from simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
-from simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.OptionClass import Option as MFOption
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.MBOptionClass import ModelBasedOption
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
 
 
 class PlanGraph(object):

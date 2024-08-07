@@ -14,7 +14,7 @@ import pickle
 from scipy.ndimage.filters import uniform_filter1d
 
 # Other imports
-from simple_rl.agents.func_approx.ddpg.DDPGAgentClass import DDPGAgent
+from dsg_rgl_ant.simple_rl.agents.func_approx.ddpg.DDPGAgentClass import DDPGAgent
 from typing import List, Tuple, Callable
 
 

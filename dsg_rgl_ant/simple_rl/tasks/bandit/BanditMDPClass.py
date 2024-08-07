@@ -6,8 +6,8 @@ from collections import defaultdict
 import numpy as np
 
 # Other imports.
-from simple_rl.mdp.MDPClass import MDP
-from simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.mdp.MDPClass import MDP
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
 
 class BanditMDP(MDP):
     ''' Imeplementation for a standard Bandit MDP.
@@ -75,7 +75,7 @@ class BanditMDP(MDP):
             (State)
 
         Notes:
-            Required to fit naturally with the rest of simple_rl, but obviously
+            Required to fit naturally with the rest of dsg_rgl_ant.simple_rl, but obviously
             doesn't do anything.
         '''
         return state

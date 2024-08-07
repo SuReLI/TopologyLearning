@@ -19,9 +19,9 @@ from mpl_toolkits.mplot3d import Axes3D
 import math
 
 # Other imports.
-from simple_rl.mdp.StateClass import State
-from simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
-from simple_rl.agents.func_approx.dqn.DQNAgentClass import DQNAgent
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
+from dsg_rgl_ant.simple_rl.agents.func_approx.dqn.DQNAgentClass import DQNAgent
 
 class Experience(object):
     def __init__(self, s, a, r, s_prime):
@@ -576,7 +576,7 @@ def visualize_graph(planner, episode, experiment_name, seed, use_target_states=T
 
 
 def visualize_chain_graph(planner, episode, experiment_name, seed):
-    from simple_rl.agents.func_approx.dsc.OptionClass import Option
+    from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.OptionClass import Option
 
     def _get_option_representative_point(option):
         effect_positions = np.array([planner.mdp.get_position(state) for state in option.effect_set])

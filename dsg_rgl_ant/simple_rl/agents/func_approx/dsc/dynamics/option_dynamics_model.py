@@ -5,7 +5,7 @@ from tqdm import tqdm
 import torch.optim as optim
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
-from simple_rl.agents.func_approx.dsc.dynamics.mdn.model import MixtureDensityNetwork
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.dynamics.mdn.model import MixtureDensityNetwork
 
 
 class OptionDynamicsModel(object):

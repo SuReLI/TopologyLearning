@@ -9,9 +9,9 @@ from copy import deepcopy
 from torch.optim import Adam
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
-from simple_rl.agents.func_approx.dsc.dynamics.dynamics_model import DynamicsModel
-from simple_rl.agents.func_approx.dsc.dynamics.replay_buffer import ReplayBuffer
-from simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.dynamics.dynamics_model import DynamicsModel
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.dynamics.replay_buffer import ReplayBuffer
+from dsg_rgl_ant.simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
 
 from tqdm import tqdm
 import ipdb

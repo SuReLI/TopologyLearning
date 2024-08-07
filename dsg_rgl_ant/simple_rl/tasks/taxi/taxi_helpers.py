@@ -1,7 +1,7 @@
 ''' Helper functions for executing actions in the Taxi Problem '''
 
 # Other imports.
-from simple_rl.mdp.oomdp.OOMDPObjectClass import OOMDPObject
+from dsg_rgl_ant.simple_rl.mdp.oomdp.OOMDPObjectClass import OOMDPObject
 
 def _is_wall_in_the_way(state, dx=0, dy=0):
     '''

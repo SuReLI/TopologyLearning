@@ -8,9 +8,9 @@ import matplotlib.cm as cm
 from matplotlib.colors import Normalize
 import ipdb
 
-from simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
-from simple_rl.mdp.MDPPlotterClass import MDPPlotter
-from simple_rl.tasks.leap_wrapper.LeapWrapperMDPClass import get_puck_pos
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
+from dsg_rgl_ant.simple_rl.mdp.MDPPlotterClass import MDPPlotter
+from dsg_rgl_ant.simple_rl.tasks.leap_wrapper.LeapWrapperMDPClass import get_puck_pos
 
 
 class LeapWrapperPlotter(MDPPlotter):

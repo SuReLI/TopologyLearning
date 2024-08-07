@@ -2,8 +2,8 @@
 import numpy as np
 
 # Other imports.
-from simple_rl.mdp.StateClass import State
-from simple_rl.abstraction.state_abs.StateAbstractionClass import StateAbstraction
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.abstraction.state_abs.StateAbstractionClass import StateAbstraction
 
 class ProbStateAbstraction(StateAbstraction):
 

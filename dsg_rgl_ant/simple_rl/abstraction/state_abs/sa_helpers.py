@@ -5,11 +5,11 @@ import sys
 import random
 
 # Other imports.
-from simple_rl.planning.ValueIterationClass import ValueIteration
-from simple_rl.mdp import State
-from simple_rl.mdp import MDPDistribution
-from simple_rl.abstraction.state_abs import indicator_funcs as ind_funcs
-from simple_rl.abstraction.state_abs.StateAbstractionClass import StateAbstraction
+from dsg_rgl_ant.simple_rl.planning.ValueIterationClass import ValueIteration
+from dsg_rgl_ant.simple_rl.mdp import State
+from dsg_rgl_ant.simple_rl.mdp import MDPDistribution
+from dsg_rgl_ant.simple_rl.abstraction.state_abs import indicator_funcs as ind_funcs
+from dsg_rgl_ant.simple_rl.abstraction.state_abs.StateAbstractionClass import StateAbstraction
 
 def merge_state_abs(list_of_sa, track_act_opt_pr=False):
     '''
@@ -144,7 +144,7 @@ def visualize_state_abstr_grid(grid_mdp, state_abstr, scr_width=720, scr_height=
         Visualizes the state abstraction.
     '''
     import pygame
-    from simple_rl.utils import mdp_visualizer
+    from dsg_rgl_ant.simple_rl.utils import mdp_visualizer
 
     pygame.init()
     title_font = pygame.font.SysFont("CMU Serif", 32)
@@ -182,7 +182,7 @@ def visualize_state_abstr_grid(grid_mdp, state_abstr, scr_width=720, scr_height=
         state_dict[s.x][s.y] = s
 
     # Grab colors.
-    from simple_rl.utils.chart_utils import first_five, color_ls
+    from dsg_rgl_ant.simple_rl.utils.chart_utils import first_five, color_ls
     sa_colors = first_five + color_ls
     while state_abstr.get_num_abstr_states() > len(sa_colors):
         sa_colors.append((random.randint(0,255), random.randint(0,255), random.randint(0,255)))

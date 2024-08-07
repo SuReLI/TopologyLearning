@@ -13,8 +13,8 @@ import os
 from collections import defaultdict
 
 # Other imports.
-from simple_rl.utils import chart_utils
-from simple_rl.experiments.ExperimentParametersClass import ExperimentParameters
+from dsg_rgl_ant.simple_rl.utils import chart_utils
+from dsg_rgl_ant.simple_rl.experiments.ExperimentParametersClass import ExperimentParameters
 
 class Experiment(object):
     ''' Experiment Class for RL Experiments '''

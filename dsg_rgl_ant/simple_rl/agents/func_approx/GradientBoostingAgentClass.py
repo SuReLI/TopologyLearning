@@ -20,7 +20,7 @@ except ImportError:
     raise ValueError("Error: sklearn not installed. See: http://scikit-learn.org/stable/install.html")
 
 # simple_rl classes.
-from simple_rl.agents.QLearningAgentClass import QLearningAgent
+from dsg_rgl_ant.simple_rl.agents.QLearningAgentClass import QLearningAgent
 
 class GradientBoostingAgent(QLearningAgent):
     '''

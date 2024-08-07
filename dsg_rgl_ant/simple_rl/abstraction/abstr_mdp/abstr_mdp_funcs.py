@@ -3,12 +3,12 @@ from collections import defaultdict
 import numpy as np
 
 # Other imports.
-from simple_rl.planning import ValueIteration
-from simple_rl.mdp import MDP
-from simple_rl.mdp import MDPDistribution
-from simple_rl.abstraction.abstr_mdp.RewardFuncClass import RewardFunc
-from simple_rl.abstraction.abstr_mdp.TransitionFuncClass import TransitionFunc
-from simple_rl.abstraction.action_abs.ActionAbstractionClass import ActionAbstraction
+from dsg_rgl_ant.simple_rl.planning import ValueIteration
+from dsg_rgl_ant.simple_rl.mdp import MDP
+from dsg_rgl_ant.simple_rl.mdp import MDPDistribution
+from dsg_rgl_ant.simple_rl.abstraction.abstr_mdp.RewardFuncClass import RewardFunc
+from dsg_rgl_ant.simple_rl.abstraction.abstr_mdp.TransitionFuncClass import TransitionFunc
+from dsg_rgl_ant.simple_rl.abstraction.action_abs.ActionAbstractionClass import ActionAbstraction
 # ------------------
 # -- Single Level --
 # ------------------

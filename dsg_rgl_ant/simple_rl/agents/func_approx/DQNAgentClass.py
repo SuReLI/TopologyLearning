@@ -7,7 +7,7 @@ import numpy as np
 import random
 
 # Other imports.
-from simple_rl.agents.AgentClass import Agent
+from dsg_rgl_ant.simple_rl.agents.AgentClass import Agent
 
 class DQNAgent(Agent):
 

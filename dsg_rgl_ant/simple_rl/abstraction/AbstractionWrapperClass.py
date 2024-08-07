@@ -2,9 +2,9 @@
 import os
 
 # Other imports.
-from simple_rl.agents import Agent, RMaxAgent, FixedPolicyAgent
-from simple_rl.abstraction.state_abs.StateAbstractionClass import StateAbstraction
-from simple_rl.abstraction.action_abs.ActionAbstractionClass import ActionAbstraction
+from dsg_rgl_ant.simple_rl.agents import Agent, RMaxAgent, FixedPolicyAgent
+from dsg_rgl_ant.simple_rl.abstraction.state_abs.StateAbstractionClass import StateAbstraction
+from dsg_rgl_ant.simple_rl.abstraction.action_abs.ActionAbstractionClass import ActionAbstraction
 
 class AbstractionWrapper(Agent):
 

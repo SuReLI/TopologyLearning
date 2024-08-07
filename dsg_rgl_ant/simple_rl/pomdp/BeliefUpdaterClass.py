@@ -1,5 +1,5 @@
 from collections import defaultdict
-from simple_rl.planning.ValueIterationClass import ValueIteration
+from dsg_rgl_ant.simple_rl.planning.ValueIterationClass import ValueIteration
 
 class BeliefUpdater(object):
     ''' Wrapper class for different methods for belief state updates in POMDPs. '''

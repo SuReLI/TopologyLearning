@@ -1,8 +1,8 @@
 import ipdb
 import itertools
 from copy import deepcopy
-from simple_rl.agents.func_approx.dsc.MBOptionClass import ModelBasedOption
-from simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.MBOptionClass import ModelBasedOption
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
 
 
 class ModelBasedSkillChaining(object):

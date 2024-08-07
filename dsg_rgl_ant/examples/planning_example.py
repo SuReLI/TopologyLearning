@@ -5,8 +5,8 @@ from __future__ import print_function
 
 # Other imports.
 import srl_example_setup
-from simple_rl.tasks import GridWorldMDP
-from simple_rl.planning import ValueIteration
+from dsg_rgl_ant.simple_rl.tasks import GridWorldMDP
+from dsg_rgl_ant.simple_rl.planning import ValueIteration
 
 def main():
     # Setup MDP, Agents.

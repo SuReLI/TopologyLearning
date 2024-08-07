@@ -5,9 +5,9 @@ import sys
 
 # Other imports.
 import srl_example_setup
-from simple_rl.agents import QLearningAgent, RandomAgent
-from simple_rl.tasks import TaxiOOMDP
-from simple_rl.run_experiments import run_agents_on_mdp, run_single_agent_on_mdp
+from dsg_rgl_ant.simple_rl.agents import QLearningAgent, RandomAgent
+from dsg_rgl_ant.simple_rl.tasks import TaxiOOMDP
+from dsg_rgl_ant.simple_rl.run_experiments import run_agents_on_mdp, run_single_agent_on_mdp
 
 def main(open_plot=True):
     # Taxi initial state attributes..

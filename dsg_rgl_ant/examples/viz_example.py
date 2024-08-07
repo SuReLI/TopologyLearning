@@ -6,11 +6,11 @@ import argparse
 
 # Other imports.
 import srl_example_setup
-from simple_rl.agents import QLearningAgent, RMaxAgent
-from simple_rl.run_experiments import run_single_agent_on_mdp 
-from simple_rl.tasks import FourRoomMDP, TaxiOOMDP
-from simple_rl.tasks.grid_world.GridWorldMDPClass import make_grid_world_from_file
-from simple_rl.planning import ValueIteration
+from dsg_rgl_ant.simple_rl.agents import QLearningAgent, RMaxAgent
+from dsg_rgl_ant.simple_rl.run_experiments import run_single_agent_on_mdp 
+from dsg_rgl_ant.simple_rl.tasks import FourRoomMDP, TaxiOOMDP
+from dsg_rgl_ant.simple_rl.tasks.grid_world.GridWorldMDPClass import make_grid_world_from_file
+from dsg_rgl_ant.simple_rl.planning import ValueIteration
 
 def parse_args():
     # Add all arguments

@@ -3,9 +3,9 @@ import numpy as np
 import random
 import ipdb
 
-from simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
-from simple_rl.tasks.point_maze.environments.swimmer_maze_env import SwimmerMazeEnv
-from simple_rl.tasks.d4rl_swimmer_maze.D4RLSwimmerMazeStateClass import D4RLSwimmerMazeState
+from dsg_rgl_ant.simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
+from dsg_rgl_ant.simple_rl.tasks.point_maze.environments.swimmer_maze_env import SwimmerMazeEnv
+from dsg_rgl_ant.simple_rl.tasks.d4rl_swimmer_maze.D4RLSwimmerMazeStateClass import D4RLSwimmerMazeState
 
 class D4RLSwimmerMDP(GoalDirectedMDP):
     def __init__(self, difficulty, goal_directed, seed, render):

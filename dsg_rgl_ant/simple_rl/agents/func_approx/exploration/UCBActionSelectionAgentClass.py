@@ -3,10 +3,10 @@ import random
 import numpy as np
 from collections import defaultdict
 import matplotlib.pyplot as plt
-from simple_rl.mdp.StateClass import State
-from simple_rl.agents.func_approx.dsc.OptionClass import Option
-from simple_rl.agents.func_approx.ddpg.DDPGAgentClass import DDPGAgent
-from simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.OptionClass import Option
+from dsg_rgl_ant.simple_rl.agents.func_approx.ddpg.DDPGAgentClass import DDPGAgent
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
 
 
 class UCBActionSelectionAgent(object):

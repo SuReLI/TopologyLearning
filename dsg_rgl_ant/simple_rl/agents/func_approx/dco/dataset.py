@@ -3,7 +3,7 @@ import random
 import torch
 import numpy as np
 from torch.utils.data import Dataset
-from simple_rl.agents.func_approx.dqn.DQNAgentClass import ReplayBuffer
+from dsg_rgl_ant.simple_rl.agents.func_approx.dqn.DQNAgentClass import ReplayBuffer
 
 
 class DCODataset(Dataset):

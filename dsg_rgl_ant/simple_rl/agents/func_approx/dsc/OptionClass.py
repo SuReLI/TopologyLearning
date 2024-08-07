@@ -11,13 +11,13 @@ import itertools
 from scipy.spatial import distance
 
 # Other imports.
-from simple_rl.mdp.StateClass import State
-from simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
-from simple_rl.agents.func_approx.ddpg.DDPGAgentClass import DDPGAgent
-from simple_rl.agents.func_approx.td3.TD3AgentClass import TD3
-from simple_rl.agents.func_approx.dsc.utils import Experience
-from simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
-from simple_rl.agents.func_approx.dsc.dynamics.mpc import MPC
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
+from dsg_rgl_ant.simple_rl.agents.func_approx.ddpg.DDPGAgentClass import DDPGAgent
+from dsg_rgl_ant.simple_rl.agents.func_approx.td3.TD3AgentClass import TD3
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.utils import Experience
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.dynamics.mpc import MPC
 
 
 

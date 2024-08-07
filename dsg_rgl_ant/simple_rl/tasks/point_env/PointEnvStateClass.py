@@ -2,7 +2,7 @@
 import numpy as np
 
 # Other imports.
-from simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
 
 
 class PointEnvState(State):

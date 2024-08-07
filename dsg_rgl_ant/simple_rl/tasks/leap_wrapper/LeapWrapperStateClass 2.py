@@ -2,7 +2,7 @@
 import numpy as np
 
 # Local imports
-from simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
 
 ''' GymStateClass.py: Contains a State class for Gym. '''
 

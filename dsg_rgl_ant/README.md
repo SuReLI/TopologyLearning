@@ -26,9 +26,9 @@ Some examples showcasing basic functionality are included in the [examples](http
 To run a simple experiment, import the _run_agents_on_mdp(agent_list, mdp)_ method from _simple_rl.run_experiments_ and call it with some agents for a given MDP. For example:
 
 	# Imports
-	from simple_rl.run_experiments import run_agents_on_mdp
-	from simple_rl.tasks import GridWorldMDP
-	from simple_rl.agents import QLearningAgent
+	from dsg_rgl_ant.simple_rl.run_experiments import run_agents_on_mdp
+	from dsg_rgl_ant.simple_rl.tasks import GridWorldMDP
+	from dsg_rgl_ant.simple_rl.agents import QLearningAgent
 
 	# Run Experiment
 	mdp = GridWorldMDP()
@@ -41,9 +41,9 @@ Running the above code will run unleash _Q_-learning on a simple GridWorld. When
 
 For a slightly more complicated example, take a look at the code of _simple_example.py_. Here we run three few agents on the grid world from the Russell-Norvig AI textbook:
 
-	from simple_rl.agents import QLearningAgent, RandomAgent, RMaxAgent
-	from simple_rl.tasks import GridWorldMDP
-	from simple_rl.run_experiments import run_agents_on_mdp
+	from dsg_rgl_ant.simple_rl.agents import QLearningAgent, RandomAgent, RMaxAgent
+	from dsg_rgl_ant.simple_rl.tasks import GridWorldMDP
+	from dsg_rgl_ant.simple_rl.run_experiments import run_agents_on_mdp
 
     # Setup MDP.
     mdp = GridWorldMDP(width=4, height=3, init_loc=(1, 1), goal_locs=[(4, 3)], lava_locs=[(4, 2)], gamma=0.95, walls=[(2, 2)])

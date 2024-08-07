@@ -8,10 +8,10 @@ import numpy as np
 import gym
 import multiworld
 
-from simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
-from simple_rl.tasks.leap_wrapper.LeapWrapperStateClass import LeapWrapperState
-from simple_rl.tasks.leap_wrapper.MovieRendererClass import MovieRenderer
-from simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
+from dsg_rgl_ant.simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
+from dsg_rgl_ant.simple_rl.tasks.leap_wrapper.LeapWrapperStateClass import LeapWrapperState
+from dsg_rgl_ant.simple_rl.tasks.leap_wrapper.MovieRendererClass import MovieRenderer
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
 
 
 class LeapWrapperMDP(GoalDirectedMDP):

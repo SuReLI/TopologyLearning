@@ -9,7 +9,7 @@ import numpy as np
 import math
 
 # Other imports.
-from simple_rl.agents import Agent, QLearningAgent
+from dsg_rgl_ant.simple_rl.agents import Agent, QLearningAgent
 
 class LinearQAgent(QLearningAgent):
     '''

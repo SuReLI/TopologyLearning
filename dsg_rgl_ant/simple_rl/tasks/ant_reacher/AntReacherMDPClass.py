@@ -2,9 +2,9 @@ import random
 import numpy as np
 from copy import deepcopy
 
-from simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
-from simple_rl.tasks.point_maze.environments.ant_maze_env import AntMazeEnv
-from simple_rl.tasks.ant_reacher.AntReacherStateClass import AntReacherState
+from dsg_rgl_ant.simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
+from dsg_rgl_ant.simple_rl.tasks.point_maze.environments.ant_maze_env import AntMazeEnv
+from dsg_rgl_ant.simple_rl.tasks.ant_reacher.AntReacherStateClass import AntReacherState
 
 
 class AntReacherMDP(GoalDirectedMDP):

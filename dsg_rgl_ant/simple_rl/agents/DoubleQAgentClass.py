@@ -12,8 +12,8 @@ import random
 from collections import defaultdict
 
 # Other imports
-from simple_rl.agents.QLearningAgentClass import QLearningAgent
-from simple_rl.agents.AgentClass import Agent
+from dsg_rgl_ant.simple_rl.agents.QLearningAgentClass import QLearningAgent
+from dsg_rgl_ant.simple_rl.agents.AgentClass import Agent
 
 class DoubleQAgent(QLearningAgent):
     ''' Class for an agent using Double Q Learning. '''

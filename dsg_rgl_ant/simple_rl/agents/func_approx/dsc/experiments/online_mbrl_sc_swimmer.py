@@ -7,9 +7,9 @@ import numpy as np
 from copy import deepcopy
 from functools import reduce
 from collections import deque
-from simple_rl.agents.func_approx.dsc.experiments.utils import *
-from simple_rl.agents.func_approx.dsc.MBOptionClass import ModelBasedOption
-from simple_rl.tasks.d4rl_swimmer_maze.D4RLSwimmerMazeMDPClass import D4RLSwimmerMDP
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.experiments.utils import *
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.MBOptionClass import ModelBasedOption
+from dsg_rgl_ant.simple_rl.tasks.d4rl_swimmer_maze.D4RLSwimmerMazeMDPClass import D4RLSwimmerMDP
 
 class OnlineModelBasedSkillChaining(object):
     def __init__(self, warmup_episodes, max_steps, gestation_period, initiation_period, experiment_name, device):

@@ -4,9 +4,9 @@
 from __future__ import print_function
 import numpy as np
 from collections import defaultdict
-from simple_rl.tasks import GridWorldMDP
-from simple_rl.planning import ValueIteration
-from simple_rl.tasks.grid_world.GridWorldStateClass import GridWorldState
+from dsg_rgl_ant.simple_rl.tasks import GridWorldMDP
+from dsg_rgl_ant.simple_rl.planning import ValueIteration
+from dsg_rgl_ant.simple_rl.tasks.grid_world.GridWorldStateClass import GridWorldState
 
 class NavigationMDP(GridWorldMDP):
 

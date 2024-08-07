@@ -4,7 +4,7 @@ import random
 from collections import defaultdict
 
 # Other imports.
-from simple_rl.abstraction.action_abs.PolicyClass import Policy
+from dsg_rgl_ant.simple_rl.abstraction.action_abs.PolicyClass import Policy
 
 class PolicyFromDict(Policy):
 

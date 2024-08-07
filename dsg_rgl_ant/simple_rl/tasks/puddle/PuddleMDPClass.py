@@ -10,9 +10,9 @@ import math
 import numpy as np
 
 # Other imports
-from simple_rl.mdp.MDPClass import MDP
-from simple_rl.tasks.grid_world.GridWorldMDPClass import GridWorldMDP
-from simple_rl.tasks.grid_world.GridWorldStateClass import GridWorldState
+from dsg_rgl_ant.simple_rl.mdp.MDPClass import MDP
+from dsg_rgl_ant.simple_rl.tasks.grid_world.GridWorldMDPClass import GridWorldMDP
+from dsg_rgl_ant.simple_rl.tasks.grid_world.GridWorldStateClass import GridWorldState
 
 class PuddleMDP(GridWorldMDP):
     ''' Class for a Puddle MDP '''

@@ -1,5 +1,5 @@
 import numpy as np
-from simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
 from scipy.spatial import distance
 from sklearn.svm import OneClassSVM
 import ipdb

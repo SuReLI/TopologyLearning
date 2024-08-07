@@ -6,9 +6,9 @@ import math
 import copy
 
 # Other imports
-from simple_rl.mdp.MDPClass import MDP
-from simple_rl.tasks.grid_world.GridWorldMDPClass import GridWorldMDP
-from simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.mdp.MDPClass import MDP
+from dsg_rgl_ant.simple_rl.tasks.grid_world.GridWorldMDPClass import GridWorldMDP
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
 
 class RockSampleMDP(GridWorldMDP):
     '''

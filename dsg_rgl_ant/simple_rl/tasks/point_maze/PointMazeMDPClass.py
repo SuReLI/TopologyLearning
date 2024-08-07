@@ -4,9 +4,9 @@ import random
 import pdb
 
 # Other imports.
-from simple_rl.mdp.MDPClass import MDP
-from simple_rl.tasks.point_maze.PointMazeStateClass import PointMazeState
-from simple_rl.tasks.point_maze.environments.point_maze_env import PointMazeEnv
+from dsg_rgl_ant.simple_rl.mdp.MDPClass import MDP
+from dsg_rgl_ant.simple_rl.tasks.point_maze.PointMazeStateClass import PointMazeState
+from dsg_rgl_ant.simple_rl.tasks.point_maze.environments.point_maze_env import PointMazeEnv
 
 class PointMazeMDP(MDP):
     def __init__(self, seed, color_str="", dense_reward=False, render=False):

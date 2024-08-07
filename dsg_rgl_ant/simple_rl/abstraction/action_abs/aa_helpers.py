@@ -1,10 +1,10 @@
 # Other imports.
-from simple_rl.planning.ValueIterationClass import ValueIteration
-from simple_rl.tasks import GridWorldMDP
-from simple_rl.abstraction.action_abs.PredicateClass import Predicate
-from simple_rl.abstraction.action_abs.InListPredicateClass import InListPredicate
-from simple_rl.abstraction.action_abs.OptionClass import Option
-from simple_rl.abstraction.action_abs.PolicyFromDictClass import PolicyFromDict
+from dsg_rgl_ant.simple_rl.planning.ValueIterationClass import ValueIteration
+from dsg_rgl_ant.simple_rl.tasks import GridWorldMDP
+from dsg_rgl_ant.simple_rl.abstraction.action_abs.PredicateClass import Predicate
+from dsg_rgl_ant.simple_rl.abstraction.action_abs.InListPredicateClass import InListPredicate
+from dsg_rgl_ant.simple_rl.abstraction.action_abs.OptionClass import Option
+from dsg_rgl_ant.simple_rl.abstraction.action_abs.PolicyFromDictClass import PolicyFromDict
 
 # ------------------------
 # -- Goal Based Options --

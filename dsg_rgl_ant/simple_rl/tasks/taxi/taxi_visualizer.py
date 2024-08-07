@@ -6,7 +6,7 @@ except ImportError:
     print("Warning: pygame not installed (needed for visuals).")
 
 # Other imports.
-from simple_rl.utils.chart_utils import color_ls
+from dsg_rgl_ant.simple_rl.utils.chart_utils import color_ls
 
 def _draw_state(screen,
                 taxi_oomdp,

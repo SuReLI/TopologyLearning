@@ -1,7 +1,7 @@
 ''' FixedPolicyAgentClass.py: Class for a basic RL Agent '''
 
 # Python imports.
-from simple_rl.agents.AgentClass import Agent
+from dsg_rgl_ant.simple_rl.agents.AgentClass import Agent
 
 class FixedPolicyAgent(Agent):
     ''' Agent Class with a fixed policy. '''

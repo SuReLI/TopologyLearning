@@ -11,8 +11,8 @@ import numpy as np
 
 # Other imports.
 import gym
-from simple_rl.mdp.MDPClass import MDP
-from simple_rl.tasks.off_policy_swimmer.SwimmerMDPStateClass import SwimmerMDPState
+from dsg_rgl_ant.simple_rl.mdp.MDPClass import MDP
+from dsg_rgl_ant.simple_rl.tasks.off_policy_swimmer.SwimmerMDPStateClass import SwimmerMDPState
 
 
 class SwimmerMDP(MDP):

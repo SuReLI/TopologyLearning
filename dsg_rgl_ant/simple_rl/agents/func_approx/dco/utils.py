@@ -2,9 +2,9 @@ import pickle
 import numpy as np
 from tqdm import tqdm
 from copy import deepcopy
-from simple_rl.agents.func_approx.dqn.DQNAgentClass import ReplayBuffer
-from simple_rl.tasks.point_maze.PointMazeMDPClass import PointMazeMDP
-from simple_rl.tasks.ant_reacher.AntReacherMDPClass import AntReacherMDP
+from dsg_rgl_ant.simple_rl.agents.func_approx.dqn.DQNAgentClass import ReplayBuffer
+from dsg_rgl_ant.simple_rl.tasks.point_maze.PointMazeMDPClass import PointMazeMDP
+from dsg_rgl_ant.simple_rl.tasks.ant_reacher.AntReacherMDPClass import AntReacherMDP
 
 
 def get_saved_transition_data(env_name, device):

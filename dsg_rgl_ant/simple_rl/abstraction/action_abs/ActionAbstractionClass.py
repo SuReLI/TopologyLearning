@@ -4,8 +4,8 @@ from collections import defaultdict
 import random
 
 # Other imports.
-from simple_rl.abstraction.action_abs.OptionClass import Option
-from simple_rl.abstraction.action_abs.PredicateClass import Predicate
+from dsg_rgl_ant.simple_rl.abstraction.action_abs.OptionClass import Option
+from dsg_rgl_ant.simple_rl.abstraction.action_abs.PredicateClass import Predicate
 
 class ActionAbstraction(object):
 

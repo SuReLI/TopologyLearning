@@ -3,8 +3,8 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
-from simple_rl.tasks.d4rl_ant_maze.D4RLAntMazeMDPClass import D4RLAntMazeMDP
-from simple_rl.agents.func_approx.dsc.dynamics.mpc import MPC
+from dsg_rgl_ant.simple_rl.tasks.d4rl_ant_maze.D4RLAntMazeMDPClass import D4RLAntMazeMDP
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.dynamics.mpc import MPC
 
 def generate_data(mdp, epochs):
     states = []

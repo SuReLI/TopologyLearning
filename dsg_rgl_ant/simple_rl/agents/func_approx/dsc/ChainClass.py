@@ -1,8 +1,8 @@
 import ipdb
 import numpy as np
-from simple_rl.agents.func_approx.dsc.MBOptionClass import ModelBasedOption
-from simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
-from simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.MBOptionClass import ModelBasedOption
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
 
 
 class SkillChain(object):

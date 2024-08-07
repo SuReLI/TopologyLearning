@@ -3,8 +3,8 @@ import copy
 import random
 
 # Other imports.
-from simple_rl.mdp.MDPClass import MDP
-from simple_rl.tasks.cleanup.cleanup_task import CleanUpTask
+from dsg_rgl_ant.simple_rl.mdp.MDPClass import MDP
+from dsg_rgl_ant.simple_rl.tasks.cleanup.cleanup_task import CleanUpTask
 
 
 class CleanUpMDP(MDP):
@@ -25,7 +25,7 @@ class CleanUpMDP(MDP):
         :param gamma: gamma factor
         :param init_state: Initial state if given
         '''
-        from simple_rl.tasks.cleanup.cleanup_state import CleanUpState
+        from dsg_rgl_ant.simple_rl.tasks.cleanup.cleanup_state import CleanUpState
         self.task = task
         if rand_init:
             block_loc = [(x, y) for block in blocks for (x, y) in (block.x, block.y)]
@@ -223,34 +223,34 @@ class CleanUpMDP(MDP):
         #     self.cur_state.x, self.cur_state.y = new_loc
 
     def visualize_agent(self, agent):
-        from simple_rl.utils import mdp_visualizer as mdpv
-        from simple_rl.tasks.cleanup.cleanup_visualizer import draw_state
+        from dsg_rgl_ant.simple_rl.utils import mdp_visualizer as mdpv
+        from dsg_rgl_ant.simple_rl.tasks.cleanup.cleanup_visualizer import draw_state
         mdpv.visualize_agent(self, agent, draw_state)
         input("Press anything to quit ")
 
     def visualize_value(self):
-        from simple_rl.utils import mdp_visualizer as mdpv
-        from simple_rl.tasks.cleanup.cleanup_visualizer import draw_state
+        from dsg_rgl_ant.simple_rl.utils import mdp_visualizer as mdpv
+        from dsg_rgl_ant.simple_rl.tasks.cleanup.cleanup_visualizer import draw_state
         mdpv.visualize_value(self, draw_state)
         input("Press anything to quit ")
 
     def visualize_interaction(self):
-        from simple_rl.utils import mdp_visualizer as mdpv
-        from simple_rl.tasks.cleanup.cleanup_visualizer import draw_state
+        from dsg_rgl_ant.simple_rl.utils import mdp_visualizer as mdpv
+        from dsg_rgl_ant.simple_rl.tasks.cleanup.cleanup_visualizer import draw_state
         mdpv.visualize_interaction(self, draw_state)
         input("Press anything to quit ")
 
     def visualize_policy(self, policy):
-        from simple_rl.utils import mdp_visualizer as mdpv
-        from simple_rl.tasks.cleanup.cleanup_visualizer import draw_state
+        from dsg_rgl_ant.simple_rl.utils import mdp_visualizer as mdpv
+        from dsg_rgl_ant.simple_rl.tasks.cleanup.cleanup_visualizer import draw_state
         mdpv.visualize_policy(self, policy=policy, draw_state=draw_state, action_char_dict={})
         input("Press anything to quit ")
 
 
 if __name__ == "__main__":
-    from simple_rl.tasks.cleanup.cleanup_block import CleanUpBlock
-    from simple_rl.tasks.cleanup.cleanup_door import CleanUpDoor
-    from simple_rl.tasks.cleanup.cleanup_room import CleanUpRoom
+    from dsg_rgl_ant.simple_rl.tasks.cleanup.cleanup_block import CleanUpBlock
+    from dsg_rgl_ant.simple_rl.tasks.cleanup.cleanup_door import CleanUpDoor
+    from dsg_rgl_ant.simple_rl.tasks.cleanup.cleanup_room import CleanUpRoom
 
     task = CleanUpTask("green", "red")
     room1 = CleanUpRoom("room1", [(x, y) for x in range(5) for y in range(3)], "blue")

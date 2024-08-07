@@ -4,8 +4,8 @@
 import itertools
 
 # Other imports
-from simple_rl.mdp.MDPClass import MDP
-from simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.mdp.MDPClass import MDP
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
 
 class HanoiMDP(MDP):
     ''' Class for a Tower of Hanoi MDP '''
@@ -82,7 +82,7 @@ class HanoiMDP(MDP):
     def _is_goal_state(self, state):
         '''
         Args:
-            state (simple_rl.State)
+            state (dsg_rgl_ant.simple_rl.State)
 
         Returns:
             (bool)

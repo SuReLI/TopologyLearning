@@ -1,4 +1,4 @@
-from simple_rl.tasks.cleanup.cleanup_state import CleanUpState
+from dsg_rgl_ant.simple_rl.tasks.cleanup.cleanup_state import CleanUpState
 
 class CleanUpRoom:
     def __init__(self, name, points_in_room=[(x + 1, y + 1) for x in range(24) for y in range(24)], color="blue"):

@@ -7,8 +7,8 @@ import os
 import copy
 from numpy.linalg import norm
 
-from simple_rl.agents.func_approx.dsc.OptionClass import Option
-from simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.OptionClass import Option
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
 
 class CoveringOptions(Option):
     # This class identifies a subgoal by Laplacian method.

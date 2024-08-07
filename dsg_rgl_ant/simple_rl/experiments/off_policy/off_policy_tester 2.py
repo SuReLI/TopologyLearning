@@ -17,14 +17,14 @@ from scipy.ndimage.filters import uniform_filter1d
 from tqdm import tqdm
 import datetime
 
-from simple_rl.agents.func_approx.ddpg.DDPGAgentClass import DDPGAgent
-from simple_rl.agents.func_approx.ddpg.replay_buffer import ReplayBuffer
-from simple_rl.agents.func_approx.ddpg.utils import create_log_dir
-from simple_rl.agents.func_approx.dsc.utils import visualize_ddpg_replay_buffer
-from simple_rl.mdp.MDPPlotterClass import rotate_file_name
-from simple_rl.tasks import GymMDP
-from simple_rl.tasks.ant_reacher.AntReacherMDPClass import AntReacherMDP
-from simple_rl.tasks.off_policy_swimmer.SwimmerMDPClass import SwimmerMDP
+from dsg_rgl_ant.simple_rl.agents.func_approx.ddpg.DDPGAgentClass import DDPGAgent
+from dsg_rgl_ant.simple_rl.agents.func_approx.ddpg.replay_buffer import ReplayBuffer
+from dsg_rgl_ant.simple_rl.agents.func_approx.ddpg.utils import create_log_dir
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.utils import visualize_ddpg_replay_buffer
+from dsg_rgl_ant.simple_rl.mdp.MDPPlotterClass import rotate_file_name
+from dsg_rgl_ant.simple_rl.tasks import GymMDP
+from dsg_rgl_ant.simple_rl.tasks.ant_reacher.AntReacherMDPClass import AntReacherMDP
+from dsg_rgl_ant.simple_rl.tasks.off_policy_swimmer.SwimmerMDPClass import SwimmerMDP
 
 plt.style.use('default')
 
@@ -52,7 +52,7 @@ class TrainOffPolicy:
         f.close()
 
         if mdp_name == "point-reacher":
-            from simple_rl.tasks.point_reacher.PointReacherMDPClass import PointReacherMDP
+            from dsg_rgl_ant.simple_rl.tasks.point_reacher.PointReacherMDPClass import PointReacherMDP
             self.on_policy_goal = (8, 8)
             self.tolerance = 0.5
             self.xlim = (-10, 10)

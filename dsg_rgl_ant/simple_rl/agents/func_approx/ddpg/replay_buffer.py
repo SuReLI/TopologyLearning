@@ -4,7 +4,7 @@ import random
 import numpy as np
 
 # Other imports.
-from simple_rl.agents.func_approx.ddpg.hyperparameters import BUFFER_SIZE, BATCH_SIZE
+from dsg_rgl_ant.simple_rl.agents.func_approx.ddpg.hyperparameters import BUFFER_SIZE, BATCH_SIZE
 
 class ReplayBuffer(object):
     def __init__(self, buffer_size=BUFFER_SIZE, name_buffer='', seed=0,

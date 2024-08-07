@@ -3,15 +3,15 @@ import random
 import itertools
 import numpy as np
 from copy import deepcopy
-from simple_rl.mdp.StateClass import State
-from simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
-from simple_rl.agents.func_approx.dsc.ModelBasedDSC import ModelBasedSkillChaining
-from simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
-from simple_rl.agents.func_approx.dsc.MBOptionClass import ModelBasedOption
-from simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
-from simple_rl.agents.func_approx.dsc.utils import visualize_graph, visualize_mpc_rollout_and_graph_result
-from simple_rl.agents.func_approx.dsc.PlanGraphClass import PlanGraph
-from simple_rl.agents.func_approx.dsc.dynamics.mpc import MPC
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.ModelBasedDSC import ModelBasedSkillChaining
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.MBOptionClass import ModelBasedOption
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.utils import visualize_graph, visualize_mpc_rollout_and_graph_result
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.PlanGraphClass import PlanGraph
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.dynamics.mpc import MPC
 
 
 class SkillGraphPlanner(object):

@@ -1,6 +1,6 @@
 # Other imports.
-from simple_rl.agents.AgentClass import Agent
-from simple_rl.pomdp.BeliefStateClass import BeliefState
+from dsg_rgl_ant.simple_rl.agents.AgentClass import Agent
+from dsg_rgl_ant.simple_rl.pomdp.BeliefStateClass import BeliefState
 
 class BeliefAgent(Agent):
     def __init__(self, name, actions, gamma=0.99):

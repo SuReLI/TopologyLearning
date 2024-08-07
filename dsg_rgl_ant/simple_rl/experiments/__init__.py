@@ -1,1 +1,1 @@
-from simple_rl.experiments.ExperimentClass import Experiment
+from dsg_rgl_ant.simple_rl.experiments.ExperimentClass import Experiment

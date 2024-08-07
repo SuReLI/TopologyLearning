@@ -19,12 +19,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from simple_rl.agents.AgentClass import Agent
-from simple_rl.agents.func_approx.ddpg.utils import compute_gradient_norm
-from simple_rl.agents.func_approx.exploration.PseudoCountExploration import DensityModel
-from simple_rl.agents.func_approx.exploration.DiscreteCountExploration import CountBasedDensityModel
-from simple_rl.tasks.gym.GymMDPClass import GymMDP
-from simple_rl.tasks.four_room.FourRoomMDPClass import FourRoomMDP
+from dsg_rgl_ant.simple_rl.agents.AgentClass import Agent
+from dsg_rgl_ant.simple_rl.agents.func_approx.ddpg.utils import compute_gradient_norm
+from dsg_rgl_ant.simple_rl.agents.func_approx.exploration.PseudoCountExploration import DensityModel
+from dsg_rgl_ant.simple_rl.agents.func_approx.exploration.DiscreteCountExploration import CountBasedDensityModel
+from dsg_rgl_ant.simple_rl.tasks.gym.GymMDPClass import GymMDP
+from dsg_rgl_ant.simple_rl.tasks.four_room.FourRoomMDPClass import FourRoomMDP
 
 ## Hyperparameters
 BUFFER_SIZE = int(3e5)  # replay buffer size

@@ -25,7 +25,7 @@ import pdb
 import random
 from scipy.spatial import distance
 
-from simple_rl.tasks.point_maze.environments import maze_env_utils
+from dsg_rgl_ant.simple_rl.tasks.point_maze.environments import maze_env_utils
 
 # Directory that contains mujoco xml files.
 MODEL_DIR = os.path.join(os.getcwd(), 'simple_rl/tasks/point_maze/environments/assets')

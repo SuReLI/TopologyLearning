@@ -3,14 +3,14 @@ import itertools
 import numpy as np
 from tqdm import tqdm
 from copy import deepcopy
-from simple_rl.mdp.StateClass import State
-from simple_rl.tasks.point_reacher.PointReacherMDPClass import PointReacherMDP
-from simple_rl.agents.func_approx.dsc.SkillChainingAgentClass import SkillChaining
-from simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
-from simple_rl.agents.func_approx.dsc.OptionClass import Option
-from simple_rl.agents.func_approx.dsc.GraphSearchClass import GraphSearch
-from simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent, DSCOptionSalientEvent
-from simple_rl.agents.func_approx.dsc.utils import make_chunked_value_function_plot, visualize_graph
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.tasks.point_reacher.PointReacherMDPClass import PointReacherMDP
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SkillChainingAgentClass import SkillChaining
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.OptionClass import Option
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.GraphSearchClass import GraphSearch
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent, DSCOptionSalientEvent
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.utils import make_chunked_value_function_plot, visualize_graph
 
 
 class SkillGraphPlanningAgent(object):

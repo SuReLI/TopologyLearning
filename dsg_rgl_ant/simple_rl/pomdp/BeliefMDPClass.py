@@ -1,6 +1,6 @@
-from simple_rl.mdp.MDPClass import MDP
-from simple_rl.pomdp.POMDPClass import POMDP
-from simple_rl.pomdp.BeliefStateClass import BeliefState
+from dsg_rgl_ant.simple_rl.mdp.MDPClass import MDP
+from dsg_rgl_ant.simple_rl.pomdp.POMDPClass import POMDP
+from dsg_rgl_ant.simple_rl.pomdp.BeliefStateClass import BeliefState
 
 class BeliefMDP(MDP):
     def __init__(self, pomdp):
@@ -71,7 +71,7 @@ class BeliefMDP(MDP):
         return self.pomdp.is_in_goal_state()
 
 if __name__ == '__main__':
-    from simple_rl.tasks.maze_1d.Maze1DPOMDPClass import Maze1DPOMDP
+    from dsg_rgl_ant.simple_rl.tasks.maze_1d.Maze1DPOMDPClass import Maze1DPOMDP
     maze_pomdp = Maze1DPOMDP()
     maze_belief_mdp = BeliefMDP(maze_pomdp)
     maze_belief_mdp.execute_agent_action('east')

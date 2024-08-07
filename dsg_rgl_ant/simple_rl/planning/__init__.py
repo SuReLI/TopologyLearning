@@ -7,6 +7,6 @@ Implementations of standard planning algorithms:
 '''
 
 # Grab classes.
-from simple_rl.planning.PlannerClass import Planner
-from simple_rl.planning.ValueIterationClass import ValueIteration
-from simple_rl.planning.MCTSClass import MCTS
+from dsg_rgl_ant.simple_rl.planning.PlannerClass import Planner
+from dsg_rgl_ant.simple_rl.planning.ValueIterationClass import ValueIteration
+from dsg_rgl_ant.simple_rl.planning.MCTSClass import MCTS

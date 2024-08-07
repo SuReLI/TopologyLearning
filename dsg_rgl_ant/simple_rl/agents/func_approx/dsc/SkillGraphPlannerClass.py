@@ -4,13 +4,13 @@ import logging
 import itertools
 import numpy as np
 from copy import deepcopy
-from simple_rl.mdp.StateClass import State
-from simple_rl.agents.func_approx.dsc.SkillChainingAgentClass import SkillChaining
-from simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
-from simple_rl.agents.func_approx.dsc.OptionClass import Option
-from simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent, DSCOptionSalientEvent
-from simple_rl.agents.func_approx.dsc.utils import make_chunked_value_function_plot, visualize_graph, visualize_mpc_rollout_and_graph_result
-from simple_rl.agents.func_approx.dsc.PlanGraphClass import PlanGraph
+from dsg_rgl_ant.simple_rl.mdp.StateClass import State
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SkillChainingAgentClass import SkillChaining
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.ChainClass import SkillChain
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.OptionClass import Option
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.SalientEventClass import SalientEvent, DSCOptionSalientEvent
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.utils import make_chunked_value_function_plot, visualize_graph, visualize_mpc_rollout_and_graph_result
+from dsg_rgl_ant.simple_rl.agents.func_approx.dsc.PlanGraphClass import PlanGraph
 
 
 class SkillGraphPlanner(object):

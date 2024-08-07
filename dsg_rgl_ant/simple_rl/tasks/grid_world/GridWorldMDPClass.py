@@ -8,8 +8,8 @@ import os
 import numpy as np
 
 # Other imports.
-from simple_rl.mdp.MDPClass import MDP
-from simple_rl.tasks.grid_world.GridWorldStateClass import GridWorldState
+from dsg_rgl_ant.simple_rl.mdp.MDPClass import MDP
+from dsg_rgl_ant.simple_rl.tasks.grid_world.GridWorldStateClass import GridWorldState
 
 # Fix input to cooperate with python 2 and 3.
 try:
@@ -59,7 +59,7 @@ class GridWorldMDP(MDP):
         MDP.__init__(self, GridWorldMDP.ACTIONS, self._transition_func, self._reward_func, init_state=init_state, gamma=gamma)
 
         if type(goal_locs) is not list:
-            raise ValueError("(simple_rl) GridWorld Error: argument @goal_locs needs to be a list of locations. For example: [(3,3), (4,3)].")
+            raise ValueError("(dsg_rgl_ant.simple_rl) GridWorld Error: argument @goal_locs needs to be a list of locations. For example: [(3,3), (4,3)].")
         self.step_cost = step_cost
         self.lava_cost = lava_cost
         self.walls = walls
@@ -213,8 +213,8 @@ class GridWorldMDP(MDP):
         return self.lava_locs
 
     def visualize_policy(self, policy):
-        from simple_rl.utils import mdp_visualizer as mdpv
-        from simple_rl.tasks.grid_world.grid_visualizer import _draw_state
+        from dsg_rgl_ant.simple_rl.utils import mdp_visualizer as mdpv
+        from dsg_rgl_ant.simple_rl.tasks.grid_world.grid_visualizer import _draw_state
 
         action_char_dict = {
             "up":"^",       #u"\u2191",
@@ -227,26 +227,26 @@ class GridWorldMDP(MDP):
         input("Press anything to quit")
 
     def visualize_agent(self, agent):
-        from simple_rl.utils import mdp_visualizer as mdpv
-        from simple_rl.tasks.grid_world.grid_visualizer import _draw_state
+        from dsg_rgl_ant.simple_rl.utils import mdp_visualizer as mdpv
+        from dsg_rgl_ant.simple_rl.tasks.grid_world.grid_visualizer import _draw_state
         mdpv.visualize_agent(self, agent, _draw_state)
         input("Press anything to quit")
 
     def visualize_value(self):
-        from simple_rl.utils import mdp_visualizer as mdpv
-        from simple_rl.tasks.grid_world.grid_visualizer import _draw_state
+        from dsg_rgl_ant.simple_rl.utils import mdp_visualizer as mdpv
+        from dsg_rgl_ant.simple_rl.tasks.grid_world.grid_visualizer import _draw_state
         mdpv.visualize_value(self, _draw_state)
         input("Press anything to quit")
 
     def visualize_learning(self, agent, delay=0.0):
-        from simple_rl.utils import mdp_visualizer as mdpv
-        from simple_rl.tasks.grid_world.grid_visualizer import _draw_state
+        from dsg_rgl_ant.simple_rl.utils import mdp_visualizer as mdpv
+        from dsg_rgl_ant.simple_rl.tasks.grid_world.grid_visualizer import _draw_state
         mdpv.visualize_learning(self, agent, _draw_state, delay=delay)
         input("Press anything to quit")
 
     def visualize_interaction(self):
-        from simple_rl.utils import mdp_visualizer as mdpv
-        from simple_rl.tasks.grid_world.grid_visualizer import _draw_state
+        from dsg_rgl_ant.simple_rl.utils import mdp_visualizer as mdpv
+        from dsg_rgl_ant.simple_rl.tasks.grid_world.grid_visualizer import _draw_state
         mdpv.visualize_interaction(self, _draw_state)
         input("Press anything to quit")
 
@@ -261,10 +261,10 @@ def _error_check(state, action):
     '''
 
     if action not in GridWorldMDP.ACTIONS:
-        raise ValueError("(simple_rl) GridWorldError: the action provided (" + str(action) + ") was invalid in state: " + str(state) + ".")
+        raise ValueError("(dsg_rgl_ant.simple_rl) GridWorldError: the action provided (" + str(action) + ") was invalid in state: " + str(state) + ".")
 
     if not isinstance(state, GridWorldState):
-        raise ValueError("(simple_rl) GridWorldError: the given state (" + str(state) + ") was not of the correct class.")
+        raise ValueError("(dsg_rgl_ant.simple_rl) GridWorldError: the given state (" + str(state) + ") was not of the correct class.")
 
 def make_grid_world_from_file(file_name, randomize=False, num_goals=1, name=None, goal_num=None, slip_prob=0.0):
     '''

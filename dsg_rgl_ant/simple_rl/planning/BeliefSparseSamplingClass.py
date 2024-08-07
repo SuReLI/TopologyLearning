@@ -4,7 +4,7 @@ import copy
 from collections import defaultdict
 import random
 
-from simple_rl.pomdp.BeliefMDPClass import BeliefMDP
+from dsg_rgl_ant.simple_rl.pomdp.BeliefMDPClass import BeliefMDP
 
 
 class BeliefSparseSampling(object):
