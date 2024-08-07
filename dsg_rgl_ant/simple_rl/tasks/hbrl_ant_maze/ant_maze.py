@@ -52,7 +52,7 @@ SETTINGS
 class AntMaze(GoalDirectedMDP):
 
     def __init__(self, maze_name="empty_room", image_resolution_per_tile=50, show=False, random_orientation=False,
-                 fixed_goal=None, dense_reward=False):
+                 fixed_goal=None, dense_reward=False, maze_scale=1):
         """
         Initialise an ant maze environment.
         THe model is automatically created using a map specification defined in /mujoco_files/maps/
@@ -63,8 +63,9 @@ class AntMaze(GoalDirectedMDP):
         self.env_name = "ant_maze_hbrl"
         self.random_orientation = random_orientation
         self.maze_name = maze_name
+        self.maze_scale = maze_scale
         self.image_resolution_per_tile = image_resolution_per_tile
-        self.maze_array, xml_spec_path = generate_xml(maze_name)  # TODO : check maze_info["reachable_spaces_size"]
+        self.maze_array, xml_spec_path = generate_xml(maze_name, scale=self.maze_scale)  # TODO : check maze_info["reachable_spaces_size"]
         self.maze_array = np.array(self.maze_array)
         self.maze_array_height, self.maze_array_width = self.maze_array.shape
 
@@ -210,7 +211,9 @@ class AntMaze(GoalDirectedMDP):
     def map_coordinates_to_env_position(self, x, y):
         x = self.maze_array_width + x if x < 0 else x
         y = self.maze_array_height + y if y < 0 else y
-        return np.array([x - self.maze_array_width / 2 + 0.5, - (y - self.maze_array_height / 2 + 0.5)])
+        res_x = (x - self.maze_array_width / 2 + 0.5) * self.maze_scale
+        res_y = - (y - self.maze_array_height / 2 + 0.5) * self.maze_scale
+        return np.array([res_x, res_y])
 
     def sample_reachable_position(self):
         # sample empty tile

@@ -57,7 +57,7 @@ def load_walls(maze_array):
     return horizontal_walls, vertical_walls
 
 
-def generate_xml(map_name: str) -> (dict, str):
+def generate_xml(map_name: str, scale=1) -> (dict, str):
     """
     Generate an ant-maze environment model from a base model and maze walls description.
     :returns: (as a tuple of two elements)
@@ -78,7 +78,7 @@ def generate_xml(map_name: str) -> (dict, str):
             world_body_node = child
 
     # Load maps data
-    maze_array = np.array(importlib.import_module("simple_rl.tasks.hbrl_ant_maze.maps." + map_name).maze_array)
+    maze_array = np.array(importlib.import_module("dsg_rgl_ant.simple_rl.tasks.hbrl_ant_maze.maps." + map_name).maze_array)
 
     # Load walls
     width = len(maze_array[0])
@@ -91,8 +91,8 @@ def generate_xml(map_name: str) -> (dict, str):
         end_x = wall[1][0] - width / 2 + 0.5
         position_x = (end_x + start_x) / 2
         position_y = - (wall[0][1] - height / 2 + 0.5)
-        position = str(position_x) + " " + str(position_y) + " 0.5"
-        wall_size = str((end_x - start_x + 1) / 2) + " 0.5 0.5"
+        position = str(position_x * scale) + " " + str(position_y * scale) + " " + str(0.5 * scale)
+        wall_size = str((end_x - start_x + 1) / 2 * scale) + " " + str(0.5 * scale) + " " + str(0.5 * scale)
         node = E.body(
             E.geom(type="box", size=wall_size, contype="1", conaffinity="1", rgba="0.4 0.4 0.4 1"),
             name="horizontal_wall_" + str(wall_id), pos=position
@@ -104,8 +104,8 @@ def generate_xml(map_name: str) -> (dict, str):
         end_y = - (wall[0][1] - height / 2 + 0.5)
         position_x = wall[0][0] - width / 2 + 0.5
         position_y = (end_y + start_y) / 2
-        position = str(position_x) + " " + str(position_y) + " 0.5"
-        wall_size = "0.5 " + str((end_y - start_y + 1) / 2) + " 0.5"
+        position = str(position_x * scale) + " " + str(position_y * scale) + " " + str(0.5 * scale)
+        wall_size = str(0.5 * scale) + " " + str((end_y - start_y + 1) / 2 * scale) + " " + str(0.5 * scale)
         node = E.body(
             E.geom(type="box", size=wall_size, contype="1", conaffinity="1", rgba="0.4 0.4 0.4 1"),
             name="vertical_wall_" + str(wall_id), pos=position

@@ -495,7 +495,6 @@ if __name__ == "__main__":
     parser.add_argument("--map_id", type=int, default="0")
     parser.add_argument("--experiment_name", type=str, help="Experiment Name", default="NONE")
     parser.add_argument("--device", type=str, default="cuda")
-    parser.add_argument("--env", type=str, help="name of gym environment", default="Pendulum-v0")
     parser.add_argument("--seed", type=int, help="Random seed for this run (default=0)", default=0)
     parser.add_argument("--episodes", type=int, help="# episodes", default=2000)
     parser.add_argument("--steps", type=int, help="# steps", default=1000)
@@ -513,7 +512,7 @@ if __name__ == "__main__":
     parser.add_argument("--test", action="store_false", help="Test to improve DSG results in RGL AntMaze")
     args = parser.parse_args()
 
-    map_name = ["four_rooms", "medium_maze", "hard_maze", "join_rooms_medium"][args.map_id]
+    map_name = ["four_rooms", "medium_maze", "hard_maze", "join_rooms_medium", "u_maze"][args.map_id]
     args.experiment_name = map_name + "_" + str(args.experiment_id)
     max_interactions = None
     nb_interaction_before_test = 12000
@@ -526,11 +525,13 @@ if __name__ == "__main__":
         max_interactions = 1600000
     elif map_name == "join_rooms_medium":
         max_interactions = 1600000
+    elif map_name == "u_maze":
+        max_interactions = 700000
     else:
         raise Exception("Unknown map name ", map_name, " got from map index ", args.map_id)
     root_directory = os.path.dirname("..")
-
-    overall_mdp = AntMaze(maze_name=map_name, dense_reward=args.test)
+    maze_scale = 4 if map_name == "u_maze" else 1
+    overall_mdp = AntMaze(maze_name=map_name, dense_reward=args.test, maze_scale=maze_scale, show=True)
     state_dim = overall_mdp.state_size
     action_dim = overall_mdp.action_size
 

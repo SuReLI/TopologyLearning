@@ -465,21 +465,32 @@ class DeepSkillGraphAgent(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--experiment_name", type=str, help="Experiment Name")
-    parser.add_argument("--device", type=str, help="cpu/cuda:0/cuda:1")
-    parser.add_argument("--env", type=str, help="name of gym environment", default="Pendulum-v0")
+
+    #  --experiment_name="[enter-your-experiment-name]"
+    #  --device="cuda"
+    #  --env="d4rl-ant-maze"
+    #  --episodes=2000
+    #  --steps=1000
+    #  --use_dense_rewards
+    #  --gestation_period=10
+    #  --buffer_len=50
+    #  --salient_event_freq=50
+    #  --use_model
+    parser.add_argument("--experiment_name", type=str, help="Experiment Name", default="DSG Reproduction")
+    parser.add_argument("--device", type=str, help="cpu/cuda:0/cuda:1", default="cpu")
+    parser.add_argument("--env", type=str, help="name of gym environment", default="d4rl-ant-maze")
     parser.add_argument("--seed", type=int, help="Random seed for this run (default=0)", default=0)
-    parser.add_argument("--episodes", type=int, help="# episodes", default=200)
+    parser.add_argument("--episodes", type=int, help="# episodes", default=2000)
     parser.add_argument("--steps", type=int, help="# steps", default=1000)
     parser.add_argument("--subgoal_reward", type=float, help="SkillChaining subgoal reward", default=0.)
     parser.add_argument("--render", type=bool, help="Render the mdp env", default=False)
-    parser.add_argument("--use_dense_rewards", action="store_true", help="Use dense/sparse rewards", default=False)
-    parser.add_argument("--gestation_period", type=int, help="Number of subgoal hits to learn an option", default=5)
+    parser.add_argument("--use_dense_rewards", action="store_true", help="Use dense/sparse rewards", default=True)
+    parser.add_argument("--gestation_period", type=int, help="Number of subgoal hits to learn an option", default=10)
     parser.add_argument("--buffer_len", type=int, help="buffer size used by option to create init sets", default=50)
     parser.add_argument("--salient_event_freq", type=int, help="Create a salient event every salient_event_freq episodes", default=50)
     parser.add_argument("--plot_rejected_events", action="store_true", default=False)
     parser.add_argument("--plot_gc_value_functions", action="store_true", default=False)
-    parser.add_argument("--use_model", action="store_true", default=False)
+    parser.add_argument("--use_model", action="store_true", default=True)
     parser.add_argument("--use_vf", action="store_true", default=False)
     parser.add_argument("--multithread_mpc", action="store_true", default=False)
     parser.add_argument("--map", type=str, help="Map Name", default="")
