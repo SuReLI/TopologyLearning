@@ -1,6 +1,6 @@
 import importlib
 import os.path
-
+from filelock import FileLock
 import numpy as np
 from lxml import etree
 from lxml.builder import E
@@ -57,7 +57,7 @@ def load_walls(maze_array):
     return horizontal_walls, vertical_walls
 
 
-def generate_xml(map_name: str, scale=1) -> (dict, str):
+def generate_xml(map_name: str, temp_dir, scale=1) -> (dict, str):
     """
     Generate an ant-maze environment model from a base model and maze walls description.
     :returns: (as a tuple of two elements)
@@ -69,7 +69,10 @@ def generate_xml(map_name: str, scale=1) -> (dict, str):
 
     # Get the path to the current directory.
     current_directory = os.path.dirname(__file__)
-    tree = etree.parse(current_directory + "/ant_maze.xml")
+    file_path = str(current_directory + "/ant_maze.xml")
+    lock = FileLock(f"{file_path}.lock")
+    with lock:
+        tree = etree.parse(current_directory + "/ant_maze.xml")
 
     # Find 'world_body' int ant-maze xml file:
     world_body_node = None

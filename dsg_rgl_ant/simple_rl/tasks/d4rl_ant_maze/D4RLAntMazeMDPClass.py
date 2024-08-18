@@ -7,6 +7,7 @@ from copy import deepcopy
 from dsg_rgl_ant.simple_rl.mdp.GoalDirectedMDPClass import GoalDirectedMDP
 from dsg_rgl_ant.simple_rl.tasks.d4rl_ant_maze.D4RLAntMazeStateClass import D4RLAntMazeState
 
+import d4rl.locomotion.ant
 
 class D4RLAntMazeMDP(GoalDirectedMDP):
     def __init__(self, maze_size, goal_state=None, use_hard_coded_events=False, seed=0, render=False):
@@ -15,6 +16,12 @@ class D4RLAntMazeMDP(GoalDirectedMDP):
         self.use_hard_coded_events = use_hard_coded_events
 
         reg = gym.envs.registry.all()
+
+        for elt in reg:
+            if elt.name == "antmaze-umaze-v0":
+                debug = 1
+            if elt.id == "antmaze-umaze-v0":
+                debug = 1
         self.env = gym.make(self.env_name)
         self.reset()
 

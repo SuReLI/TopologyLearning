@@ -30,7 +30,11 @@ class Settings:
         #      simulation have which parameters. (NB: as a security, simulations settings is always saved in a
         #      "simulation_settings.pkl" file inside the output directory, but set a relevant name make outputs
         #      management more handy).
+<<<<<<< HEAD
+        self.redirect_std_output = True
+=======
         self.redirect_std_output = False
+>>>>>>> b695bc478e70e5c5aa9aca0b7fa787a0883f7955
 
         # Pre_training
         if pre_train_in_playground is None:

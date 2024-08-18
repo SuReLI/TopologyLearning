@@ -1,7 +1,7 @@
 import math
 import random
 from typing import Union
-
+import tempfile
 import networkx as nx
 import numpy as np
 from gym.spaces import Box
@@ -65,7 +65,8 @@ class AntMaze(GoalDirectedMDP):
         self.maze_name = maze_name
         self.maze_scale = maze_scale
         self.image_resolution_per_tile = image_resolution_per_tile
-        self.maze_array, xml_spec_path = generate_xml(maze_name, scale=self.maze_scale)  # TODO : check maze_info["reachable_spaces_size"]
+        self.temporary_directory = tempfile.TemporaryDirectory()
+        self.maze_array, xml_spec_path = generate_xml(maze_name, self.temporary_directory, scale=self.maze_scale)
         self.maze_array = np.array(self.maze_array)
         self.maze_array_height, self.maze_array_width = self.maze_array.shape
 

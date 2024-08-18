@@ -1,6 +1,6 @@
 import importlib
 import os.path
-
+from filelock import FileLock
 import numpy as np
 from lxml import etree
 from lxml.builder import E
@@ -57,7 +57,7 @@ def load_walls(maze_array):
     return horizontal_walls, vertical_walls
 
 
-def generate_xml(map_name: str) -> (dict, str):
+def generate_xml(map_name: str, temp_dir) -> (dict, str):
     """
     Generate an ant-maze environment model from a base model and maze walls description.
     :returns: (as a tuple of two elements)
@@ -69,7 +69,10 @@ def generate_xml(map_name: str) -> (dict, str):
 
     # Get the path to the current directory.
     current_directory = os.path.dirname(__file__)
-    tree = etree.parse(current_directory + "/ant_maze.xml")
+    file_path = str(current_directory + "/ant_maze.xml")
+    lock = FileLock(f"{file_path}.lock")
+    with lock:
+        tree = etree.parse(current_directory + "/ant_maze.xml")
 
     # Find 'world_body' int ant-maze xml file:
     world_body_node = None
@@ -112,15 +115,15 @@ def generate_xml(map_name: str) -> (dict, str):
         )
         world_body_node.append(node)
 
-    xml_output_path = current_directory + "/generated/" + "ant_maze_" + map_name + ".xml"
-    tree.write(xml_output_path)
+    xml_file_path = os.path.join(temp_dir.name, "ant_maze_" + map_name + ".xml")
+    tree.write(xml_file_path)
 
     # Make generated file more pretty
     parser = etree.XMLParser(remove_blank_text=True)
-    tree = etree.parse(xml_output_path, parser)
-    tree.write(xml_output_path, pretty_print=True)
+    tree = etree.parse(xml_file_path, parser)
+    tree.write(xml_file_path, pretty_print=True)
 
-    return maze_array, xml_output_path
+    return maze_array, xml_file_path
 
 
 if __name__ == "__main__":

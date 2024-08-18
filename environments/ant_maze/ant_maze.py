@@ -1,7 +1,7 @@
 import math
 import random
 from typing import Union
-
+import tempfile
 import networkx as nx
 import numpy as np
 from gym.spaces import Box
@@ -46,7 +46,6 @@ SETTINGS
 """
 
 
-
 class AntMaze:
 
     def __init__(self, maze_name="empty_room", image_resolution_per_tile=50, show=False, random_orientation=False):
@@ -60,7 +59,8 @@ class AntMaze:
         self.random_orientation = random_orientation
         self.maze_name = maze_name
         self.image_resolution_per_tile = image_resolution_per_tile
-        self.maze_array, xml_spec_path = generate_xml(maze_name)  # TODO : check maze_info["reachable_spaces_size"]
+        self.temporary_directory = tempfile.TemporaryDirectory()
+        self.maze_array, xml_spec_path = generate_xml(maze_name, self.temporary_directory)  # TODO : check maze_info["reachable_spaces_size"]
         self.maze_array = np.array(self.maze_array)
         self.maze_array_height, self.maze_array_width = self.maze_array.shape
 
@@ -237,8 +237,6 @@ class AntMaze:
         angle = math.acos(diff[0] / np.linalg.norm(diff))
         euler_rotation = np.array([-math.pi / 2, angle, 0])
         self.sim.model.geom_quat[edge_id] = euler2quat(euler_rotation)
-
-
 
         if rgba is not None:
             if isinstance(rgba, str):
